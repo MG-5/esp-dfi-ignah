@@ -2,8 +2,7 @@
 
 #include "dfi/Dfi.hpp"
 // #include "StatusLed.hpp"
-// #include "Timebase.hpp"
-// #include "Wireless.hpp"
+#include "wifi/Wireless.hpp"
 
 class Application
 {
@@ -16,7 +15,7 @@ public:
 private:
     bool isConnected = false;
 
-    // Wireless wireless{isConnected};
+    Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
     Dfi dfi{isConnected};
 };
