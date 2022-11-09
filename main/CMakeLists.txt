@@ -1,19 +1,38 @@
 idf_component_register(SRCS 
-    #dfi/Dfi.cxx
-    #dfi/HttpClient.cxx
+    dfi/Dfi.cxx
+    dfi/HttpClient.cxx
 
     Application.cxx
+    sync.cxx
     #StatusLed.cxx
     #Wireless.cxx
 
     INCLUDE_DIRS ".")
 
-#add_subdirectory(components/pugixml)
-#add_subdirectory(components/Time)
-#add_subdirectory(components/util)
+# Unfortunately the pugixml library performs install and export.
+# Override install() and export() to do nothing instead.
+function(install)
+endfunction()
+
+function(export)
+endfunction()
+    
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_TESTING OFF)
+
+# pugixml
+add_compile_definitions(
+   PUGIXML_NO_XPATH
+   PUGIXML_NO_EXCEPTIONS)
+
+add_subdirectory(components/pugixml)
+add_subdirectory(components/Time)
+add_subdirectory(components/display-renderer)
+add_subdirectory(components/util)
 
 target_link_libraries(${COMPONENT_LIB} PUBLIC 
-                #pugixml
-                #Time
-                #util
+                pugixml
+                Time
+                display-renderer
+                util
                 )
