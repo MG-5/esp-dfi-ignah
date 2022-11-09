@@ -1,11 +1,15 @@
 #include "Application.hpp"
 
+#include "dfi/Timebase.hpp"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "sdkconfig.h"
+#include "sync.hpp"
 
 #include <memory>
+
+using namespace util::wrappers;
 
 // called by ESP-IDF
 extern "C" void app_main(void) // NOLINT
@@ -21,7 +25,7 @@ extern "C" void app_main(void) // NOLINT
     ESP_LOGI(PrintTag, "Application consumes %d bytes on heap",
              (previousHeapFreeSpace - currentHeapFreeSpace));
 
-    // vTaskDelay(toOsTicks(100.0_ms));
+    vTaskDelay(toOsTicks(100.0_ms));
 
     app.run();
 }
@@ -29,10 +33,10 @@ extern "C" void app_main(void) // NOLINT
 //--------------------------------------------------------------------------------------------------
 void Application::run()
 {
-    // util::wrappers::Task::applicationIsReadyStartAllTasks();
+    Task::applicationIsReadyStartAllTasks();
 
-    // sync::waitForAll(sync::ConnectedToWifi);
-    //  Timebase::initTimeSychronization();
+    sync::waitForAll(sync::ConnectedToWifi);
+    Timebase::initTimeSychronization();
 
     while (true)
     {

@@ -2,10 +2,11 @@ idf_component_register(SRCS
     dfi/Dfi.cxx
     dfi/HttpClient.cxx
 
+    wifi/Wireless.cxx
+
     Application.cxx
     sync.cxx
     #StatusLed.cxx
-    #Wireless.cxx
 
     INCLUDE_DIRS ".")
 
