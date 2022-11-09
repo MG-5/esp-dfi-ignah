@@ -1,0 +1,3 @@
+[submodule "main/components/util"]
+	path = main/components/util
+	url = ../util.git
