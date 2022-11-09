@@ -1,6 +1,6 @@
 #pragma once
 
-// #include "dfi/Dfi.hpp"
+#include "dfi/Dfi.hpp"
 // #include "StatusLed.hpp"
 // #include "Timebase.hpp"
 // #include "Wireless.hpp"
@@ -14,9 +14,9 @@ public:
     static Application &getApplicationInstance();
 
 private:
-    // bool isConnected = false;
+    bool isConnected = false;
 
     // Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
-    // Dfi dfi{isConnected};
+    Dfi dfi{isConnected};
 };
