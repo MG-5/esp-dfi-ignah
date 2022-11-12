@@ -1,4 +1,8 @@
 @import "@fontsource/material-icons";
 
-html, body { height: 100%; }
+html, body, mat-sidenav-container { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.button--icon {
+    margin-right: 0.5rem;
+}

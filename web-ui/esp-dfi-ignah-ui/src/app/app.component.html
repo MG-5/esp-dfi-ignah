@@ -1,0 +1,24 @@
+<mat-sidenav-container>
+  <mat-sidenav #sidenav>
+    Sidenav content
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+
+    <mat-toolbar color="primary" class="mat-elevation-z6">
+      <span class="button--icon">
+        <button mat-icon-button *ngIf="isSmallLayout$ | async" (click)="sidenav.open()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </span>
+      <span>ESP DFI IGNah</span>
+
+      <span class="spacer"></span>
+
+      <!-- <button mat-icon-button>
+        <mat-icon>light_mode</mat-icon>
+      </button> -->
+    </mat-toolbar>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>
