@@ -15,9 +15,15 @@
 
       <span class="spacer"></span>
 
-      <!-- <button mat-icon-button>
+      <button mat-icon-button (click)="themingService.setDarkTheme()" *ngIf="themingService.getCurrentTheme() === theme.Light; else darkModeButton">
         <mat-icon>light_mode</mat-icon>
-      </button> -->
+      </button>
+      <ng-template #darkModeButton>
+        <button mat-icon-button (click)="themingService.setLightTheme()">
+          <mat-icon>dark_mode</mat-icon>
+        </button>
+      </ng-template>
+
     </mat-toolbar>
 
   </mat-sidenav-content>

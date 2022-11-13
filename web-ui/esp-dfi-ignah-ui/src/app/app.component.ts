@@ -1,6 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnInit } from '@angular/core';
 import { EMPTY, map, Observable } from 'rxjs';
+import { Theme, ThemingService } from './services/theming.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,9 @@ export class AppComponent implements OnInit {
 
   isSmallLayout$: Observable<boolean> = EMPTY;
 
-  constructor(private breakpointObserver: BreakpointObserver) { }
+  theme = Theme;
+
+  constructor(private breakpointObserver: BreakpointObserver, public themingService: ThemingService) { }
 
   ngOnInit(): void {
     this.isSmallLayout$ = this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall]).pipe(map(state => state.matches));
