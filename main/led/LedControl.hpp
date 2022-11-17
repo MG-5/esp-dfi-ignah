@@ -8,9 +8,10 @@ using util::Gpio;
 class LedControl : public IRenderTarget
 {
 public:
-    static constexpr auto Rows = 5;
-    static constexpr auto LedsPerRow = 120 * 8;
-    static constexpr auto TotalLeds = Rows * LedsPerRow;
+    static constexpr auto Strips = 5;
+    static constexpr auto Columns = 120;
+    static constexpr auto LedsPerStrip = Columns * 8;
+    static constexpr auto TotalLeds = Strips * LedsPerStrip;
 
     LedControl() = default;
 

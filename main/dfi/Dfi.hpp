@@ -5,15 +5,15 @@
 #include "pugixml.hpp"
 #include "wrappers/Task.hpp"
 
-#include "DriverInterface.hpp"
 #include "display-renderer/Renderer.hpp"
+#include "led/LedControl.hpp"
 
 class Dfi : public util::wrappers::TaskWithMemberFunctionBase
 {
 public:
     static constexpr auto PrintTag = "[DFI]";
-    static constexpr auto MaximumNumberVehiclesRequest = 14;
-    static constexpr auto MaximumNumberVehiclesToShow = 4;
+    static constexpr auto MaximumNumberVehiclesRequest = 16;
+    static constexpr auto MaximumNumberVehiclesToShow = 8;
 
     using BlacklistArray = std::array<std::string_view, 8>;
 
@@ -57,18 +57,19 @@ private:
     pugi::xml_document xmlDocument{};
     LocalTransportVehicleArray vehicleArray;
 
-    DriverInterface driverInterface{};
-    Renderer renderer{960, 40, driverInterface};
+    LedControl ledControl{};
+    Renderer renderer{LedControl::Columns, LedControl::Strips, ledControl};
 
     static constexpr auto PrintBufferSize = 32;
-    char printBuffer[PrintBufferSize];
+    char printBuffer[PrintBufferSize]{};
     bool &isConnected;
 
     bool loadXmlFromBuffer();
     void parseXml();
 
-    void printTitleBar();
-    void printVehicles();
+    void renderTitleBar(bool showDoublePoint);
+    void renderVehicles(bool showCurrentVehicle);
+    void logVehicles();
 
     void initDisplayInterface();
     void clearDisplayRam();

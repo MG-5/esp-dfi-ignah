@@ -19,7 +19,7 @@ void LedControl::submitImage(const uint8_t *image, size_t length)
 
     // send LED data to row 2 and 4 simultanously
     setTripleControlShiftRegister(0b1010);
-    shiftDualLedData(LedsPerRow, image);
+    shiftDualLedData(LedsPerStrip, image);
 
     // send LED data to row 5 at last
     setTripleControlShiftRegister(0b10000);
@@ -101,12 +101,12 @@ void LedControl::triggerRegisterClock()
 //--------------------------------------------------------------------------------------------------
 void LedControl::shiftDualLedData(const size_t startPosition, const uint8_t *image)
 {
-    for (int i = startPosition; i < startPosition + LedsPerRow; i++)
+    for (int i = startPosition; i < startPosition + LedsPerStrip; i++)
     {
         bool pinState1 = 1 & (image[i / 8] >> (7 - (i % 8)));
         ShiftDataIn1.write(pinState1);
 
-        bool pinState2 = 1 & (image[i / 8 + (2 * (LedsPerRow / 8))] >> (7 - (i % 8)));
+        bool pinState2 = 1 & (image[i / 8 + (2 * (LedsPerStrip / 8))] >> (7 - (i % 8)));
         ShiftDataIn2.write(pinState2);
 
         ShiftClock1.write(true);
@@ -122,7 +122,7 @@ void LedControl::shiftDualLedData(const size_t startPosition, const uint8_t *ima
 //--------------------------------------------------------------------------------------------------
 void LedControl::shiftLedDataRow5(const uint8_t *image)
 {
-    for (int i = 4 * LedsPerRow; i < 5 * LedsPerRow; i++)
+    for (int i = 4 * LedsPerStrip; i < 5 * LedsPerStrip; i++)
     {
         bool pinState = 1 & (image[i / 8] >> (7 - (i % 8)));
         ShiftDataIn2.write(pinState);
