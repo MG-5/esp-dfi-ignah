@@ -142,6 +142,10 @@ void LedControl::shiftLedDataRow5(const uint8_t *image)
 //--------------------------------------------------------------------------------------------------
 void LedControl::delay200ns()
 {
+#ifndef CONFIG_ESP32_DEFAULT_CPU_FREQ_160
+#error "Frequency is not set to 160MHz"
+#endif
+
     // 160MHz = 6,25ns per cycle
     // 200ns / 6,25ns = 32 cycles
 
