@@ -1,14 +1,10 @@
 #include "LedControl.hpp"
 #include "helpers/freertos.hpp"
 
-void LedControl::taskMain(void *)
+void LedControl::init()
 {
     initGpios();
     clearShiftRegisters();
-
-    while (true)
-    {
-    }
 }
 
 //--------------------------------------------------------------------------------------------------

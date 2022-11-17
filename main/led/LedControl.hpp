@@ -2,24 +2,21 @@
 
 #include "display-renderer/IRenderTarget.hpp"
 #include "util/gpio.hpp"
-#include "wrappers/Task.hpp"
 
 using util::Gpio;
 
-class LedControl : public util::wrappers::TaskWithMemberFunctionBase, IRenderTarget
+class LedControl : public IRenderTarget
 {
 public:
     static constexpr auto Rows = 5;
     static constexpr auto LedsPerRow = 120 * 8;
     static constexpr auto TotalLeds = Rows * LedsPerRow;
 
-    LedControl() : TaskWithMemberFunctionBase("ledControlTask", 512, osPriorityNormal3)
-    {
-    }
+    LedControl() = default;
+
+    void init();
 
 protected:
-    void taskMain(void *) override;
-
     void submitImage(const uint8_t *image, size_t length) override;
 
 private:
