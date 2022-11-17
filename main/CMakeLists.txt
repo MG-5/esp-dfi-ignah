@@ -2,6 +2,8 @@ idf_component_register(SRCS
     dfi/Dfi.cxx
     dfi/HttpClient.cxx
 
+    led/LedControl.cxx
+
     wifi/Wireless.cxx
 
     Application.cxx

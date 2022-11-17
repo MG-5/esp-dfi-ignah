@@ -2,6 +2,7 @@
 
 #include "dfi/Dfi.hpp"
 // #include "StatusLed.hpp"
+#include "led/LedControl.hpp"
 #include "wifi/Wireless.hpp"
 
 class Application
