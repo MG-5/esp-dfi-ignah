@@ -47,7 +47,12 @@ void LedControl::setTripleControlShiftRegister(uint8_t rows)
 {
     uint8_t secondRegister =
         0b00000000; // controls OR-Gate, which can disable LEDs, not needed at moment
-    uint8_t thirdRegister = 0b00000000; // some power control, not needed at moment
+
+    [[maybe_unused]] constexpr auto AllowPwm = 1 << 0;
+    constexpr auto EnableMosfets = 1 << 1;
+    [[maybe_unused]] constexpr auto MultiplexerSelect = 1 << 2;
+
+    uint8_t thirdRegister = EnableMosfets;
 
     shiftControlData(thirdRegister);
     shiftControlData(secondRegister);
