@@ -108,10 +108,11 @@ void LedControl::shiftDualLedData(const size_t startPosition, const uint8_t *ima
 {
     for (int i = startPosition; i < startPosition + LedsPerStrip; i++)
     {
-        bool pinState1 = 1 & (image[i / 8] >> (7 - (i % 8)));
+        // read VRAM in reverse order
+        bool pinState1 = 1 & (image[i / 8] >> (i % 8));
         ShiftDataIn1.write(pinState1);
 
-        bool pinState2 = 1 & (image[i / 8 + (2 * (LedsPerStrip / 8))] >> (7 - (i % 8)));
+        bool pinState2 = 1 & (image[i / 8 + (2 * (LedsPerStrip / 8))] >> (i % 8));
         ShiftDataIn2.write(pinState2);
 
         ShiftClock1.write(true);
