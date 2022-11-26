@@ -18,7 +18,7 @@ public:
 private:
     static constexpr auto PrintTag = "[RestServer]";
 
-    static constexpr size_t ScratchBufferSize = 10240;
+    static constexpr size_t ScratchBufferSize = 1024 * 20;
 
     void initialiseMdns();
     esp_err_t initFileSystem();
@@ -29,6 +29,6 @@ private:
     static esp_err_t setContentTypeFromFile(httpd_req_t *req, std::string filePath);
     static bool checkFileExtension(std::string filePath, std::string extension);
 
-    std::string basePath;
-    char scratchBuffer[ScratchBufferSize];
+    std::string basePath = "";
+    char scratchBuffer[ScratchBufferSize]{};
 };

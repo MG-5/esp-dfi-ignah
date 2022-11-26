@@ -17,6 +17,7 @@ void RestServer::initServer()
     netbiosns_init();
     netbiosns_set_name(MdnsHostName);
 
+    ESP_ERROR_CHECK(initFileSystem());
     ESP_ERROR_CHECK(startServer(WebMountPoint));
 }
 
@@ -105,7 +106,7 @@ esp_err_t RestServer::startServer(std::string newBasePath)
 //--------------------------------------------------------------------------------------------------
 esp_err_t RestServer::systemInfoGetHandler(httpd_req_t *req)
 {
-    // [[maybe_unused]] int number = reinterpret_cast<RestServer *>(req->user_ctx)->test;
+    ESP_LOGI(PrintTag, "systemInfoGetHandler")
 
     httpd_resp_set_type(req, "application/json");
 
@@ -126,7 +127,6 @@ esp_err_t RestServer::commonGetHandler(httpd_req_t *req)
     std::string filePath;
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
-
     filePath = serverInstance->basePath;
 
     if (req->uri[strlen(req->uri) - 1] == '/')
@@ -143,7 +143,9 @@ esp_err_t RestServer::commonGetHandler(httpd_req_t *req)
         return ESP_FAIL;
     }
 
-    setContentTypeFromFile(req, filePath.data());
+    esp_err_t returnValue = setContentTypeFromFile(req, filePath);
+    if (returnValue != ESP_OK)
+        ESP_LOGE(PrintTag, "Failed to set content type, reason: %s", esp_err_to_name(returnValue));
 
     size_t readBytes;
     do
@@ -160,7 +162,7 @@ esp_err_t RestServer::commonGetHandler(httpd_req_t *req)
             {
                 close(fileStreamId);
                 ESP_LOGE(PrintTag, "Failed to send file %s", filePath.data());
-                httpd_resp_sendstr_chunk(req, NULL); // Abort sending file
+                httpd_resp_sendstr_chunk(req, nullptr); // Abort sending file
                 httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to send file");
                 return ESP_FAIL;
             }
@@ -171,14 +173,14 @@ esp_err_t RestServer::commonGetHandler(httpd_req_t *req)
     ESP_LOGI(PrintTag, "Sended file: %s", filePath.data());
 
     // Respond with an empty chunk to signal HTTP response completion
-    httpd_resp_send_chunk(req, NULL, 0);
+    httpd_resp_send_chunk(req, nullptr, 0);
     return ESP_OK;
 }
 
 //--------------------------------------------------------------------------------------------------
 esp_err_t RestServer::setContentTypeFromFile(httpd_req_t *req, std::string filePath)
 {
-    std::string type = "text/plain";
+    std::string_view type = "text/plain";
 
     if (checkFileExtension(filePath, ".html"))
         type = "text/html";
@@ -197,6 +199,8 @@ esp_err_t RestServer::setContentTypeFromFile(httpd_req_t *req, std::string fileP
 
     else if (checkFileExtension(filePath, ".svg"))
         type = "text/xml";
+
+    ESP_LOGD(PrintTag, "content type: %s", type.data());
 
     return httpd_resp_set_type(req, type.data());
 }
