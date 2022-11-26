@@ -38,6 +38,8 @@ void Application::run()
     sync::waitForAll(sync::ConnectedToWifi);
     Timebase::initTimeSychronization();
 
+    restServer.initServer();
+
     while (true)
     {
         vTaskDelay(portMAX_DELAY);

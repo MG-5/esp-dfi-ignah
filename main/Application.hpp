@@ -2,6 +2,7 @@
 
 #include "dfi/Dfi.hpp"
 // #include "StatusLed.hpp"
+#include "rest/RestServer.hpp"
 #include "wifi/Wireless.hpp"
 
 class Application
@@ -18,4 +19,5 @@ private:
     Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
     Dfi dfi{isConnected};
+    RestServer restServer;
 };
