@@ -1,10 +1,12 @@
 #include "RestApiHandlers.hpp"
 #include "RestServer.hpp"
 #include "dfi/Timebase.hpp"
+#include "wifi/Wireless.hpp"
 
 #include "cJSON.h"
 #include "esp_log.h"
 #include "esp_ota_ops.h"
+#include "esp_wifi.h"
 #include <fcntl.h>
 
 //--------------------------------------------------------------------------------------------------
@@ -118,6 +120,41 @@ esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
     cJSON *jsonRoot = cJSON_CreateObject();
     cJSON_AddStringToObject(jsonRoot, "clock", serverInstance->scratchBuffer);
     cJSON_AddStringToObject(jsonRoot, "timezone", Timebase::Timezone);
+
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    httpd_resp_sendstr(req, jsonData.data());
+    cJSON_Delete(jsonRoot);
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "wifiStationGetHandler");
+    httpd_resp_set_type(req, "application/json");
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    uint8_t mac[6];
+    esp_wifi_get_mac(WIFI_IF_STA, mac);
+    snprintf(serverInstance->scratchBuffer, RestServer::ScratchBufferSize,
+             "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    std::string_view authMode = Wireless::getAuthModeAsString(Wireless::staInfos.authmode);
+
+    cJSON *jsonRoot = cJSON_CreateObject();
+    cJSON_AddStringToObject(jsonRoot, "ssid",
+                            reinterpret_cast<const char *>(Wireless::staInfos.ssid));
+
+    snprintf(serverInstance->scratchBuffer, RestServer::ScratchBufferSize, IPSTR,
+             IP2STR(&Wireless::ipAdress));
+    cJSON_AddStringToObject(jsonRoot, "ipAdress", serverInstance->scratchBuffer);
+
+    snprintf(serverInstance->scratchBuffer, RestServer::ScratchBufferSize,
+             "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    cJSON_AddStringToObject(jsonRoot, "macAdress", serverInstance->scratchBuffer);
+
+    cJSON_AddNumberToObject(jsonRoot, "channel", Wireless::staInfos.channel);
+    cJSON_AddStringToObject(jsonRoot, "authMode", authMode.data());
 
     std::string_view jsonData = cJSON_Print(jsonRoot);
     httpd_resp_sendstr(req, jsonData.data());

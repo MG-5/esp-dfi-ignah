@@ -70,8 +70,6 @@ void Wireless::startStation()
         IP_EVENT, IP_EVENT_STA_GOT_IP, &Wireless::eventHandler, NULL, &instanceGotIp));
 
     wifi_sta_config_t staConfig{WifiSsid, WifiPassword};
-    staConfig.threshold.authmode = WIFI_AUTH_WPA2_WPA3_PSK;
-    staConfig.pmf_cfg.capable = true;
     staConfig.pmf_cfg.required = false;
 
     wifi_config_t wifiConfig;
@@ -96,6 +94,12 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
             ESP_ERROR_CHECK(esp_wifi_connect());
             break;
 
+        case WIFI_EVENT_STA_CONNECTED:
+            std::memcpy(&staInfos, eventData, sizeof(wifi_event_sta_connected_t));
+            ESP_LOGI(PrintTag, "Established a wifi connection to %s, wait for  IP address now.",
+                     WifiSsid);
+            break;
+
         case WIFI_EVENT_STA_DISCONNECTED:
         {
             wifi_event_sta_disconnected_t *disconnected =
@@ -118,11 +122,51 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
     }
     else if (eventBase == IP_EVENT && eventId == IP_EVENT_STA_GOT_IP)
     {
-        ip_event_got_ip_t *event = static_cast<ip_event_got_ip_t *>(eventData);
-        ESP_LOGI(PrintTag, "Established a wifi connection to %s", WifiSsid);
-        ESP_LOGI(PrintTag, "IP address: " IPSTR, IP2STR(&event->ip_info.ip));
+        ipAdress = static_cast<ip_event_got_ip_t *>(eventData)->ip_info.ip;
+        ESP_LOGI(PrintTag, "IP address: " IPSTR, IP2STR(&ipAdress));
 
         sync::clearEvents(sync::ConnectionFailed);
         sync::signal(sync::ConnectedToWifi);
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+std::string_view Wireless::getAuthModeAsString(wifi_auth_mode_t mode)
+{
+    std::string_view authMode = "Unknown";
+    switch (mode)
+    {
+    case WIFI_AUTH_OPEN:
+        authMode = "open";
+        break;
+    case WIFI_AUTH_WEP:
+        authMode = "WEP";
+        break;
+    case WIFI_AUTH_WPA_PSK:
+        authMode = "WPA PSK";
+        break;
+    case WIFI_AUTH_WPA2_PSK:
+        authMode = "WP2 PSK";
+        break;
+    case WIFI_AUTH_WPA_WPA2_PSK:
+        authMode = "WPA+WPA2 PSK";
+        break;
+    case WIFI_AUTH_WPA2_ENTERPRISE:
+        authMode = "WPA2 Enterprise";
+        break;
+    case WIFI_AUTH_WPA3_PSK:
+        authMode = "WPA3 PSK";
+        break;
+    case WIFI_AUTH_WPA2_WPA3_PSK:
+        authMode = "WPA2+WPA3 PSK";
+        break;
+    case WIFI_AUTH_WAPI_PSK:
+        authMode = "WAPI PSK";
+        break;
+
+    default:
+        break;
+    }
+
+    return authMode;
 }

@@ -98,6 +98,12 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                                .user_ctx = this};
     httpd_register_uri_handler(server, &systemClock);
 
+    httpd_uri_t wifiStationGetUri = {.uri = "/wifi/station",
+                                     .method = HTTP_GET,
+                                     .handler = RestApiHandlers::wifiStationGetHandler,
+                                     .user_ctx = this};
+    httpd_register_uri_handler(server, &wifiStationGetUri);
+
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //
                                 .method = HTTP_GET,
