@@ -12,6 +12,7 @@ public:
     static constexpr auto MdnsHostName = "esp-home";
     static constexpr auto FriendlyName = "esp home web server";
     static constexpr auto WebMountPoint = "/www";
+    static constexpr auto UseGzipCompression = true;
 
     void initServer();
 

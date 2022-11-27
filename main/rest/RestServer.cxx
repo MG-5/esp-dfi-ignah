@@ -134,12 +134,24 @@ esp_err_t RestServer::commonGetHandler(httpd_req_t *req)
     else
         filePath += req->uri;
 
+    ESP_ERROR_CHECK(setContentTypeFromFile(req, filePath));
+
+    if (UseGzipCompression)
+    {
+        httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
+        filePath += ".gz";
+    }
+
     int fileStreamId = open(filePath.data(), O_RDONLY, 0);
     if (fileStreamId == -1)
     {
         ESP_LOGW(PrintTag, "Failed to open file: %s, return index.html instead", filePath.data());
         filePath = serverInstance->basePath;
         filePath += "/index.html";
+        ESP_ERROR_CHECK(setContentTypeFromFile(req, filePath));
+
+        if (UseGzipCompression)
+            filePath += ".gz";
 
         fileStreamId = open(filePath.data(), O_RDONLY, 0);
         if (fileStreamId == -1)
@@ -149,10 +161,6 @@ esp_err_t RestServer::commonGetHandler(httpd_req_t *req)
             return ESP_FAIL;
         }
     }
-
-    esp_err_t returnValue = setContentTypeFromFile(req, filePath);
-    if (returnValue != ESP_OK)
-        ESP_LOGE(PrintTag, "Failed to set content type, reason: %s", esp_err_to_name(returnValue));
 
     size_t readBytes;
     do
