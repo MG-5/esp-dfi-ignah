@@ -28,5 +28,6 @@ private:
     void startNvs();
     void init();
     void configureStation();
+    void configureSoftAp();
     void startWifi();
 };

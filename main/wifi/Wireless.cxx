@@ -20,6 +20,7 @@ void Wireless::taskMain(void *)
     startNvs();
     init();
     configureStation();
+    configureSoftAp();
     startWifi();
 
     while (true)
@@ -60,6 +61,7 @@ void Wireless::init()
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
     esp_netif_create_default_wifi_sta();
+    esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -70,7 +72,7 @@ void Wireless::init()
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
                                                         &Wireless::eventHandler, nullptr, nullptr));
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -86,6 +88,20 @@ void Wireless::configureStation()
     wifi_config_t wifiConfig;
     wifiConfig.sta = staConfig;
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifiConfig));
+}
+
+//--------------------------------------------------------------------------------------------------
+void Wireless::configureSoftAp()
+{
+    wifi_ap_config_t apConfig{};
+    std::memcpy(apConfig.ssid, ApSsid.data(), ApSsid.length());
+    std::memcpy(apConfig.password, ApPassword.data(), ApPassword.length());
+    apConfig.authmode = WIFI_AUTH_WPA2_PSK;
+    apConfig.max_connection = 4;
+
+    wifi_config_t wifiConfig;
+    wifiConfig.ap = apConfig;
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifiConfig));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -107,6 +123,20 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
             ESP_LOGI(PrintTag, "Wifi driver started");
             ESP_ERROR_CHECK(esp_wifi_connect());
             break;
+
+        case WIFI_EVENT_AP_STACONNECTED:
+        {
+            wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)eventData;
+            ESP_LOGI(PrintTag, "station " MACSTR " join, AID=%d", MAC2STR(event->mac), event->aid);
+        }
+        break;
+
+        case WIFI_EVENT_AP_STADISCONNECTED:
+        {
+            wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)eventData;
+            ESP_LOGI(PrintTag, "station " MACSTR " leave, AID=%d", MAC2STR(event->mac), event->aid);
+        }
+        break;
 
         case WIFI_EVENT_STA_DISCONNECTED:
         {
