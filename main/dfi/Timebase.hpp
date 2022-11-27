@@ -22,6 +22,7 @@ class Timebase
 {
 public:
     static constexpr auto PrintTag = "[Timebase]";
+    static constexpr auto Timezone = "CET-1CEST,M3.5.0,M10.5.0/3";
     using Timestamp = std::chrono::time_point<std::chrono::system_clock>;
     using TimestampQueue = util::wrappers::Queue<Timebase::Timestamp>;
 
@@ -37,7 +38,7 @@ public:
                  CONFIG_LWIP_SNTP_UPDATE_DELAY / 1000 / 60);
 
         // set timezone to Berlin
-        setenv("TZ", "CET-1CEST,M3.5.0,M10.5.0/3", 1);
+        setenv("TZ", Timezone, 1);
         tzset();
     }
 

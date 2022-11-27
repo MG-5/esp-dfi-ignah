@@ -1,5 +1,6 @@
 #include "RestApiHandlers.hpp"
 #include "RestServer.hpp"
+#include "dfi/Timebase.hpp"
 
 #include "cJSON.h"
 #include "esp_log.h"
@@ -96,6 +97,28 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "idf-version", IDF_VER);
     cJSON_AddNumberToObject(jsonRoot, "model", chipInfo.model);
     cJSON_AddNumberToObject(jsonRoot, "cores", chipInfo.cores);
+
+    std::string_view sysInfo = cJSON_Print(jsonRoot);
+
+    httpd_resp_sendstr(req, sysInfo.data());
+    cJSON_Delete(jsonRoot);
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "systemClockGetHandler");
+    httpd_resp_set_type(req, "application/json");
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+    auto localTime = Timebase::getLocaltime(Timebase::getCurrentUTC());
+    snprintf(serverInstance->scratchBuffer, RestServer::ScratchBufferSize, "%02d:%02d",
+             localTime->tm_hour, localTime->tm_min);
+
+    cJSON *jsonRoot = cJSON_CreateObject();
+    cJSON_AddStringToObject(jsonRoot, "clock", serverInstance->scratchBuffer);
+    cJSON_AddStringToObject(jsonRoot, "timezone", Timebase::Timezone);
 
     std::string_view sysInfo = cJSON_Print(jsonRoot);
 

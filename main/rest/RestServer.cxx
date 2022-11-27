@@ -86,11 +86,17 @@ esp_err_t RestServer::startServer(std::string newBasePath)
     ESP_LOGI(PrintTag, "Starting REST server");
     ESP_ERROR_CHECK(httpd_start(&server, &config));
 
-    httpd_uri_t systemInfoGetUri = {.uri = "/api/v1/system/info",
+    httpd_uri_t systemInfoGetUri = {.uri = "/system/info",
                                     .method = HTTP_GET,
                                     .handler = RestApiHandlers::systemInfoGetHandler,
                                     .user_ctx = this};
     httpd_register_uri_handler(server, &systemInfoGetUri);
+
+    httpd_uri_t systemClock = {.uri = "/system/clock",
+                               .method = HTTP_GET,
+                               .handler = RestApiHandlers::systemClockGetHandler,
+                               .user_ctx = this};
+    httpd_register_uri_handler(server, &systemClock);
 
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //
