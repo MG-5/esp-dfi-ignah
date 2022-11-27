@@ -23,18 +23,20 @@ protected:
     void submitImage(const uint8_t *image, size_t length) override;
 
 private:
-    Gpio ControlShiftInput{GPIO_NUM_2};
-    Gpio ControlShiftClock{GPIO_NUM_3};
-    Gpio ControlEnableOutput{GPIO_NUM_4};
-    Gpio RegisterClear{GPIO_NUM_5}; // SRCLR -active low
-    Gpio RegisterClock{GPIO_NUM_6}; // RCK
-    Gpio ShiftDataIn2{GPIO_NUM_7};  // DI for rows 3, 4, 7 and 8
-    Gpio ShiftDataIn1{GPIO_NUM_8};  // DI for rows 1, 2, 5 and 6
-    Gpio ShiftClock2{GPIO_NUM_9};   // SRCK for rows 3, 4, 7 and 8
-    Gpio ShiftClock1{GPIO_NUM_10};  // SRCK for rows 1, 2, 5 and 6
+    Gpio MultiplexerOut1{GPIO_NUM_4};
+    Gpio MultiplexerOut2{GPIO_NUM_13};
+    Gpio ControlShiftInput{GPIO_NUM_12};
+    Gpio ControlShiftClock{GPIO_NUM_14};
+    Gpio ControlEnableOutput{GPIO_NUM_27};
+    Gpio RegisterClear{GPIO_NUM_26}; // SRCLR -active low
+    Gpio RegisterClock{GPIO_NUM_25}; // RCK
+    Gpio ShiftDataIn2{GPIO_NUM_33};  // DI for rows 3, 4, 7 and 8
+    Gpio ShiftDataIn1{GPIO_NUM_32};  // DI for rows 1, 2, 5 and 6
+    Gpio ShiftClock2{GPIO_NUM_35};   // SRCK for rows 3, 4, 7 and 8
+    Gpio ShiftClock1{GPIO_NUM_34};   // SRCK for rows 1, 2, 5 and 6
 
-    static constexpr auto PwmPin1 = GPIO_NUM_11;
-    static constexpr auto PwmPin2 = GPIO_NUM_12;
+    static constexpr auto PwmPin1 = GPIO_NUM_2;
+    static constexpr auto PwmPin2 = GPIO_NUM_15;
     static constexpr auto PwmChannel1 = LEDC_CHANNEL_0;
     static constexpr auto PwmChannel2 = LEDC_CHANNEL_1;
 

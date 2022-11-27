@@ -32,6 +32,9 @@ void LedControl::submitImage(const uint8_t *image, size_t length)
 //--------------------------------------------------------------------------------------------------
 void LedControl::initGpios()
 {
+    MultiplexerOut1.init(GPIO_MODE_INPUT);
+    MultiplexerOut2.init(GPIO_MODE_INPUT);
+
     ControlShiftInput.init(GPIO_MODE_OUTPUT);
     ControlShiftClock.init(GPIO_MODE_OUTPUT);
     ControlEnableOutput.init(GPIO_MODE_OUTPUT);
