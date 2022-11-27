@@ -106,8 +106,7 @@ esp_err_t RestServer::startServer(std::string newBasePath)
 //--------------------------------------------------------------------------------------------------
 esp_err_t RestServer::systemInfoGetHandler(httpd_req_t *req)
 {
-    ESP_LOGI(PrintTag, "systemInfoGetHandler")
-
+    ESP_LOGI(PrintTag, "systemInfoGetHandler");
     httpd_resp_set_type(req, "application/json");
 
     cJSON *jsonRoot = cJSON_CreateObject();
@@ -138,9 +137,17 @@ esp_err_t RestServer::commonGetHandler(httpd_req_t *req)
     int fileStreamId = open(filePath.data(), O_RDONLY, 0);
     if (fileStreamId == -1)
     {
-        ESP_LOGE(PrintTag, "Failed to open file: %s", filePath.data());
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to read existing file");
-        return ESP_FAIL;
+        ESP_LOGW(PrintTag, "Failed to open file: %s, return index.html instead", filePath.data());
+        filePath = serverInstance->basePath;
+        filePath += "/index.html";
+
+        fileStreamId = open(filePath.data(), O_RDONLY, 0);
+        if (fileStreamId == -1)
+        {
+            ESP_LOGE(PrintTag, "index.html does not exist!");
+            httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Failed to find index.html file");
+            return ESP_FAIL;
+        }
     }
 
     esp_err_t returnValue = setContentTypeFromFile(req, filePath);
