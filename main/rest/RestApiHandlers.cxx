@@ -91,16 +91,15 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
     esp_chip_info(&chipInfo);
     const esp_app_desc_t *appDesc = esp_ota_get_app_description();
 
-    cJSON_AddStringToObject(jsonRoot, "project-name", appDesc->project_name);
-    cJSON_AddStringToObject(jsonRoot, "project-version", appDesc->version);
-    cJSON_AddStringToObject(jsonRoot, "compile-date", appDesc->date);
-    cJSON_AddStringToObject(jsonRoot, "idf-version", IDF_VER);
+    cJSON_AddStringToObject(jsonRoot, "projectName", appDesc->project_name);
+    cJSON_AddStringToObject(jsonRoot, "projectVersion", appDesc->version);
+    cJSON_AddStringToObject(jsonRoot, "compileDate", appDesc->date);
+    cJSON_AddStringToObject(jsonRoot, "idfVersion", IDF_VER);
     cJSON_AddNumberToObject(jsonRoot, "model", chipInfo.model);
     cJSON_AddNumberToObject(jsonRoot, "cores", chipInfo.cores);
 
-    std::string_view sysInfo = cJSON_Print(jsonRoot);
-
-    httpd_resp_sendstr(req, sysInfo.data());
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    httpd_resp_sendstr(req, jsonData.data());
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -120,9 +119,8 @@ esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "clock", serverInstance->scratchBuffer);
     cJSON_AddStringToObject(jsonRoot, "timezone", Timebase::Timezone);
 
-    std::string_view sysInfo = cJSON_Print(jsonRoot);
-
-    httpd_resp_sendstr(req, sysInfo.data());
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    httpd_resp_sendstr(req, jsonData.data());
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
