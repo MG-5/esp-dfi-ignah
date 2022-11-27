@@ -3,6 +3,7 @@
 
 #include "cJSON.h"
 #include "esp_log.h"
+#include "esp_ota_ops.h"
 #include <fcntl.h>
 
 //--------------------------------------------------------------------------------------------------
@@ -87,9 +88,15 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
     cJSON *jsonRoot = cJSON_CreateObject();
     esp_chip_info_t chipInfo;
     esp_chip_info(&chipInfo);
+    const esp_app_desc_t *appDesc = esp_ota_get_app_description();
 
-    cJSON_AddStringToObject(jsonRoot, "version", IDF_VER);
+    cJSON_AddStringToObject(jsonRoot, "project-name", appDesc->project_name);
+    cJSON_AddStringToObject(jsonRoot, "project-version", appDesc->version);
+    cJSON_AddStringToObject(jsonRoot, "compile-date", appDesc->date);
+    cJSON_AddStringToObject(jsonRoot, "idf-version", IDF_VER);
+    cJSON_AddNumberToObject(jsonRoot, "model", chipInfo.model);
     cJSON_AddNumberToObject(jsonRoot, "cores", chipInfo.cores);
+
     std::string_view sysInfo = cJSON_Print(jsonRoot);
 
     httpd_resp_sendstr(req, sysInfo.data());
