@@ -4,6 +4,7 @@
 void LedControl::init()
 {
     initGpios();
+    initPwm();
     clearShiftRegisters();
 }
 
@@ -40,6 +41,53 @@ void LedControl::initGpios()
     ShiftDataIn1.init(GPIO_MODE_OUTPUT);
     ShiftClock2.init(GPIO_MODE_OUTPUT);
     ShiftClock1.init(GPIO_MODE_OUTPUT);
+}
+
+//--------------------------------------------------------------------------------------------------
+void LedControl::initPwm()
+{
+    ledc_timer_config_t ledcTimer = {.speed_mode = PwmMode,
+                                     .duty_resolution = PwmResolution,
+                                     .timer_num = LEDC_TIMER_0,
+                                     .freq_hz = 5000, // frequency in Hz
+                                     .clk_cfg = LEDC_AUTO_CLK};
+    ESP_ERROR_CHECK(ledc_timer_config(&ledcTimer));
+
+    ledc_channel_config_t ledcChannel1 = {
+        .gpio_num = PwmPin1,
+        .speed_mode = PwmMode,
+        .channel = PwmChannel1,
+        .intr_type = LEDC_INTR_DISABLE,
+        .timer_sel = LEDC_TIMER_0,
+        .duty = PwmMaximumDuty / 2, // Set duty to 50%
+        .hpoint = 0,
+        .flags = {1} // invert output
+    };
+    ESP_ERROR_CHECK(ledc_channel_config(&ledcChannel1));
+
+    ledc_channel_config_t ledcChannel2 = {
+        .gpio_num = PwmPin2,
+        .speed_mode = PwmMode,
+        .channel = PwmChannel2,
+        .intr_type = LEDC_INTR_DISABLE,
+        .timer_sel = LEDC_TIMER_0,
+        .duty = PwmMaximumDuty / 2, // Set duty to 50%
+        .hpoint = 0,
+        .flags = {1} // invert output
+    };
+    ESP_ERROR_CHECK(ledc_channel_config(&ledcChannel2));
+}
+
+//--------------------------------------------------------------------------------------------------
+void LedControl::setPwmDuty(size_t dutyCycle)
+{
+    if (dutyCycle > PwmMaximumDuty)
+        dutyCycle = PwmMaximumDuty;
+
+    ESP_ERROR_CHECK(ledc_set_duty(PwmMode, PwmChannel1, dutyCycle));
+    ESP_ERROR_CHECK(ledc_set_duty(PwmMode, PwmChannel2, dutyCycle));
+    ESP_ERROR_CHECK(ledc_update_duty(PwmMode, PwmChannel1));
+    ESP_ERROR_CHECK(ledc_update_duty(PwmMode, PwmChannel2));
 }
 
 //--------------------------------------------------------------------------------------------------

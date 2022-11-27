@@ -3,6 +3,8 @@
 #include "display-renderer/IRenderTarget.hpp"
 #include "util/gpio.hpp"
 
+#include "driver/ledc.h"
+
 using util::Gpio;
 
 class LedControl : public IRenderTarget
@@ -31,9 +33,19 @@ private:
     Gpio ShiftClock2{GPIO_NUM_9};   // SRCK for rows 3, 4, 7 and 8
     Gpio ShiftClock1{GPIO_NUM_10};  // SRCK for rows 1, 2, 5 and 6
 
-    // ToDo: add PWM pin
+    static constexpr auto PwmPin1 = GPIO_NUM_11;
+    static constexpr auto PwmPin2 = GPIO_NUM_12;
+    static constexpr auto PwmChannel1 = LEDC_CHANNEL_0;
+    static constexpr auto PwmChannel2 = LEDC_CHANNEL_1;
+
+    static constexpr auto PwmMode = LEDC_LOW_SPEED_MODE;
+    static constexpr auto PwmResolution = LEDC_TIMER_10_BIT;
+    static constexpr auto PwmMaximumDuty = (1 << PwmResolution) - 1;
 
     void initGpios();
+
+    void initPwm();
+    void setPwmDuty(size_t dutyCycle);
 
     // one bit = one row
     void setTripleControlShiftRegister(uint8_t rows);
