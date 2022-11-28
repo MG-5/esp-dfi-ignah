@@ -181,13 +181,13 @@ void LedControl::shiftLedDataRow5(const uint8_t *image)
 {
     for (int i = 4 * LedsPerStrip; i < 5 * LedsPerStrip; i++)
     {
-        bool pinState = 1 & (image[i / 8] >> (7 - (i % 8)));
-        ShiftDataIn2.write(pinState);
+        bool pinState = 1 & (image[i / 8] >> (i % 8));
+        ShiftDataIn1.write(pinState);
 
-        ShiftClock2.write(true);
+        ShiftClock1.write(true);
         triggerControlShiftRegisterOutput();
 
-        ShiftClock2.write(false);
+        ShiftClock1.write(false);
         triggerControlShiftRegisterOutput();
     }
 }
