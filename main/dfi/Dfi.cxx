@@ -25,6 +25,7 @@ void Dfi::taskMain(void *)
     currentStation = &AmbrosiusplatzRtgStadt;
 
     initDisplayInterface();
+    ledControl.init();
 
     sync::waitForAll(sync::ConnectedToWifi);
     sync::waitForAll(sync::TimeIsSynchronized);

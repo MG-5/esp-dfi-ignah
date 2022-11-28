@@ -22,7 +22,9 @@ public:
 protected:
     void submitImage(const uint8_t *image, size_t length) override;
 
-private:
+public:
+    static constexpr auto PrintTag = "[LedControl]";
+
     Gpio MultiplexerOut1{GPIO_NUM_4};
     Gpio MultiplexerOut2{GPIO_NUM_13};
     Gpio ControlShiftInput{GPIO_NUM_12};
@@ -32,8 +34,8 @@ private:
     Gpio RegisterClock{GPIO_NUM_25}; // RCK
     Gpio ShiftDataIn2{GPIO_NUM_33};  // DI for rows 3, 4, 7 and 8
     Gpio ShiftDataIn1{GPIO_NUM_32};  // DI for rows 1, 2, 5 and 6
-    Gpio ShiftClock2{GPIO_NUM_35};   // SRCK for rows 3, 4, 7 and 8
-    Gpio ShiftClock1{GPIO_NUM_34};   // SRCK for rows 1, 2, 5 and 6
+    Gpio ShiftClock2{GPIO_NUM_18};   // SRCK for rows 3, 4, 7 and 8
+    Gpio ShiftClock1{GPIO_NUM_19};   // SRCK for rows 1, 2, 5 and 6
 
     static constexpr auto PwmPin1 = GPIO_NUM_2;
     static constexpr auto PwmPin2 = GPIO_NUM_15;
