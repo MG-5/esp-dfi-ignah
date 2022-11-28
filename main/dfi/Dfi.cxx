@@ -13,9 +13,10 @@
 #include <string>
 #include <sys/time.h>
 
-constexpr Dfi::Station AmbrosiusplatzRtgStadt{7307,                                     //
-                                              "Ambrosiuspl.",                           //
-                                              {"Sudenburg", "Reform", "Friedenshöhe"}}; //
+constexpr Dfi::Station AmbrosiusplatzRtgStadt{
+    7307,                                                                              //
+    "Ambrosiusplatz",                                                                  //
+    {"Sudenburg", "Reform", "Friedenshöhe", "Magdeburg, Sudenburg, Braunlager Str."}}; //
 
 using namespace util::wrappers;
 
@@ -31,7 +32,7 @@ void Dfi::taskMain(void *)
     sync::waitForAll(sync::TimeIsSynchronized);
 
     constexpr auto TaskDelay = 1.0_s;
-    constexpr auto TriggerDelay = 30.0_s;
+    constexpr auto TriggerDelay = 60.0_s;
 
     auto lastWakeTime = xTaskGetTickCount();
     bool blinkState = true;
@@ -60,6 +61,8 @@ void Dfi::taskMain(void *)
 
         renderVehicles(blinkState);
         renderer.render();
+
+        blinkState = !blinkState;
 
         vTaskDelayUntil(&lastWakeTime, toOsTicks(TaskDelay));
     }
@@ -156,8 +159,7 @@ void Dfi::renderTitleBar(bool showDoublePoint)
     const char *clockFormat = showDoublePoint ? "%02d:%02d" : "%02d %02d";
 
     snprintf(printBuffer, PrintBufferSize, clockFormat, localTime->tm_hour, localTime->tm_min);
-    renderer.print({296, 0}, printBuffer, Renderer::Alignment::Right);
-    renderer.drawHorizontalLine(1, 7);
+    renderer.print({LedControl::Columns, 0}, printBuffer, Renderer::Alignment::Right);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -197,7 +199,8 @@ void Dfi::renderVehicles(bool showCurrentVehicle)
         {
             // print arrival time in minutes
             snprintf(printBuffer, PrintBufferSize, "%dmin", vehicle.arrivalInMinutes);
-            renderer.print({296, pageCounter}, printBuffer, Renderer::Alignment::Right);
+            renderer.print({LedControl::Columns, pageCounter}, printBuffer,
+                           Renderer::Alignment::Right);
         }
 
         pageCounter++;
