@@ -57,7 +57,7 @@ void LedControl::initPwm()
     ledc_timer_config_t ledcTimer = {.speed_mode = PwmMode,
                                      .duty_resolution = PwmResolution,
                                      .timer_num = LEDC_TIMER_0,
-                                     .freq_hz = 5000, // frequency in Hz
+                                     .freq_hz = 20000, // frequency in Hz
                                      .clk_cfg = LEDC_AUTO_CLK};
     ESP_ERROR_CHECK(ledc_timer_config(&ledcTimer));
 
@@ -67,7 +67,7 @@ void LedControl::initPwm()
         .channel = PwmChannel1,
         .intr_type = LEDC_INTR_DISABLE,
         .timer_sel = LEDC_TIMER_0,
-        .duty = PwmMaximumDuty / 2, // Set duty to 50%
+        .duty = PwmMaximumDuty / 4, // Set duty to 25%
         .hpoint = 0,
         .flags = {1} // invert output
     };
@@ -79,7 +79,7 @@ void LedControl::initPwm()
         .channel = PwmChannel2,
         .intr_type = LEDC_INTR_DISABLE,
         .timer_sel = LEDC_TIMER_0,
-        .duty = PwmMaximumDuty / 2, // Set duty to 50%
+        .duty = PwmMaximumDuty / 4, // Set duty to 25%
         .hpoint = 0,
         .flags = {1} // invert output
     };
@@ -108,7 +108,7 @@ void LedControl::setTripleControlShiftRegister(uint8_t rows)
     constexpr auto EnableMosfets = 1 << 1;
     [[maybe_unused]] constexpr auto MultiplexerSelect = 1 << 2;
 
-    uint8_t thirdRegister = EnableMosfets;
+    uint8_t thirdRegister = EnableMosfets | AllowPwm;
 
     shiftControlData(thirdRegister);
     shiftControlData(secondRegister);
