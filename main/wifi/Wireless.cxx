@@ -74,7 +74,6 @@ void Wireless::init()
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
 }
-
 //--------------------------------------------------------------------------------------------------
 void Wireless::configureStation()
 {
@@ -82,7 +81,7 @@ void Wireless::configureStation()
     std::memcpy(staConfig.ssid, StaSsid.data(), StaSsid.length());
     std::memcpy(staConfig.password, StaPassword.data(), StaPassword.length());
     staConfig.threshold.authmode =
-        WIFI_AUTH_WPA2_WPA3_PSK; // don't accept auths below this threshold
+        WIFI_AUTH_WPA2_PSK; // don't accept auths below this threshold
     staConfig.sae_pwe_h2e = WPA3_SAE_PWE_BOTH;
 
     wifi_config_t wifiConfig;
