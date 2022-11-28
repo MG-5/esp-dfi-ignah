@@ -1,4 +1,5 @@
 #include "LedControl.hpp"
+#include "esp_log.h"
 #include "helpers/freertos.hpp"
 
 void LedControl::init()
@@ -12,7 +13,10 @@ void LedControl::init()
 void LedControl::submitImage(const uint8_t *image, size_t length)
 {
     if (length < (TotalLeds / 8))
+    {
+        ESP_LOGE(PrintTag, "length is too small! length: %d", length);
         return;
+    }
 
     // send LED data to row 1 and 3 simultanously
     setTripleControlShiftRegister(0b101);
@@ -26,6 +30,7 @@ void LedControl::submitImage(const uint8_t *image, size_t length)
     setTripleControlShiftRegister(0b10000);
     shiftLedDataRow5(image);
 
+    setTripleControlShiftRegister(0b11111);
     triggerRegisterClock();
 }
 
