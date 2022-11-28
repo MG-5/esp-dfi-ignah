@@ -26,5 +26,8 @@ private:
     bool &isConnected;
 
     void startNvs();
-    void startStation();
+    void init();
+    void configureStation();
+    void configureSoftAp();
+    void startWifi();
 };
