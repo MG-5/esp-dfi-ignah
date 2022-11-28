@@ -70,7 +70,7 @@ void Wireless::startStation()
         IP_EVENT, IP_EVENT_STA_GOT_IP, &Wireless::eventHandler, NULL, &instanceGotIp));
 
     wifi_sta_config_t staConfig{WifiSsid, WifiPassword};
-    staConfig.threshold.authmode = WIFI_AUTH_WPA2_WPA3_PSK;
+    staConfig.threshold.authmode = WIFI_AUTH_WPA2_PSK;
     staConfig.pmf_cfg.capable = true;
     staConfig.pmf_cfg.required = false;
 
