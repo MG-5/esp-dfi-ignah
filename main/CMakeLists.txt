@@ -5,6 +5,7 @@ idf_component_register(SRCS
     led/LedControl.cxx
 
     light_sensor/AD7417.cxx
+    light_sensor/LightSensor.cxx
 
     wifi/Wireless.cxx
 
