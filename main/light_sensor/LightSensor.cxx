@@ -1,4 +1,5 @@
 #include "LightSensor.hpp"
+#include "util/MapValue.hpp"
 
 //--------------------------------------------------------------------------------------------------
 void LightSensor::taskMain(void *)
@@ -27,7 +28,9 @@ void LightSensor::taskMain(void *)
         else
         {
             updateFastLowpass(filteredValue, (uint16_t)(rawValue), FilterSampleSize);
-            ESP_LOGI(PrintTag, "sensor raw value: %d, filtered value: %d", rawValue, filteredValue);
+            ESP_LOGD(PrintTag, "sensor raw value: %d, filtered value: %d", rawValue, filteredValue);
+
+            updatePwm();
         }
     }
 }
@@ -76,4 +79,21 @@ bool LightSensor::readSensor()
     rawValue = optionalResult.value() * Gain;
 
     return sensor.shutdown();
+}
+
+//--------------------------------------------------------------------------------------------------
+void LightSensor::updatePwm()
+{
+    constexpr uint16_t PwmMaximum = 4095 * 0.8;
+    constexpr uint16_t InputMaximum = ((1 << Resolution) - 1) * Gain;
+
+    uint16_t pwmValue =
+        util::mapValue<uint16_t, uint16_t>(0, InputMaximum, 0, PwmMaximum, filteredValue);
+
+    pwmValue += 100;
+
+    if (pwmValue > PwmMaximum)
+        pwmValue = PwmMaximum;
+
+    ledControl.setPwmDuty(pwmValue);
 }

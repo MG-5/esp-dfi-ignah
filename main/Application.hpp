@@ -19,6 +19,7 @@ private:
 
     Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
-    Dfi dfi{isConnected};
-    LightSensor lightSensor;
+    LedControl ledControl;
+    Dfi dfi{isConnected, ledControl};
+    LightSensor lightSensor{ledControl};
 };

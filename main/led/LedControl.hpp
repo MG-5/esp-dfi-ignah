@@ -18,6 +18,7 @@ public:
     LedControl() = default;
 
     void init();
+    void setPwmDuty(size_t dutyCycle);
 
 protected:
     void submitImage(const uint8_t *image, size_t length) override;
@@ -49,7 +50,6 @@ public:
     void initGpios();
 
     void initPwm();
-    void setPwmDuty(size_t dutyCycle);
 
     // one bit = one row
     void setTripleControlShiftRegister(uint8_t rows);

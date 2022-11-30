@@ -2,6 +2,7 @@
 
 #include "AD7417.hpp"
 #include "driver/i2c.h"
+#include "led/LedControl.hpp"
 #include "util/gpio.hpp"
 #include "wrappers/Task.hpp"
 
@@ -9,7 +10,9 @@ class LightSensor : public util::wrappers::TaskWithMemberFunctionBase
 {
 
 public:
-    LightSensor() : TaskWithMemberFunctionBase("lightSensorTask", 1024, osPriorityBelowNormal3){};
+    LightSensor(LedControl &ledControl)
+        : TaskWithMemberFunctionBase("lightSensorTask", 1024, osPriorityBelowNormal3), //
+          ledControl(ledControl){};
 
     static constexpr auto I2cPort = I2C_NUM_0;
     static constexpr auto SdaPin = GPIO_NUM_21;
@@ -24,6 +27,8 @@ private:
     static constexpr auto FilterSampleSize = 64;
     static constexpr auto Gain = 50;
 
+    LedControl &ledControl;
+
     EspI2cBusAccessor espI2cBusAccessor{I2cPort};
     AD7417 sensor{espI2cBusAccessor, 0b111};
     util::Gpio powerEnable{GPIO_NUM_23};
@@ -35,6 +40,7 @@ private:
     void initI2c();
     bool reconfigureSensor();
     bool readSensor();
+    void updatePwm();
 
     template <class T>
     static void updateFastLowpass(T &oldValue, const T newSample, const uint8_t sampleCount)

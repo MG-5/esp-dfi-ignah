@@ -33,10 +33,10 @@ public:
         int arrivalInMinutes = 0;
     };
 
-    explicit Dfi(bool &isConnected)
+    explicit Dfi(bool &isConnected, LedControl &ledControl)
         : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
-          isConnected(isConnected) //
-          {};
+          isConnected(isConnected), //
+          ledControl(ledControl){};
 
     static bool localTransportVehicleSorter(LocalTransportVehicle const &lhs,
                                             LocalTransportVehicle const &rhs)
@@ -57,12 +57,13 @@ private:
     pugi::xml_document xmlDocument{};
     LocalTransportVehicleArray vehicleArray;
 
-    LedControl ledControl{};
     Renderer renderer{LedControl::Columns, LedControl::Strips, ledControl};
 
     static constexpr auto PrintBufferSize = 32;
     char printBuffer[PrintBufferSize]{};
+
     bool &isConnected;
+    LedControl &ledControl;
 
     bool loadXmlFromBuffer();
     void parseXml();
