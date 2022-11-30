@@ -15,7 +15,8 @@ class EspI2cBusAccessor : public I2cBusAccessor
 public:
     explicit EspI2cBusAccessor(i2c_port_t i2cNumber) : i2cNumber(i2cNumber)
     {
-        printTag = "[I2cBusaccessor (" + i2cNumber;
+        printTag = "[I2cBusaccessor port: ";
+        printTag += std::to_string(i2cNumber);
         printTag += ")]";
     }
 
@@ -51,9 +52,8 @@ public:
     //--------------------------------------------------------------------------------------------------
     bool readFromRegister(uint8_t registerAdress, uint8_t *buffer, uint16_t length) override
     {
-        auto returnValue =
-            i2c_master_write_read_device(i2cNumber, currentAddress, &registerAdress, 1, buffer,
-                                         length, toOsTicks(Timeout) / portTICK_RATE_MS);
+        auto returnValue = i2c_master_write_read_device(i2cNumber, currentAddress, &registerAdress,
+                                                        1, buffer, length, toOsTicks(Timeout));
 
         bool hasError = returnValue != ESP_OK;
 
