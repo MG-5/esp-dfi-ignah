@@ -9,7 +9,7 @@ void LightSensor::taskMain(void *)
     auto lastWakeTime = xTaskGetTickCount();
     while (true)
     {
-        vTaskDelayUntil(&lastWakeTime, toOsTicks(100.0_Hz));
+        vTaskDelayUntil(&lastWakeTime, toOsTicks(50.0_Hz));
 
         if (!isSensorOkay)
         {
@@ -26,8 +26,8 @@ void LightSensor::taskMain(void *)
         }
         else
         {
-            updateFastLowpass(filterdValue, rawValue, FilterSampleSize);
-            ESP_LOGI(PrintTag, "sensor raw value: %d, filtered value: %d", rawValue, filterdValue);
+            updateFastLowpass(filteredValue, (uint16_t)(rawValue), FilterSampleSize);
+            ESP_LOGI(PrintTag, "sensor raw value: %d, filtered value: %d", rawValue, filteredValue);
         }
     }
 }
@@ -73,7 +73,7 @@ bool LightSensor::readSensor()
     if (!optionalResult)
         return false;
 
-    rawValue = optionalResult.value();
+    rawValue = optionalResult.value() * Gain;
 
     return sensor.shutdown();
 }

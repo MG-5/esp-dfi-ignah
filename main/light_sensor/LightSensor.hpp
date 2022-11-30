@@ -22,13 +22,14 @@ private:
     static constexpr auto PrintTag = "[LightSensor]";
     static constexpr auto Resolution = 10;
     static constexpr auto FilterSampleSize = 64;
+    static constexpr auto Gain = 50;
 
     EspI2cBusAccessor espI2cBusAccessor{I2cPort};
     AD7417 sensor{espI2cBusAccessor, 0b111};
     util::Gpio powerEnable{GPIO_NUM_23};
 
     uint16_t rawValue = 0;
-    uint16_t filterdValue = (1 << Resolution) / 2; // init with value lay in the middle
+    uint16_t filteredValue = (1 << Resolution) / 2; // init with value lay in the middle
     bool isSensorOkay = false;
 
     void initI2c();
