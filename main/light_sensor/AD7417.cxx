@@ -108,7 +108,7 @@ bool AD7417::setMode(Mode newMode)
         return false;
 
     uint8_t config = result.value();
-    config &= ~Configuration::ShutdownBit;
+    config &= ~(1 << Configuration::ShutdownBit);
     config |= ((uint8_t)newMode & 1) << Configuration::ShutdownBit;
 
     return setConfiguration(config);
@@ -122,7 +122,7 @@ bool AD7417::setOtiPolarity(bool isActiveHigh)
         return false;
 
     uint8_t config = result.value();
-    config &= ~Configuration::OtiPolarityBit;
+    config &= ~(1 << Configuration::OtiPolarityBit);
     config |= (isActiveHigh ? 1 : 0) << Configuration::OtiPolarityBit;
 
     return setConfiguration(config);
@@ -136,7 +136,7 @@ bool AD7417::setOtiOutput(ComparatorInterruptMode newMode)
         return false;
 
     uint8_t config = result.value();
-    config &= ~Configuration::ComparatorInterruptModeBit;
+    config &= ~(1 << Configuration::ComparatorInterruptModeBit);
     config |= ((uint8_t)newMode & 1) << Configuration::ComparatorInterruptModeBit;
 
     return setConfiguration(config);
@@ -155,7 +155,7 @@ bool AD7417::setFaultQueue(uint8_t size)
     std::clamp<uint8_t>(size, 1, 6);
 
     uint8_t config = result.value();
-    config &= ~Configuration::FaultQueuePos;
+    config &= ~(Configuration::FaultQueueMask << Configuration::FaultQueuePos);
     config |= ((size >> 1) & Configuration::FaultQueueMask) << Configuration::FaultQueuePos;
 
     return setConfiguration(config);
@@ -169,7 +169,7 @@ bool AD7417::setConvstPin(ConvstPinMode newMode)
         return false;
 
     uint8_t config = result.value();
-    config &= ~Config2::ConversionModeBit;
+    config &= ~(1 << Config2::ConversionModeBit);
     config |= ((uint8_t)newMode & 1) << Config2::ConversionModeBit;
 
     return setConfig2(config);
@@ -197,7 +197,7 @@ bool AD7417::setI2cFilters(bool enable)
         return false;
 
     uint8_t config = result.value();
-    config &= ~Config2::Test1Bit;
+    config &= ~(1 << Config2::Test1Bit);
     config |= (enable ? 1 : 0) << Config2::Test1Bit;
 
     return setConfig2(config);
