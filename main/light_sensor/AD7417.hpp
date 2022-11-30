@@ -66,7 +66,7 @@ private:
     I2cBusAccessor &i2cBusAccessor;
     I2cBusAccessor::DeviceAddress deviceAddress = BaseAddress; // 7-bit
 
-    static constexpr auto BaseAddress = 0b1001 << 3;
+    static constexpr auto BaseAddress = 0b0101 << 3;
     static constexpr auto ChipSelectMask = 0b111;
 
     bool readByteFromRegister(Register registerAddress, uint8_t &byte);
