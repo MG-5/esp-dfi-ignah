@@ -71,8 +71,7 @@ void Dfi::taskMain(void *)
 //--------------------------------------------------------------------------------------------------
 bool Dfi::loadXmlFromBuffer()
 {
-    auto result =
-        xmlDocument.load_buffer_inplace(HttpClient::dataBuffer.data(), HttpClient::bufferIndex);
+    auto result = xmlDocument.load_buffer(HttpClient::dataBuffer.data(), HttpClient::bufferIndex);
 
     if (!result)
     {
@@ -109,8 +108,8 @@ void Dfi::parseXml()
         Time arrivalTime = vehicleArray[index].fpTime + vehicleArray[index].delay;
 
         // calc the difference between two times, it can handle the time crossing at midnight.
-        // arrival times that are before the current time will be handled at time occuring next day
-        // resulting in high minutes difference, so there is a need to handle this
+        // arrival times that are before the current time will be handled at time occuring next
+        // day resulting in high minutes difference, so there is a need to handle this
         uint16_t arrivalInMinutes = Time::getDifferenceInMinutes(currentTime, arrivalTime);
 
         if (arrivalInMinutes >= 12 * 60)

@@ -3,6 +3,7 @@
 #include "dfi/Dfi.hpp"
 // #include "StatusLed.hpp"
 #include "led/LedControl.hpp"
+#include "light_sensor/LightSensor.hpp"
 #include "wifi/Wireless.hpp"
 
 class Application
@@ -18,5 +19,7 @@ private:
 
     Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
-    Dfi dfi{isConnected};
+    LedControl ledControl;
+    Dfi dfi{isConnected, ledControl};
+    LightSensor lightSensor{ledControl};
 };
