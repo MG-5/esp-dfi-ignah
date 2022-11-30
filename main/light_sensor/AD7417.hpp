@@ -59,6 +59,9 @@ public:
     bool setTOtiSetPoint(uint16_t setPoint);
     bool setI2cFilters(bool enable);
 
+    bool shutdown();
+    bool wakeUp();
+
 private:
     I2cBusAccessor &i2cBusAccessor;
     I2cBusAccessor::DeviceAddress deviceAddress = BaseAddress; // 7-bit

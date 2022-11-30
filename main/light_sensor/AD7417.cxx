@@ -204,6 +204,18 @@ bool AD7417::setI2cFilters(bool enable)
 }
 
 //--------------------------------------------------------------------------------------------------
+bool AD7417::shutdown()
+{
+    return setMode(Mode::Shutdown);
+}
+
+//--------------------------------------------------------------------------------------------------
+bool AD7417::wakeUp()
+{
+    return setMode(Mode::Normal);
+}
+
+//--------------------------------------------------------------------------------------------------
 bool AD7417::readByteFromRegister(Register registerAddress, uint8_t &byte)
 {
     i2cBusAccessor.beginTransaction(deviceAddress);
