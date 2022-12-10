@@ -1,0 +1,12 @@
+[submodule "main/components/pugixml"]
+	path = main/components/pugixml
+	url = https://github.com/zeux/pugixml.git
+[submodule "main/components/Time"]
+	path = main/components/Time
+	url = ../Time.git
+[submodule "main/components/util"]
+	path = main/components/util
+	url = ../util.git
+[submodule "main/components/display-renderer"]
+	path = main/components/display-renderer
+	url = ../display-renderer.git
