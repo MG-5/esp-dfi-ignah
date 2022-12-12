@@ -7,6 +7,7 @@ void LightSensor::taskMain(void *)
     initI2c();
     powerEnable.init(GPIO_MODE_OUTPUT);
 
+    bool hasPrintedOnce = false;
     auto lastWakeTime = xTaskGetTickCount();
     while (true)
     {
@@ -15,9 +16,20 @@ void LightSensor::taskMain(void *)
         if (!isSensorOkay)
         {
             if (reconfigureSensor())
+            {
+                ESP_LOGI(PrintTag, "Configured light sensor.");
+                hasPrintedOnce = false;
                 isSensorOkay = true;
+            }
             else
+            {
+                if (!hasPrintedOnce)
+                {
+                    hasPrintedOnce = true;
+                    ESP_LOGE(PrintTag, "Light sensor cannot be configured!");
+                }
                 continue;
+            }
         }
 
         if (!readSensor())
@@ -54,7 +66,7 @@ void LightSensor::initI2c()
 //--------------------------------------------------------------------------------------------------
 bool LightSensor::reconfigureSensor()
 {
-    ESP_LOGI(PrintTag, "restart and reconfigure sensor");
+    ESP_LOGD(PrintTag, "restart and reconfigure sensor");
     powerEnable.write(false);
     vTaskDelay(toOsTicks(100.0_ms));
     powerEnable.write(true);

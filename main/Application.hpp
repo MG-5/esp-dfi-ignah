@@ -30,8 +30,9 @@ private:
     // StatusLed statusLed{isConnected, pulseDetected};
 
     Dfi dfi{isConnected};
-    RenderTask renderTask{dfi};
-    // LightSensor lightSensor{ledControl};
+    LedControl ledControl{};
+    RenderTask renderTask{dfi, ledControl};
+    LightSensor lightSensor{ledControl};
 
     inline static TimerHandle_t timeoutTimer = nullptr;
 

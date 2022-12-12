@@ -9,9 +9,10 @@
 class RenderTask : public util::wrappers::TaskWithMemberFunctionBase
 {
 public:
-    explicit RenderTask(Dfi &dfi)
+    explicit RenderTask(Dfi &dfi, LedControl &ledControl)
         : TaskWithMemberFunctionBase("renderTask", 1024, osPriorityNormal5), //
-          dfi(dfi)                                                           //
+          dfi(dfi),                                                          //
+          ledControl(ledControl)                                             //
           {};
 
     enum class State
@@ -28,7 +29,7 @@ private:
     static constexpr auto PrintTag = "[RenderTask]";
 
     Dfi &dfi;
-    LedControl ledControl{};
+    LedControl &ledControl;
     Renderer renderer{LedControl::Columns, LedControl::Strips, ledControl};
 
     State state = State::InitializingWifi;

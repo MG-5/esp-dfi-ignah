@@ -43,7 +43,7 @@ public:
         bool hasError = returnValue != ESP_OK;
 
         if (hasError)
-            ESP_LOGE(printTag.data(), "reading from device at address: %d returns error: %s",
+            ESP_LOGD(printTag.data(), "reading from device at address: %d returns error: %s",
                      currentAddress, esp_err_to_name(returnValue));
 
         return !hasError;
@@ -58,7 +58,7 @@ public:
         bool hasError = returnValue != ESP_OK;
 
         if (hasError)
-            ESP_LOGE(printTag.data(),
+            ESP_LOGD(printTag.data(),
                      "reading register %d from device at address: %d returns error: %s",
                      registerAdress, currentAddress, esp_err_to_name(returnValue));
 
@@ -88,7 +88,7 @@ public:
         bool hasError = returnValue != ESP_OK;
 
         if (hasError)
-            ESP_LOGE(printTag.data(), "writing to device at address: %d returns error: %s",
+            ESP_LOGD(printTag.data(), "writing to device at address: %d returns error: %s",
                      currentAddress, esp_err_to_name(returnValue));
 
         return !hasError;
