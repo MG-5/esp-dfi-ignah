@@ -61,5 +61,5 @@ public:
     void shiftDualLedData(const size_t startPosition, const uint8_t *image);
     void shiftLedDataRow5(const uint8_t *image);
 
-    void delay200ns();
+    void delay50ns();
 };
