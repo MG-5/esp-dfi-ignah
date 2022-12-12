@@ -51,19 +51,18 @@ protected:
     void taskMain(void *) override;
 
 private:
+    bool &isConnected;
+    LedControl &ledControl;
     const Station *currentStation = nullptr;
 
     HttpClient httpClient{MaximumNumberVehiclesRequest};
     pugi::xml_document xmlDocument{};
-    LocalTransportVehicleArray vehicleArray;
+    LocalTransportVehicleArray vehicleArray{};
 
     Renderer renderer{LedControl::Columns, LedControl::Strips, ledControl};
 
     static constexpr auto PrintBufferSize = 32;
     char printBuffer[PrintBufferSize]{};
-
-    bool &isConnected;
-    LedControl &ledControl;
 
     bool loadXmlFromBuffer();
     void parseXml();
