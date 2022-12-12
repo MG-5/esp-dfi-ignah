@@ -80,8 +80,7 @@ void Wireless::configureStation()
     wifi_sta_config_t staConfig{};
     std::memcpy(staConfig.ssid, StaSsid.data(), StaSsid.length());
     std::memcpy(staConfig.password, StaPassword.data(), StaPassword.length());
-    staConfig.threshold.authmode =
-        WIFI_AUTH_WPA2_PSK; // don't accept auths below this threshold
+    staConfig.threshold.authmode = WIFI_AUTH_WPA2_PSK; // don't accept auths below this threshold
     staConfig.sae_pwe_h2e = WPA3_SAE_PWE_BOTH;
 
     wifi_config_t wifiConfig;
@@ -142,11 +141,21 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
             wifi_event_sta_disconnected_t *disconnected =
                 reinterpret_cast<wifi_event_sta_disconnected_t *>(eventData);
             ESP_LOGE(PrintTag, "Wifi disconnect. Reason : %d", disconnected->reason);
-            vTaskDelay(toOsTicks(RetryDelay));
 
             sync::clearEvents(sync::ConnectedToWifi);
             sync::signal(sync::ConnectionFailed);
 
+            if (++reconnectionCounter >= ReconnectionCounterThreshould)
+            {
+                reconnectionCounter = 0;
+                ESP_LOGW(PrintTag, "Restart wifi driver.");
+                ESP_ERROR_CHECK(esp_wifi_stop());
+                vTaskDelay(toOsTicks(RetryDelay));
+                ESP_ERROR_CHECK(esp_wifi_start());
+                break;
+            }
+
+            vTaskDelay(toOsTicks(RetryDelay));
             ESP_LOGW(PrintTag, "try to reconnnect");
             ESP_ERROR_CHECK(esp_wifi_connect());
         }
@@ -159,6 +168,7 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
     }
     else if (eventBase == IP_EVENT && eventId == IP_EVENT_STA_GOT_IP)
     {
+        reconnectionCounter = 0;
         ip_event_got_ip_t *event = static_cast<ip_event_got_ip_t *>(eventData);
         ESP_LOGI(PrintTag, "Established a wifi connection to %s", StaSsid.data());
         ESP_LOGI(PrintTag, "IP address: " IPSTR, IP2STR(&event->ip_info.ip));
