@@ -9,10 +9,18 @@
 class Application
 {
 public:
-    Application(){};
+    static constexpr auto PrintTag = "[Application]";
+
+    Application()
+    {
+        timeoutTimer = xTimerCreate("timeoutTimer", toOsTicks(10.0_s), pdFALSE, nullptr, onTimeout);
+    }
+
     void run();
 
     static Application &getApplicationInstance();
+
+    static void onTimeout(TimerHandle_t);
 
 private:
     bool isConnected = false;
@@ -21,5 +29,17 @@ private:
     // StatusLed statusLed{isConnected, pulseDetected};
     LedControl ledControl;
     Dfi dfi{isConnected, ledControl};
-    LightSensor lightSensor{ledControl};
+    // LightSensor lightSensor{ledControl};
+
+    inline static TimerHandle_t timeoutTimer = nullptr;
+
+    static void stopTimer()
+    {
+        xTimerStop(timeoutTimer, 0);
+    }
+
+    static void resetTimer()
+    {
+        xTimerReset(timeoutTimer, 0);
+    }
 };
