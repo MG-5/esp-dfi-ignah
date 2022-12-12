@@ -18,21 +18,35 @@ public:
     enum class State
     {
         InitializingWifi,
-        WaitForTimesycronization,
-        NoWifiConnection
+        WaitForTimesyncronization,
+        ShowVehicles,
+        ShowVehiclesWithRunningText,
+        ShowFreeText
     };
+
+    void setState(State newState)
+    {
+        state = newState;
+    }
+
+    State getState() const
+    {
+        return state;
+    }
 
 protected:
     void taskMain(void *) override;
 
 private:
     static constexpr auto PrintTag = "[RenderTask]";
+    static constexpr auto NumberOfDots = 5;
 
     Dfi &dfi;
     LedControl &ledControl;
     Renderer renderer{LedControl::Columns, LedControl::Strips, ledControl};
 
     State state = State::InitializingWifi;
+    uint8_t dotCounter = 1;
 
     static constexpr auto PrintBufferSize = 32;
     char printBuffer[PrintBufferSize]{};
@@ -40,4 +54,7 @@ private:
     void clearDisplayRam();
     void renderTitleBar(bool showDoublePoint);
     void renderVehicles(bool showCurrentVehicle);
+    void renderProjectInfos();
+    void renderConnectingToWifi();
+    void renderTimesyncronization();
 };
