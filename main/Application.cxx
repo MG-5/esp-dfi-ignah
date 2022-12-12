@@ -34,10 +34,12 @@ void Application::run()
     Task::applicationIsReadyStartAllTasks();
 
     sync::waitForAll(sync::ConnectedToWifi);
+    renderTask.setState(RenderTask::State::WaitForTimesyncronization);
     Timebase::initTimeSychronization();
 
     resetTimer();
     sync::waitForAll(sync::TimeIsSynchronized);
+    renderTask.setState(RenderTask::State::ShowVehicles);
     stopTimer();
 
     while (true)

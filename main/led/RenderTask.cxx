@@ -3,6 +3,7 @@
 #include "helpers/freertos.hpp"
 
 #include "esp_log.h"
+#include "esp_ota_ops.h"
 
 void RenderTask::taskMain(void *)
 {
@@ -14,8 +15,35 @@ void RenderTask::taskMain(void *)
     while (true)
     {
         clearDisplayRam();
-        renderTitleBar(blinkState);
-        renderVehicles(blinkState);
+
+        switch (state)
+        {
+        case State::InitializingWifi:
+            renderProjectInfos();
+            renderConnectingToWifi();
+            break;
+
+        case State::WaitForTimesyncronization:
+            renderProjectInfos();
+            renderTimesyncronization();
+            break;
+
+        case State::ShowVehicles:
+        case State::ShowVehiclesWithRunningText:
+            renderTitleBar(blinkState);
+            renderVehicles(blinkState);
+            break;
+
+        case State::ShowFreeText:
+            // Todo:
+            renderer.print({0, 0}, "free text mode 1");
+            renderer.print({0, 1}, "free text mode 2");
+            renderer.print({0, 2}, "free text mode 3");
+            renderer.print({0, 3}, "free text mode 4");
+            renderer.print({0, 4}, "free text mode 5");
+            break;
+        }
+
         renderer.render();
 
         blinkState = !blinkState;
@@ -87,4 +115,43 @@ void RenderTask::renderVehicles(bool showCurrentVehicle)
 
         pageCounter++;
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderTask::renderProjectInfos()
+{
+    const esp_app_desc_t *appDesc = esp_ota_get_app_description();
+
+    snprintf(printBuffer, PrintBufferSize, "%s (%s)", appDesc->project_name, appDesc->version);
+    renderer.print({0, 0}, printBuffer);
+    renderer.print({0, 1}, appDesc->date);
+    renderer.print({0, 2}, "by M. Grau und T. Wiesner");
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderTask::renderConnectingToWifi()
+{
+    std::string textToPrint = " Mit WLAN verbinden ";
+
+    if (dotCounter++ >= NumberOfDots)
+        dotCounter = 1;
+
+    for (size_t i = 0; i < dotCounter; i++)
+        textToPrint += ".";
+
+    renderer.print({0, LedControl::Strips - 1}, textToPrint.data());
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderTask::renderTimesyncronization()
+{
+    std::string textToPrint = " Zeitsyncronisation ";
+
+    if (dotCounter++ >= NumberOfDots)
+        dotCounter = 1;
+
+    for (size_t i = 0; i < dotCounter; i++)
+        textToPrint += ".";
+
+    renderer.print({0, LedControl::Strips - 1}, textToPrint.data());
 }
