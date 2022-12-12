@@ -3,6 +3,7 @@ idf_component_register(SRCS
     dfi/HttpClient.cxx
 
     led/LedControl.cxx
+    led/RenderTask.cxx
 
     light_sensor/AD7417.cxx
     light_sensor/LightSensor.cxx

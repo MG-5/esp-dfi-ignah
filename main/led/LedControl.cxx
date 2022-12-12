@@ -119,9 +119,9 @@ void LedControl::setTripleControlShiftRegister(uint8_t rows)
 void LedControl::triggerControlShiftRegisterOutput()
 {
     ControlEnableOutput.write(true);
-    delay200ns();
+    delay50ns();
     ControlEnableOutput.write(false);
-    delay200ns();
+    delay50ns();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -134,9 +134,9 @@ void LedControl::shiftControlData(uint8_t byte)
         ControlShiftInput.write(pinState);
 
         ControlShiftClock.write(true);
-        delay200ns();
+        delay50ns();
         ControlShiftClock.write(false);
-        delay200ns();
+        delay50ns();
     }
 }
 
@@ -198,17 +198,14 @@ void LedControl::shiftLedDataRow5(const uint8_t *image)
 }
 
 //--------------------------------------------------------------------------------------------------
-void LedControl::delay200ns()
+void LedControl::delay50ns()
 {
 #ifndef CONFIG_ESP32_DEFAULT_CPU_FREQ_160
 #error "Frequency is not set to 160MHz"
 #endif
 
     // 160MHz = 6,25ns per cycle
-    // 200ns / 6,25ns = 32 cycles
+    // 50ns / 6,25ns = 8 cycles
 
-    asm("nop; nop; nop; nop; nop; nop; nop; nop;"
-        "nop; nop; nop; nop; nop; nop; nop; nop;"
-        "nop; nop; nop; nop; nop; nop; nop; nop;"
-        "nop; nop; nop; nop; nop; nop; nop; nop;");
+    asm volatile("nop; nop; nop; nop; nop; nop; nop; nop;");
 }

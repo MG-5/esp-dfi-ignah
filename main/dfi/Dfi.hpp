@@ -5,7 +5,6 @@
 #include "pugixml.hpp"
 #include "wrappers/Task.hpp"
 
-#include "display-renderer/Renderer.hpp"
 #include "led/LedControl.hpp"
 
 class Dfi : public util::wrappers::TaskWithMemberFunctionBase
@@ -24,6 +23,11 @@ public:
         BlacklistArray blacklist{};
     };
 
+    static constexpr Dfi::Station AmbrosiusplatzRtgStadt{
+        7307,                                                                              //
+        "Ambrosiusplatz",                                                                  //
+        {"Sudenburg", "Reform", "Friedenshöhe", "Magdeburg, Sudenburg, Braunlager Str."}}; //
+
     struct LocalTransportVehicle
     {
         std::string lineNumber = "";
@@ -32,11 +36,6 @@ public:
         Time fpTime{};
         int arrivalInMinutes = 0;
     };
-
-    explicit Dfi(bool &isConnected, LedControl &ledControl)
-        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
-          isConnected(isConnected), //
-          ledControl(ledControl){};
 
     static bool localTransportVehicleSorter(LocalTransportVehicle const &lhs,
                                             LocalTransportVehicle const &rhs)
@@ -47,30 +46,34 @@ public:
     using LocalTransportVehicleArray =
         std::array<LocalTransportVehicle, MaximumNumberVehiclesToShow>;
 
+    explicit Dfi(bool &isConnected)
+        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
+          isConnected(isConnected) //
+          {};
+
+    std::string_view getStationName()
+    {
+        return currentStation->stationName;
+    }
+
+    const LocalTransportVehicleArray &getVehicles() const
+    {
+        return vehicleArray;
+    }
+
 protected:
     void taskMain(void *) override;
 
 private:
     bool &isConnected;
-    LedControl &ledControl;
-    const Station *currentStation = nullptr;
+    const Station *currentStation = &AmbrosiusplatzRtgStadt;
 
     HttpClient httpClient{MaximumNumberVehiclesRequest};
     pugi::xml_document xmlDocument{};
     LocalTransportVehicleArray vehicleArray{};
 
-    Renderer renderer{LedControl::Columns, LedControl::Strips, ledControl};
-
-    static constexpr auto PrintBufferSize = 32;
-    char printBuffer[PrintBufferSize]{};
-
     bool loadXmlFromBuffer();
     void parseXml();
 
-    void renderTitleBar(bool showDoublePoint);
-    void renderVehicles(bool showCurrentVehicle);
     void logVehicles();
-
-    void initDisplayInterface();
-    void clearDisplayRam();
 };

@@ -3,6 +3,7 @@
 #include "dfi/Dfi.hpp"
 // #include "StatusLed.hpp"
 #include "led/LedControl.hpp"
+#include "led/RenderTask.hpp"
 #include "light_sensor/LightSensor.hpp"
 #include "wifi/Wireless.hpp"
 
@@ -27,8 +28,9 @@ private:
 
     Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
-    LedControl ledControl;
-    Dfi dfi{isConnected, ledControl};
+
+    Dfi dfi{isConnected};
+    RenderTask renderTask{dfi};
     // LightSensor lightSensor{ledControl};
 
     inline static TimerHandle_t timeoutTimer = nullptr;

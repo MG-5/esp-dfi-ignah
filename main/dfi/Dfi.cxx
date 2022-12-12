@@ -13,58 +13,32 @@
 #include <string>
 #include <sys/time.h>
 
-constexpr Dfi::Station AmbrosiusplatzRtgStadt{
-    7307,                                                                              //
-    "Ambrosiusplatz",                                                                  //
-    {"Sudenburg", "Reform", "Friedenshöhe", "Magdeburg, Sudenburg, Braunlager Str."}}; //
-
 using namespace util::wrappers;
 
 //--------------------------------------------------------------------------------------------------
 void Dfi::taskMain(void *)
 {
-    currentStation = &AmbrosiusplatzRtgStadt;
-
-    initDisplayInterface();
-    ledControl.init();
-
     sync::waitForAll(sync::ConnectedToWifi);
     sync::waitForAll(sync::TimeIsSynchronized);
 
-    constexpr auto TaskDelay = 1.0_s;
     constexpr auto TriggerDelay = 60.0_s;
 
     auto lastWakeTime = xTaskGetTickCount();
-    bool blinkState = true;
-    size_t timeCounter = TriggerDelay.getMagnitude();
 
     while (true)
     {
-        clearDisplayRam();
-        renderTitleBar(blinkState);
+        if (!isConnected)
+            ESP_LOGW(PrintTag, "No connection. Use old data.");
 
-        if (++timeCounter >= (TriggerDelay / TaskDelay).getMagnitude())
-        {
-            timeCounter = 0;
+        else if (httpClient.requestData(currentStation->stationNumber))
+            loadXmlFromBuffer();
 
-            if (!isConnected)
-                ESP_LOGW(PrintTag, "No connection. Wait for reconnect.");
+        // parse XML buffer, regardless of connection state
+        // so we can use old data if there is no connection
+        parseXml();
+        logVehicles();
 
-            else if (httpClient.requestData(currentStation->stationNumber))
-                loadXmlFromBuffer();
-
-            // parse XML buffer, regardless of connection state
-            // so we can use old data if there is no connection
-            parseXml();
-            logVehicles();
-        }
-
-        renderVehicles(blinkState);
-        renderer.render();
-
-        blinkState = !blinkState;
-
-        vTaskDelayUntil(&lastWakeTime, toOsTicks(TaskDelay));
+        vTaskDelayUntil(&lastWakeTime, toOsTicks(TriggerDelay));
     }
 }
 
@@ -149,64 +123,6 @@ void Dfi::parseXml()
 }
 
 //--------------------------------------------------------------------------------------------------
-void Dfi::renderTitleBar(bool showDoublePoint)
-{
-    renderer.print({0, 0}, currentStation->stationName.data());
-
-    std::tm *localTime = Timebase::getLocaltime(Timebase::getCurrentUTC());
-
-    const char *clockFormat = showDoublePoint ? "%02d:%02d" : "%02d %02d";
-
-    snprintf(printBuffer, PrintBufferSize, clockFormat, localTime->tm_hour, localTime->tm_min);
-    renderer.print({LedControl::Columns, 0}, printBuffer, Renderer::Alignment::Right);
-}
-
-//--------------------------------------------------------------------------------------------------
-void Dfi::renderVehicles(bool showCurrentVehicle)
-{
-    size_t pageCounter = 1;
-
-    for (auto &vehicle : vehicleArray)
-    {
-        if (vehicle.lineNumber == "" && vehicle.directionName == "")
-            continue;
-
-        if (pageCounter == LedControl::Strips)
-            break;
-
-        size_t lineNumberPixelWidth = 0;
-        const bool IsTrainAtStation = vehicle.arrivalInMinutes == 0;
-
-        try
-        {
-            // print line number
-            snprintf(printBuffer, PrintBufferSize, "%s ", vehicle.lineNumber.substr(6).data());
-            lineNumberPixelWidth = renderer.print({0, pageCounter}, printBuffer);
-        }
-        catch (...)
-        {
-            ESP_LOGE(PrintTag, "line number is not valid, reject it: %s",
-                     vehicle.lineNumber.data());
-            continue;
-        }
-
-        // print line direction, blinking when train is at station
-        if (!IsTrainAtStation || showCurrentVehicle)
-            renderer.print({lineNumberPixelWidth, pageCounter}, vehicle.directionName.data());
-
-        if (!IsTrainAtStation)
-        {
-            // print arrival time in minutes
-            snprintf(printBuffer, PrintBufferSize, "%dmin", vehicle.arrivalInMinutes);
-            renderer.print({LedControl::Columns, pageCounter}, printBuffer,
-                           Renderer::Alignment::Right);
-        }
-
-        pageCounter++;
-    }
-}
-
-//--------------------------------------------------------------------------------------------------
 void Dfi::logVehicles()
 {
     for (auto &vehicle : vehicleArray)
@@ -231,16 +147,4 @@ void Dfi::logVehicles()
         ESP_LOGI(PrintTag, "Linie %s, %s, Abfahrt in (%d) %dmin", lineNumber,
                  vehicle.directionName.data(), vehicle.delay, vehicle.arrivalInMinutes);
     }
-}
-
-//--------------------------------------------------------------------------------------------------
-void Dfi::initDisplayInterface()
-{
-    std::setlocale(LC_ALL, "CP1252");
-}
-
-//--------------------------------------------------------------------------------------------------
-void Dfi::clearDisplayRam()
-{
-    renderer.clearAll();
 }
