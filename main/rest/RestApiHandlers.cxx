@@ -161,3 +161,72 @@ esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
+
+esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "modeSetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto contentLength = req->content_len;
+
+    if (contentLength >= serverInstance->ScratchBufferSize) 
+    {
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+        return ESP_FAIL;
+    }
+
+    size_t currrentLength = 0;
+    int received = 0;
+
+    while (currrentLength < contentLength) {
+        received = httpd_req_recv(req, serverInstance->scratchBuffer + currrentLength, contentLength);
+        if (received <= 0) 
+        {
+            // Respond with 500 Internal Server Error
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+            return ESP_FAIL;
+        }
+        currrentLength += received;
+    }
+
+    ESP_LOGI(PrintTag, "%s", serverInstance->scratchBuffer);
+
+    httpd_resp_set_status(req, HTTPD_200);
+        httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+/*
+static esp_err_t light_brightness_post_handler(httpd_req_t *req)
+{
+    int total_len = req->content_len;
+    int cur_len = 0;
+    char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
+    int received = 0;
+    if (total_len >= SCRATCH_BUFSIZE) {
+        // Respond with 500 Internal Server Error
+        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
+        return ESP_FAIL;
+    }
+    while (cur_len < total_len) {
+        received = httpd_req_recv(req, buf + cur_len, total_len);
+        if (received <= 0) {
+            // Respond with 500 Internal Server Error
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control
+value"); return ESP_FAIL;
+        }
+        cur_len += received;
+    }
+    buf[total_len] = '\0';
+
+    cJSON *root = cJSON_Parse(buf);
+    int red = cJSON_GetObjectItem(root, "red")->valueint;
+    int green = cJSON_GetObjectItem(root, "green")->valueint;
+    int blue = cJSON_GetObjectItem(root, "blue")->valueint;
+    ESP_LOGI(REST_TAG, "Light control: red = %d, green = %d, blue = %d", red, green, blue);
+    cJSON_Delete(root);
+    httpd_resp_sendstr(req, "Post control value successfully");
+    return ESP_OK;
+}
+*/
