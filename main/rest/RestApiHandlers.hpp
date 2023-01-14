@@ -14,4 +14,5 @@ public:
     static esp_err_t systemClockGetHandler(httpd_req_t *req);
     static esp_err_t wifiStationGetHandler(httpd_req_t *req);
     static esp_err_t modeSetHandler(httpd_req_t *req);
+    static esp_err_t modeGetHandler(httpd_req_t *req);
 };

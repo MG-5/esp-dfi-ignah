@@ -105,10 +105,16 @@ esp_err_t RestServer::startServer(std::string newBasePath)
     httpd_register_uri_handler(server, &wifiStationGetUri);
 
     httpd_uri_t modeSetUri = {.uri = "/mode",
-                                     .method = HTTP_PUT,
-                                     .handler = RestApiHandlers::modeSetHandler,
-                                     .user_ctx = this};
+                              .method = HTTP_PUT,
+                              .handler = RestApiHandlers::modeSetHandler,
+                              .user_ctx = this};
     httpd_register_uri_handler(server, &modeSetUri);
+
+    httpd_uri_t modeGetUri = {.uri = "/mode",
+                              .method = HTTP_GET,
+                              .handler = RestApiHandlers::modeGetHandler,
+                              .user_ctx = this};
+    httpd_register_uri_handler(server, &modeGetUri);
 
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //

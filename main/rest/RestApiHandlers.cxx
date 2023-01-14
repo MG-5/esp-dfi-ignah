@@ -9,6 +9,8 @@
 #include "esp_wifi.h"
 #include <fcntl.h>
 
+#include <algorithm>
+
 //--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
 {
@@ -162,6 +164,7 @@ esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
+//--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "modeSetHandler");
@@ -169,7 +172,7 @@ esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
 
     auto contentLength = req->content_len;
 
-    if (contentLength >= serverInstance->ScratchBufferSize) 
+    if (contentLength >= serverInstance->ScratchBufferSize)
     {
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
         return ESP_FAIL;
@@ -178,21 +181,50 @@ esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
     size_t currrentLength = 0;
     int received = 0;
 
-    while (currrentLength < contentLength) {
-        received = httpd_req_recv(req, serverInstance->scratchBuffer + currrentLength, contentLength);
-        if (received <= 0) 
+    while (currrentLength < contentLength)
+    {
+        received =
+            httpd_req_recv(req, serverInstance->scratchBuffer + currrentLength, contentLength);
+        if (received <= 0)
         {
             // Respond with 500 Internal Server Error
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control value");
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR,
+                                "Failed to post control value");
             return ESP_FAIL;
         }
         currrentLength += received;
     }
 
-    ESP_LOGI(PrintTag, "%s", serverInstance->scratchBuffer);
+    ESP_LOGI(PrintTag, "set mode to %s", serverInstance->scratchBuffer);
+
+    int modeNumber = atoi(serverInstance->scratchBuffer);
+
+    if (modeNumber != std::clamp(modeNumber, 0, 2))
+    {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "mode does not exist");
+        return ESP_FAIL;
+    }
+
+    // skip first two entries
+    RenderTask::State state = static_cast<RenderTask::State>(modeNumber + 2);
+    serverInstance->renderTask.setState(state);
 
     httpd_resp_set_status(req, HTTPD_200);
-        httpd_resp_send(req, NULL, 0);
+    httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::modeGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "modeGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    // skip first two entries
+    const size_t ModeNumber = static_cast<size_t>(serverInstance->renderTask.getState()) - 2;
+
+    httpd_resp_sendstr(req, std::to_string(ModeNumber).data());
 
     return ESP_OK;
 }

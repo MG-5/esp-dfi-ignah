@@ -4,6 +4,8 @@
 #include "esp_http_server.h"
 #include "esp_vfs.h"
 
+#include "led/RenderTask.hpp"
+
 #include <string>
 
 class RestApiHandlers;
@@ -16,12 +18,15 @@ public:
     static constexpr auto WebMountPoint = "/www";
     static constexpr auto UseGzipCompression = true;
 
+    RestServer(RenderTask &renderTask) : renderTask(renderTask){};
+
     void initServer();
 
 private:
     static constexpr auto PrintTag = "[RestServer]";
-
     static constexpr size_t ScratchBufferSize = 1024 * 20;
+
+    RenderTask &renderTask;
 
     void initialiseMdns();
     esp_err_t initFileSystem();
