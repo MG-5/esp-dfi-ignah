@@ -1,0 +1,37 @@
+<h2>Anzeige</h2>
+
+<div>
+  <h3>Anzeigemodus</h3>
+
+  <mat-radio-group class="mode-radio-group">
+    <mat-radio-button>Fahrplan</mat-radio-button>
+    <mat-radio-button>Fahrplan mit Lauftext in unterster Zeile</mat-radio-button>
+    <mat-radio-button>Freitext</mat-radio-button>
+  </mat-radio-group>
+
+  <button mat-flat-button color="accent">Übernehmen</button>
+</div>
+
+<div>
+  <mat-tab-group>
+
+    <mat-tab label="Lauftext">
+      <ng-template matTabContent>
+        <app-running-text></app-running-text>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Freitext">
+      <ng-template matTabContent>
+        <app-free-text></app-free-text>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab label="Zusätzliche Fahrzeuge">
+      <ng-template matTabContent>
+        <app-additional-vehicles></app-additional-vehicles>
+      </ng-template>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>
