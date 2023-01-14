@@ -52,6 +52,12 @@
     }
     ```
 ----
+## modes
+
+* 0 -> normal mode (showing vehicles)
+* 1 -> like normal mode but last strip is showing running text
+* 2 -> free text mode on all lines
+
 ## mode request
   Return the current mode
 
@@ -63,7 +69,7 @@
     ```
     1
     ```
-----
+
 ## mode setter
   Set the mode
 
@@ -79,6 +85,7 @@
 * **Returned code**
   * 200 at success
   * 404 mode not found
+  
 ----
 ## free text setter
   Set the free text showing on all strips
