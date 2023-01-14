@@ -20,6 +20,7 @@ public:
     static esp_err_t modeGetHandler(httpd_req_t *req);
 
     static esp_err_t freeTextSetHandler(httpd_req_t *req);
+    static esp_err_t runningTextSetHandler(httpd_req_t *req);
 
     static esp_err_t loadContentToBuffer(httpd_req_t *req);
 };

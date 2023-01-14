@@ -39,6 +39,12 @@ public:
         freeText = newFreeText;
     }
 
+    void setRunningText(std::string &newRunningText, size_t newSpeed)
+    {
+        runningText = newRunningText;
+        runningTextSpeed = newSpeed;
+    }
+
 protected:
     void taskMain(void *) override;
 
@@ -55,6 +61,9 @@ private:
 
     std::array<std::string, LedControl::Strips> freeText{"Zeile1", "Zeile2", "Zeile3", "Zeile4",
                                                          "Zeile5"};
+
+    std::string runningText = "*** Lauftext ***";
+    size_t runningTextSpeed = 20; // pixels per second
 
     static constexpr auto PrintBufferSize = 72;
     char printBuffer[PrintBufferSize]{};

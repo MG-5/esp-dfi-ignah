@@ -245,6 +245,39 @@ esp_err_t RestApiHandlers::freeTextSetHandler(httpd_req_t *req)
 }
 
 //--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::runningTextSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "runningTextSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+
+    auto text = cJSON_GetObjectItem(root, "text");
+    auto speed = cJSON_GetObjectItem(root, "speed");
+
+    if (!text || !speed)
+    {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "text or speed does not exist");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    std::string textString(text->string);
+    serverInstance->renderTask.setRunningText(textString, speed->valueint);
+
+    cJSON_Delete(root);
+
+    httpd_resp_set_status(req, HTTPD_200);
+    httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
 {
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
