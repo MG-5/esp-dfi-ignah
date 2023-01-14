@@ -136,7 +136,7 @@
 * **Example PUT Content:**
     ```json
     {
-      "vehicle": [
+      "vehicles": [
         {
           "destination": "Herrenkrug",
           "departure": "hh:mm"

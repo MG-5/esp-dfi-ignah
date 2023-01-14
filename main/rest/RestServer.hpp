@@ -4,6 +4,7 @@
 #include "esp_http_server.h"
 #include "esp_vfs.h"
 
+#include "dfi/Dfi.hpp"
 #include "led/RenderTask.hpp"
 
 #include <string>
@@ -18,7 +19,7 @@ public:
     static constexpr auto WebMountPoint = "/www";
     static constexpr auto UseGzipCompression = true;
 
-    explicit RestServer(RenderTask &renderTask) : renderTask(renderTask){};
+    explicit RestServer(RenderTask &renderTask, Dfi &dfi) : renderTask(renderTask), dfi(dfi){};
 
     void initServer();
 
@@ -27,6 +28,7 @@ private:
     static constexpr size_t ScratchBufferSize = 1024 * 20;
 
     RenderTask &renderTask;
+    Dfi &dfi;
 
     void initialiseMdns();
     esp_err_t initFileSystem();

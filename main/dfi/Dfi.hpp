@@ -13,6 +13,7 @@ public:
     static constexpr auto PrintTag = "[DFI]";
     static constexpr auto MaximumNumberVehiclesRequest = 16;
     static constexpr auto MaximumNumberVehiclesToShow = 8;
+    static constexpr auto MaximumNumberOfAdditionalVehicles = 8;
 
     using BlacklistArray = std::array<std::string_view, 8>;
 
@@ -44,7 +45,10 @@ public:
     }
 
     using LocalTransportVehicleArray =
-        std::array<LocalTransportVehicle, MaximumNumberVehiclesToShow>;
+        std::array<LocalTransportVehicle,
+                   MaximumNumberVehiclesToShow + MaximumNumberOfAdditionalVehicles>;
+
+    using AdditionalVehicleList = std::vector<LocalTransportVehicle>;
 
     explicit Dfi(bool &isConnected)
         : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
@@ -61,6 +65,9 @@ public:
         return vehicleArray;
     }
 
+    void setAdditionalVehicles(AdditionalVehicleList &additionalVehicles);
+    void getAdditionalVehicles(AdditionalVehicleList &additionalVehicles);
+
 protected:
     void taskMain(void *) override;
 
@@ -71,6 +78,8 @@ private:
     HttpClient httpClient{MaximumNumberVehiclesRequest};
     pugi::xml_document xmlDocument{};
     LocalTransportVehicleArray vehicleArray{};
+
+    AdditionalVehicleList additionalVehicleList{MaximumNumberOfAdditionalVehicles};
 
     bool loadXmlFromBuffer();
     void parseXml();

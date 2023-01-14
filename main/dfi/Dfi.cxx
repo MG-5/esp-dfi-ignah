@@ -102,6 +102,26 @@ void Dfi::parseXml()
         index++;
     }
 
+    // recalculate arrival times if needed
+    for (auto &e : additionalVehicleList)
+    {
+        if (e.lineNumber.empty())
+            break;
+
+        e.arrivalInMinutes = calculateArrivalTime(e);
+    }
+
+    // clean up if needed
+    auto end =
+        std::remove_if(additionalVehicleList.begin(), additionalVehicleList.end(),
+                       [this](LocalTransportVehicle &v) { return !isArrivalTimeInFuture(v); });
+    std::distance(end, additionalVehicleList.end());
+    additionalVehicleList.erase(end, additionalVehicleList.end());
+
+    // copy additional vehicles into our array
+    std::copy(additionalVehicleList.begin(), additionalVehicleList.end(),
+              vehicleArray.begin() + MaximumNumberVehiclesToShow);
+
     // sort by arrival time
     std::sort(vehicleArray.begin(), vehicleArray.end(), &localTransportVehicleSorter);
 }
@@ -160,4 +180,31 @@ int Dfi::calculateArrivalTime(LocalTransportVehicle &vehicle)
     // day resulting in high minutes difference, so there is a need to handle this
     Time arrivalTime = vehicle.fpTime + vehicle.delay;
     return Time::getDifferenceInMinutes(getCurrentLocalTime(), arrivalTime);
+}
+
+//--------------------------------------------------------------------------------------------------
+void Dfi::setAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
+{
+    for (auto &e : additionalVehicles)
+    {
+        if (e.lineNumber.empty())
+            break;
+
+        e.arrivalInMinutes = calculateArrivalTime(e);
+    }
+
+    // erase not valid entries and return new end iterator
+    auto end =
+        std::remove_if(additionalVehicles.begin(), additionalVehicles.end(),
+                       [this](LocalTransportVehicle &v) { return !isArrivalTimeInFuture(v); });
+    std::distance(end, additionalVehicles.end());
+    additionalVehicles.erase(end, additionalVehicles.end());
+
+    additionalVehicleList = additionalVehicles;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Dfi::getAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
+{
+    additionalVehicles = additionalVehicleList;
 }
