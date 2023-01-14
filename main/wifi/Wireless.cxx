@@ -122,6 +122,12 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
             ESP_ERROR_CHECK(esp_wifi_connect());
             break;
 
+        case WIFI_EVENT_STA_CONNECTED:
+            std::memcpy(&staInfos, eventData, sizeof(wifi_event_sta_connected_t));
+            ESP_LOGI(PrintTag, "Established a wifi connection to %s, wait for  IP address now.",
+                     WifiSsid);
+            break;
+
         case WIFI_EVENT_AP_STACONNECTED:
         {
             wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)eventData;
@@ -169,9 +175,8 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
     else if (eventBase == IP_EVENT && eventId == IP_EVENT_STA_GOT_IP)
     {
         reconnectionCounter = 0;
-        ip_event_got_ip_t *event = static_cast<ip_event_got_ip_t *>(eventData);
-        ESP_LOGI(PrintTag, "Established a wifi connection to %s", StaSsid.data());
-        ESP_LOGI(PrintTag, "IP address: " IPSTR, IP2STR(&event->ip_info.ip));
+        ipAdress = static_cast<ip_event_got_ip_t *>(eventData)->ip_info.ip;
+        ESP_LOGI(PrintTag, "IP address: " IPSTR, IP2STR(&ipAdress));
 
         sync::clearEvents(sync::ConnectionFailed);
         sync::signal(sync::ConnectedToWifi);
