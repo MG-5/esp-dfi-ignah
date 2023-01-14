@@ -137,10 +137,6 @@ esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
 
-    uint8_t mac[6];
-    esp_wifi_get_mac(WIFI_IF_STA, mac);
-    snprintf(serverInstance->scratchBuffer, RestServer::ScratchBufferSize,
-             "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     std::string_view authMode = Wireless::getAuthModeAsString(Wireless::staInfos.authmode);
 
     cJSON *jsonRoot = cJSON_CreateObject();
@@ -151,6 +147,8 @@ esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
              IP2STR(&Wireless::ipAdress));
     cJSON_AddStringToObject(jsonRoot, "ipAdress", serverInstance->scratchBuffer);
 
+    uint8_t mac[6];
+    esp_wifi_get_mac(WIFI_IF_STA, mac);
     snprintf(serverInstance->scratchBuffer, RestServer::ScratchBufferSize,
              "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     cJSON_AddStringToObject(jsonRoot, "macAdress", serverInstance->scratchBuffer);
