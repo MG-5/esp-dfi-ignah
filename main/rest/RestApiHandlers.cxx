@@ -170,7 +170,8 @@ esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
     ESP_LOGI(PrintTag, "modeSetHandler");
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
 
-    loadContentToBuffer(req);
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
 
     ESP_LOGI(PrintTag, "set mode to %s", serverInstance->scratchBuffer);
 
@@ -202,6 +203,43 @@ esp_err_t RestApiHandlers::modeGetHandler(httpd_req_t *req)
     const size_t ModeNumber = static_cast<size_t>(serverInstance->renderTask.getState()) - 2;
 
     httpd_resp_sendstr(req, std::to_string(ModeNumber).data());
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::freeTextSetHandler(httpd_req_t *req)
+{
+    constexpr auto NumberOfLines = LedControl::Strips;
+
+    ESP_LOGI(PrintTag, "freeTextSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+    auto jsonLines = cJSON_GetObjectItem(root, "lines");
+    if (!cJSON_IsArray(jsonLines) || cJSON_GetArraySize(jsonLines) != NumberOfLines)
+    {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "lines is not an array or does not contain five elements");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    std::array<std::string, NumberOfLines> lineArray{};
+
+    for (size_t i = 0; i < NumberOfLines; i++)
+        lineArray[i] = cJSON_GetArrayItem(jsonLines, i)->string;
+
+    serverInstance->renderTask.setFreeText(lineArray);
+
+    cJSON_Delete(root);
+
+    httpd_resp_set_status(req, HTTPD_200);
+    httpd_resp_send(req, NULL, 0);
 
     return ESP_OK;
 }

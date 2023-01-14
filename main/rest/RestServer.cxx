@@ -116,6 +116,12 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                               .user_ctx = this};
     httpd_register_uri_handler(server, &modeGetUri);
 
+    httpd_uri_t freeTextSetUri = {.uri = "/freetext",
+                                  .method = HTTP_PUT,
+                                  .handler = RestApiHandlers::freeTextSetHandler,
+                                  .user_ctx = this};
+    httpd_register_uri_handler(server, &freeTextSetUri);
+
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //
                                 .method = HTTP_GET,

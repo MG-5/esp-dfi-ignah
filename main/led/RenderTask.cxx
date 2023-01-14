@@ -35,12 +35,11 @@ void RenderTask::taskMain(void *)
             break;
 
         case State::ShowFreeText:
-            // Todo:
-            renderer.print({0, 0}, "free text mode 1");
-            renderer.print({0, 1}, "free text mode 2");
-            renderer.print({0, 2}, "free text mode 3");
-            renderer.print({0, 3}, "free text mode 4");
-            renderer.print({0, 4}, "free text mode 5");
+            renderer.print({0, 0}, freeText[0].c_str());
+            renderer.print({0, 1}, freeText[1].c_str());
+            renderer.print({0, 2}, freeText[2].c_str());
+            renderer.print({0, 3}, freeText[3].c_str());
+            renderer.print({0, 4}, freeText[4].c_str());
             break;
         }
 

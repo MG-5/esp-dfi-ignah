@@ -29,9 +29,14 @@ public:
         state = newState;
     }
 
-    State getState() const
+    [[nodiscard]] State getState() const
     {
         return state;
+    }
+
+    void setFreeText(std::array<std::string, LedControl::Strips> &newFreeText)
+    {
+        freeText = newFreeText;
     }
 
 protected:
@@ -47,6 +52,9 @@ private:
 
     State state = State::InitializingWifi;
     uint8_t dotCounter = 1;
+
+    std::array<std::string, LedControl::Strips> freeText{"Zeile1", "Zeile2", "Zeile3", "Zeile4",
+                                                         "Zeile5"};
 
     static constexpr auto PrintBufferSize = 72;
     char printBuffer[PrintBufferSize]{};

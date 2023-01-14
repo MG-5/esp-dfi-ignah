@@ -18,7 +18,7 @@ public:
     static constexpr auto WebMountPoint = "/www";
     static constexpr auto UseGzipCompression = true;
 
-    RestServer(RenderTask &renderTask) : renderTask(renderTask){};
+    explicit RestServer(RenderTask &renderTask) : renderTask(renderTask){};
 
     void initServer();
 
