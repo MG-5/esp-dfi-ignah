@@ -232,7 +232,7 @@ esp_err_t RestApiHandlers::freeTextSetHandler(httpd_req_t *req)
     std::array<std::string, NumberOfLines> lineArray{};
 
     for (size_t i = 0; i < NumberOfLines; i++)
-        lineArray[i] = cJSON_GetArrayItem(jsonLines, i)->string;
+        lineArray[i] = cJSON_GetArrayItem(jsonLines, i)->valuestring;
 
     serverInstance->renderTask.setFreeText(lineArray);
 
