@@ -77,7 +77,7 @@ esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
     } while (readBytes > 0);
 
     close(fileStreamId);
-    ESP_LOGI(PrintTag, "Sended file: %s", filePath.data());
+    ESP_LOGI(PrintTag, "Sent file: %s", filePath.data());
 
     // Respond with an empty chunk to signal HTTP response completion
     httpd_resp_send_chunk(req, nullptr, 0);
@@ -170,30 +170,7 @@ esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
     ESP_LOGI(PrintTag, "modeSetHandler");
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
 
-    auto contentLength = req->content_len;
-
-    if (contentLength >= serverInstance->ScratchBufferSize)
-    {
-        httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
-        return ESP_FAIL;
-    }
-
-    size_t currrentLength = 0;
-    int received = 0;
-
-    while (currrentLength < contentLength)
-    {
-        received =
-            httpd_req_recv(req, serverInstance->scratchBuffer + currrentLength, contentLength);
-        if (received <= 0)
-        {
-            // Respond with 500 Internal Server Error
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR,
-                                "Failed to post control value");
-            return ESP_FAIL;
-        }
-        currrentLength += received;
-    }
+    loadContentToBuffer(req);
 
     ESP_LOGI(PrintTag, "set mode to %s", serverInstance->scratchBuffer);
 
@@ -201,7 +178,7 @@ esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
 
     if (modeNumber != std::clamp(modeNumber, 0, 2))
     {
-        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "mode does not exist");
+        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "mode does not exist");
         return ESP_FAIL;
     }
 
@@ -229,36 +206,33 @@ esp_err_t RestApiHandlers::modeGetHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
-/*
-static esp_err_t light_brightness_post_handler(httpd_req_t *req)
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
 {
-    int total_len = req->content_len;
-    int cur_len = 0;
-    char *buf = ((rest_server_context_t *)(req->user_ctx))->scratch;
-    int received = 0;
-    if (total_len >= SCRATCH_BUFSIZE) {
-        // Respond with 500 Internal Server Error
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+    auto contentLength = req->content_len;
+
+    if (contentLength >= serverInstance->ScratchBufferSize)
+    {
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
         return ESP_FAIL;
     }
-    while (cur_len < total_len) {
-        received = httpd_req_recv(req, buf + cur_len, total_len);
-        if (received <= 0) {
-            // Respond with 500 Internal Server Error
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to post control
-value"); return ESP_FAIL;
-        }
-        cur_len += received;
-    }
-    buf[total_len] = '\0';
 
-    cJSON *root = cJSON_Parse(buf);
-    int red = cJSON_GetObjectItem(root, "red")->valueint;
-    int green = cJSON_GetObjectItem(root, "green")->valueint;
-    int blue = cJSON_GetObjectItem(root, "blue")->valueint;
-    ESP_LOGI(REST_TAG, "Light control: red = %d, green = %d, blue = %d", red, green, blue);
-    cJSON_Delete(root);
-    httpd_resp_sendstr(req, "Post control value successfully");
+    size_t currrentLength = 0;
+    int received = 0;
+
+    while (currrentLength < contentLength)
+    {
+        received =
+            httpd_req_recv(req, serverInstance->scratchBuffer + currrentLength, contentLength);
+
+        if (received <= 0)
+        {
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to put/post value");
+            return ESP_FAIL;
+        }
+        currrentLength += received;
+    }
+
     return ESP_OK;
 }
-*/
