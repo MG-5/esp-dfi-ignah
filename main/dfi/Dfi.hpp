@@ -75,5 +75,9 @@ private:
     bool loadXmlFromBuffer();
     void parseXml();
 
+    [[nodiscard]] Time getCurrentLocalTime();
+    [[nodiscard]] bool isArrivalTimeInFuture(LocalTransportVehicle &vehicle);
+    [[nodiscard]] int calculateArrivalTime(LocalTransportVehicle &vehicle);
+
     void logVehicles();
 };
