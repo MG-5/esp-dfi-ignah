@@ -10,6 +10,7 @@ class Wireless : public TaskWithMemberFunctionBase
 {
 public:
     static constexpr auto RetryDelay = 3.0_s;
+    static constexpr auto ReconnectionCounterThreshould = 5;
 
     Wireless(bool &isConnected)
         : TaskWithMemberFunctionBase("wirelessTask", 2048, osPriorityAboveNormal3),
@@ -29,6 +30,11 @@ protected:
 private:
     bool &isConnected;
 
+    inline static uint8_t reconnectionCounter = 0;
+
     void startNvs();
-    void startStation();
+    void init();
+    void configureStation();
+    void configureSoftAp();
+    void startWifi();
 };

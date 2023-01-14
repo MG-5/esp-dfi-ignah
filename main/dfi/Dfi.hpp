@@ -5,15 +5,14 @@
 #include "pugixml.hpp"
 #include "wrappers/Task.hpp"
 
-#include "DriverInterface.hpp"
-#include "display-renderer/Renderer.hpp"
+#include "led/LedControl.hpp"
 
 class Dfi : public util::wrappers::TaskWithMemberFunctionBase
 {
 public:
     static constexpr auto PrintTag = "[DFI]";
-    static constexpr auto MaximumNumberVehiclesRequest = 14;
-    static constexpr auto MaximumNumberVehiclesToShow = 4;
+    static constexpr auto MaximumNumberVehiclesRequest = 16;
+    static constexpr auto MaximumNumberVehiclesToShow = 8;
 
     using BlacklistArray = std::array<std::string_view, 8>;
 
@@ -24,6 +23,11 @@ public:
         BlacklistArray blacklist{};
     };
 
+    static constexpr Dfi::Station AmbrosiusplatzRtgStadt{
+        7307,                                                                              //
+        "Ambrosiusplatz",                                                                  //
+        {"Sudenburg", "Reform", "Friedenshöhe", "Magdeburg, Sudenburg, Braunlager Str."}}; //
+
     struct LocalTransportVehicle
     {
         std::string lineNumber = "";
@@ -32,11 +36,6 @@ public:
         Time fpTime{};
         int arrivalInMinutes = 0;
     };
-
-    explicit Dfi(bool &isConnected)
-        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
-          isConnected(isConnected) //
-          {};
 
     static bool localTransportVehicleSorter(LocalTransportVehicle const &lhs,
                                             LocalTransportVehicle const &rhs)
@@ -47,29 +46,34 @@ public:
     using LocalTransportVehicleArray =
         std::array<LocalTransportVehicle, MaximumNumberVehiclesToShow>;
 
+    explicit Dfi(bool &isConnected)
+        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
+          isConnected(isConnected) //
+          {};
+
+    std::string_view getStationName()
+    {
+        return currentStation->stationName;
+    }
+
+    const LocalTransportVehicleArray &getVehicles() const
+    {
+        return vehicleArray;
+    }
+
 protected:
     void taskMain(void *) override;
 
 private:
-    const Station *currentStation = nullptr;
+    bool &isConnected;
+    const Station *currentStation = &AmbrosiusplatzRtgStadt;
 
     HttpClient httpClient{MaximumNumberVehiclesRequest};
     pugi::xml_document xmlDocument{};
-    LocalTransportVehicleArray vehicleArray;
-
-    DriverInterface driverInterface{};
-    Renderer renderer{960, 40, driverInterface};
-
-    static constexpr auto PrintBufferSize = 32;
-    char printBuffer[PrintBufferSize];
-    bool &isConnected;
+    LocalTransportVehicleArray vehicleArray{};
 
     bool loadXmlFromBuffer();
     void parseXml();
 
-    void printTitleBar();
-    void printVehicles();
-
-    void initDisplayInterface();
-    void clearDisplayRam();
+    void logVehicles();
 };

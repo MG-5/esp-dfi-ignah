@@ -29,6 +29,7 @@ public:
     //--------------------------------------------------------------------------------------------------
     static void initTimeSychronization()
     {
+        sntp_stop();
         ESP_LOGI(PrintTag, "Initializing SNTP");
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
         sntp_setservername(0, "pool.ntp.org");

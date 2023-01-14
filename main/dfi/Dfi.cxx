@@ -13,19 +13,11 @@
 #include <string>
 #include <sys/time.h>
 
-constexpr Dfi::Station AmbrosiusplatzRtgStadt{7307,                      //
-                                              "Ambrosiusplatz -> Stadt", //
-                                              {"Sudenburg", "Reform"}};  //
-
 using namespace util::wrappers;
 
 //--------------------------------------------------------------------------------------------------
 void Dfi::taskMain(void *)
 {
-    currentStation = &AmbrosiusplatzRtgStadt;
-
-    initDisplayInterface();
-
     sync::waitForAll(sync::ConnectedToWifi);
     sync::waitForAll(sync::TimeIsSynchronized);
 
@@ -36,24 +28,15 @@ void Dfi::taskMain(void *)
     while (true)
     {
         if (!isConnected)
-        {
-            ESP_LOGW(PrintTag, "No connection. Wait for reconnect.");
-            Timebase::printLocaltime();
-            sync::waitForAll(sync::ConnectedToWifi);
-        }
+            ESP_LOGW(PrintTag, "No connection. Use old data.");
 
-        Timebase::printLocaltime();
-
-        if (httpClient.requestData(currentStation->stationNumber))
-        {
+        else if (httpClient.requestData(currentStation->stationNumber))
             loadXmlFromBuffer();
-            parseXml();
 
-            clearDisplayRam();
-            printTitleBar();
-            printVehicles();
-            renderer.render();
-        }
+        // parse XML buffer, regardless of connection state
+        // so we can use old data if there is no connection
+        parseXml();
+        logVehicles();
 
         vTaskDelayUntil(&lastWakeTime, toOsTicks(TriggerDelay));
     }
@@ -62,8 +45,7 @@ void Dfi::taskMain(void *)
 //--------------------------------------------------------------------------------------------------
 bool Dfi::loadXmlFromBuffer()
 {
-    auto result =
-        xmlDocument.load_buffer_inplace(HttpClient::dataBuffer.data(), HttpClient::bufferIndex);
+    auto result = xmlDocument.load_buffer(HttpClient::dataBuffer.data(), HttpClient::bufferIndex);
 
     if (!result)
     {
@@ -100,8 +82,8 @@ void Dfi::parseXml()
         Time arrivalTime = vehicleArray[index].fpTime + vehicleArray[index].delay;
 
         // calc the difference between two times, it can handle the time crossing at midnight.
-        // arrival times that are before the current time will be handled at time occuring next day
-        // resulting in high minutes difference, so there is a need to handle this
+        // arrival times that are before the current time will be handled at time occuring next
+        // day resulting in high minutes difference, so there is a need to handle this
         uint16_t arrivalInMinutes = Time::getDifferenceInMinutes(currentTime, arrivalTime);
 
         if (arrivalInMinutes >= 12 * 60)
@@ -141,69 +123,28 @@ void Dfi::parseXml()
 }
 
 //--------------------------------------------------------------------------------------------------
-void Dfi::printTitleBar()
+void Dfi::logVehicles()
 {
-    renderer.print({0, 0}, currentStation->stationName.data(), Renderer::Alignment::Left);
-
-    std::tm *localTime = Timebase::getLocaltime(Timebase::getCurrentUTC());
-
-    snprintf(printBuffer, PrintBufferSize, "%02d:%02d", localTime->tm_hour, localTime->tm_min);
-    renderer.print({296, 0}, printBuffer, Renderer::Alignment::Right, 2);
-    renderer.drawHorizontalLine(1, 7);
-}
-
-//--------------------------------------------------------------------------------------------------
-void Dfi::printVehicles()
-{
-    size_t pageCounter = 1;
-
     for (auto &vehicle : vehicleArray)
     {
         if (vehicle.lineNumber == "" && vehicle.directionName == "")
             continue;
 
-        if (pageCounter == 5)
-            break;
+        const char *lineNumber;
 
         try
         {
-            // put line number and direction in a string
-            snprintf(printBuffer, PrintBufferSize, "%s %s ", vehicle.lineNumber.substr(6).data(),
-                     vehicle.directionName.data());
-
-            renderer.print({0, pageCounter}, printBuffer, Renderer::Alignment::Left, 2);
+            lineNumber = vehicle.lineNumber.substr(6).data();
         }
-        catch (...)
+
+        catch (const std::exception &e)
         {
             ESP_LOGE(PrintTag, "line number is not valid, reject it: %s",
                      vehicle.lineNumber.data());
             continue;
         }
 
-        if (vehicle.arrivalInMinutes == 0)
-            renderer.print({296, pageCounter}, "jetzt", Renderer::Alignment::Right, 2);
-
-        else
-        {
-            snprintf(printBuffer, PrintBufferSize, "%dmin", vehicle.arrivalInMinutes);
-            renderer.print({296, pageCounter}, printBuffer, Renderer::Alignment::Right, 2);
-        }
-
-        ESP_LOGI(PrintTag, "Linie %s, %s, Abfahrt in (%dmin) %dmin",
-                 vehicle.lineNumber.substr(6).c_str(), vehicle.directionName.c_str(), vehicle.delay,
-                 vehicle.arrivalInMinutes);
-
-        pageCounter++;
+        ESP_LOGI(PrintTag, "Linie %s, %s, Abfahrt in (%d) %dmin", lineNumber,
+                 vehicle.directionName.data(), vehicle.delay, vehicle.arrivalInMinutes);
     }
-}
-
-//--------------------------------------------------------------------------------------------------
-void Dfi::initDisplayInterface()
-{
-    std::setlocale(LC_ALL, "CP1252");
-}
-
-//--------------------------------------------------------------------------------------------------
-void Dfi::clearDisplayRam()
-{
 }

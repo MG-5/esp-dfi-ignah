@@ -21,8 +21,11 @@ jobs:
       run: |
         cd main
         touch loginData.hpp
-        echo '#define WifiSsid "ssid"' >> loginData.hpp
-        echo '#define WifiPassword "password"' >> loginData.hpp
+        echo '#include <string_view>' >> loginData.hpp
+        echo 'constexpr std::string_view StaSsid = "ssid";' >> loginData.hpp
+        echo 'constexpr std::string_view StaPassword = "password";' >> loginData.hpp
+        echo 'constexpr std::string_view ApSsid = "apssid";' >> loginData.hpp
+        echo 'constexpr std::string_view ApPassword = "appassword";' >> loginData.hpp
         cat loginData.hpp
       shell: bash
 

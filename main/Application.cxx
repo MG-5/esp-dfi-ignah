@@ -1,6 +1,6 @@
 #include "Application.hpp"
 
-#include "dfi/Timebase.hpp"
+#include "Timebase.hpp"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -18,11 +18,9 @@ extern "C" void app_main(void) // NOLINT
     auto &app = Application::getApplicationInstance();
     auto currentHeapFreeSpace = esp_get_free_heap_size();
 
-    static constexpr auto PrintTag = "[Application]";
-
-    ESP_LOGI(PrintTag, "Moin");
-    ESP_LOGI(PrintTag, "Free memory: %d bytes", currentHeapFreeSpace);
-    ESP_LOGI(PrintTag, "Application consumes %d bytes on heap",
+    ESP_LOGI(Application::PrintTag, "Moin");
+    ESP_LOGI(Application::PrintTag, "Free memory: %d bytes", currentHeapFreeSpace);
+    ESP_LOGI(Application::PrintTag, "Application consumes %d bytes on heap",
              (previousHeapFreeSpace - currentHeapFreeSpace));
 
     vTaskDelay(toOsTicks(100.0_ms));
@@ -36,9 +34,15 @@ void Application::run()
     Task::applicationIsReadyStartAllTasks();
 
     sync::waitForAll(sync::ConnectedToWifi);
+    renderTask.setState(RenderTask::State::WaitForTimesyncronization);
     Timebase::initTimeSychronization();
 
     restServer.initServer();
+
+    resetTimer();
+    sync::waitForAll(sync::TimeIsSynchronized);
+    renderTask.setState(RenderTask::State::ShowVehicles);
+    stopTimer();
 
     while (true)
     {
@@ -51,4 +55,12 @@ Application &Application::getApplicationInstance()
 {
     static auto app = std::make_unique<Application>();
     return *app;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Application::onTimeout(TimerHandle_t)
+{
+    ESP_LOGW(PrintTag, "No response from SNTP. Restart it.");
+    Timebase::initTimeSychronization();
+    resetTimer();
 }
