@@ -283,7 +283,7 @@ esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
     auto contentLength = req->content_len;
 
-    if (contentLength >= serverInstance->ScratchBufferSize)
+    if (contentLength >= serverInstance->ScratchBufferSize - 1)
     {
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
         return ESP_FAIL;
@@ -304,6 +304,8 @@ esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
         }
         currrentLength += received;
     }
+
+    serverInstance->scratchBuffer[contentLength] = '\0';
 
     return ESP_OK;
 }
