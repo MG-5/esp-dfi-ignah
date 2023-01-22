@@ -21,24 +21,52 @@ void Dfi::taskMain(void *)
     sync::waitForAll(sync::ConnectedToWifi);
     sync::waitForAll(sync::TimeIsSynchronized);
 
-    constexpr auto TriggerDelay = 60.0_s;
+    constexpr auto RequestDelay = 60.0_s;
+    constexpr auto ParseDelay = 15.0_s;
+
+    constexpr auto Divisor = (RequestDelay / ParseDelay).getMagnitude();
+    static_assert(int(Divisor) == Divisor,
+                  "The parse delay time is not an even divisor of request delay time!");
 
     auto lastWakeTime = xTaskGetTickCount();
+    auto prevTime = lastWakeTime - toOsTicks(RequestDelay); // trigger once at start
+
+    bool shouldLog = false;
 
     while (true)
     {
-        if (!isConnected)
-            ESP_LOGW(PrintTag, "No connection. Use old data.");
+        if (lastWakeTime - prevTime >= toOsTicks(RequestDelay))
+        {
+            shouldLog = true;
 
-        else if (httpClient.requestData(currentStation->stationNumber))
-            loadXmlFromBuffer();
+            if (!isConnected)
+                ESP_LOGW(PrintTag, "No connection. Use old data.");
+
+            else if (httpClient.requestData(currentStation->stationNumber))
+            {
+                loadXmlFromBuffer();
+                prevTime = lastWakeTime;
+            }
+        }
 
         // parse XML buffer, regardless of connection state
         // so we can use old data if there is no connection
         parseXml();
-        logVehicles();
 
-        vTaskDelayUntil(&lastWakeTime, toOsTicks(TriggerDelay));
+        if (shouldLog)
+        {
+            shouldLog = false;
+            logVehicles();
+        }
+
+        const auto TicksToWait = toOsTicks(ParseDelay) - (xTaskGetTickCount() - lastWakeTime);
+
+        uint32_t notifyValue;
+        notifyWait(0, ULONG_MAX, &notifyValue, TicksToWait);
+        lastWakeTime = xTaskGetTickCount();
+
+        if ((notifyValue & 1) != 0)
+            shouldLog = true;
     }
 }
 
@@ -201,6 +229,8 @@ void Dfi::setAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
     additionalVehicles.erase(end, additionalVehicles.end());
 
     additionalVehicleList = additionalVehicles;
+
+    notify(1, util::wrappers::NotifyAction::SetBits);
 }
 
 //--------------------------------------------------------------------------------------------------
