@@ -11,9 +11,9 @@
     ```json
     {
         "projectName": "example project",
-        "projectVersion": "v1.0.0",
+        "projectVersion": "42af7d1",  // git commit id
         "compileDate": "Jan 1 1970", 
-        "idfVersion": "v1.0.0", 
+        "idfVersion": "v4.4.3", 
         "model": 1, 
         "cores": 2 
     }
