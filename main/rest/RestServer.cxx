@@ -16,7 +16,7 @@ void RestServer::initServer()
     netbiosns_init();
     netbiosns_set_name(MdnsHostName);
 
-    ESP_ERROR_CHECK(initFileSystem());
+    // ESP_ERROR_CHECK(initFileSystem());
     ESP_ERROR_CHECK(startServer(WebMountPoint));
 }
 
