@@ -1,12 +1,17 @@
 #include "LedControl.hpp"
 #include "esp_log.h"
 #include "helpers/freertos.hpp"
+#include "sync.hpp"
+
+using namespace util::wrappers;
 
 void LedControl::init()
 {
     initGpios();
     initPwm();
     clearShiftRegisters();
+
+    sync::signal(sync::LedDriverStarted);
 }
 
 //--------------------------------------------------------------------------------------------------

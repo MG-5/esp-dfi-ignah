@@ -17,6 +17,8 @@ using namespace util::wrappers;
 //--------------------------------------------------------------------------------------------------
 void Wireless::taskMain(void *)
 {
+    sync::waitForAll(sync::LedDriverStarted);
+
     startNvs();
     init();
     configureStation();
