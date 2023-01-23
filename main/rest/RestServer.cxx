@@ -16,7 +16,7 @@ void RestServer::initServer()
     netbiosns_init();
     netbiosns_set_name(MdnsHostName);
 
-    ESP_ERROR_CHECK(initFileSystem());
+    // ESP_ERROR_CHECK(initFileSystem());
     ESP_ERROR_CHECK(startServer(WebMountPoint));
 }
 
@@ -81,6 +81,8 @@ esp_err_t RestServer::startServer(std::string newBasePath)
 
     httpd_handle_t server = nullptr;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.max_uri_handlers = 16;
+
     config.uri_match_fn = httpd_uri_match_wildcard;
 
     ESP_LOGI(PrintTag, "Starting REST server");
@@ -127,6 +129,20 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                                      .handler = RestApiHandlers::runningTextSetHandler,
                                      .user_ctx = this};
     httpd_register_uri_handler(server, &runningTextSetUri);
+
+    httpd_uri_t additionalVehiclesSetUri = {.uri = "/additionalvehicles",
+                                            .method = HTTP_PUT,
+                                            .handler =
+                                                RestApiHandlers::additionalVehiclesSetHandler,
+                                            .user_ctx = this};
+    httpd_register_uri_handler(server, &additionalVehiclesSetUri);
+
+    httpd_uri_t additionalVehiclesGetUri = {.uri = "/additionalvehicles",
+                                            .method = HTTP_GET,
+                                            .handler =
+                                                RestApiHandlers::additionalVehiclesGetHandler,
+                                            .user_ctx = this};
+    httpd_register_uri_handler(server, &additionalVehiclesGetUri);
 
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //

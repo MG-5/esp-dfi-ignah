@@ -21,24 +21,52 @@ void Dfi::taskMain(void *)
     sync::waitForAll(sync::ConnectedToWifi);
     sync::waitForAll(sync::TimeIsSynchronized);
 
-    constexpr auto TriggerDelay = 60.0_s;
+    constexpr auto RequestDelay = 60.0_s;
+    constexpr auto ParseDelay = 15.0_s;
+
+    constexpr auto Divisor = (RequestDelay / ParseDelay).getMagnitude();
+    static_assert(int(Divisor) == Divisor,
+                  "The parse delay time is not an even divisor of request delay time!");
 
     auto lastWakeTime = xTaskGetTickCount();
+    auto prevTime = lastWakeTime - toOsTicks(RequestDelay); // trigger once at start
+
+    bool shouldLog = false;
 
     while (true)
     {
-        if (!isConnected)
-            ESP_LOGW(PrintTag, "No connection. Use old data.");
+        if (lastWakeTime - prevTime >= toOsTicks(RequestDelay))
+        {
+            shouldLog = true;
 
-        else if (httpClient.requestData(currentStation->stationNumber))
-            loadXmlFromBuffer();
+            if (!isConnected)
+                ESP_LOGW(PrintTag, "No connection. Use old data.");
+
+            else if (httpClient.requestData(currentStation->stationNumber))
+            {
+                loadXmlFromBuffer();
+                prevTime = lastWakeTime;
+            }
+        }
 
         // parse XML buffer, regardless of connection state
         // so we can use old data if there is no connection
         parseXml();
-        logVehicles();
 
-        vTaskDelayUntil(&lastWakeTime, toOsTicks(TriggerDelay));
+        if (shouldLog)
+        {
+            shouldLog = false;
+            logVehicles();
+        }
+
+        const auto TicksToWait = toOsTicks(ParseDelay) - (xTaskGetTickCount() - lastWakeTime);
+
+        uint32_t notifyValue;
+        notifyWait(0, ULONG_MAX, &notifyValue, TicksToWait);
+        lastWakeTime = xTaskGetTickCount();
+
+        if ((notifyValue & 1) != 0)
+            shouldLog = true;
     }
 }
 
@@ -64,34 +92,20 @@ void Dfi::parseXml()
     const auto StationTable = xmlDocument.child("StationTable");
     size_t index = 0;
 
-    // get computers local time
-    std::tm *localTime = Timebase::getLocaltime(Timebase::getCurrentUTC());
-
-    Time currentTime(localTime->tm_hour, localTime->tm_min);
-
     for (auto vehicle = StationTable.child("Journey");
          vehicle && index < MaximumNumberVehiclesToShow; vehicle = vehicle.next_sibling("Journey"))
     {
+        LocalTransportVehicle newVehicle{};
+
         // extract informations from XML
-        std::string currentLineNumber = vehicle.attribute("hafasname").value();
-        std::string currentDirectionName = vehicle.attribute("dir").value();
+        newVehicle.lineNumber = vehicle.attribute("hafasname").value();
+        newVehicle.directionName = vehicle.attribute("dir").value();
+        newVehicle.delay = vehicle.attribute("e_delay").as_int();
+        newVehicle.fpTime = Time(vehicle.attribute("fpTime").value());
+        newVehicle.arrivalInMinutes = calculateArrivalTime(newVehicle);
 
-        vehicleArray[index].delay = vehicle.attribute("e_delay").as_int();
-        vehicleArray[index].fpTime = Time(vehicle.attribute("fpTime").value());
-
-        Time arrivalTime = vehicleArray[index].fpTime + vehicleArray[index].delay;
-
-        // calc the difference between two times, it can handle the time crossing at midnight.
-        // arrival times that are before the current time will be handled at time occuring next
-        // day resulting in high minutes difference, so there is a need to handle this
-        uint16_t arrivalInMinutes = Time::getDifferenceInMinutes(currentTime, arrivalTime);
-
-        if (arrivalInMinutes >= 12 * 60)
-        {
-            // due the high difference the probability that the tram arrival time is before the
-            // current time is high so we guess the tram is gone, so reject it
-            continue;
-        }
+        if (!isArrivalTimeInFuture(newVehicle))
+            continue; // reject it
 
         bool directionIsInBlacklist = false;
         for (auto &blacklistStation : currentStation->blacklist)
@@ -99,7 +113,7 @@ void Dfi::parseXml()
             if (blacklistStation == "")
                 break;
 
-            if (currentDirectionName == blacklistStation)
+            if (newVehicle.directionName == blacklistStation)
             {
                 directionIsInBlacklist = true;
                 break;
@@ -111,15 +125,52 @@ void Dfi::parseXml()
             continue;
 
         // apply values to array entry
-        vehicleArray[index].arrivalInMinutes = arrivalInMinutes;
-        vehicleArray[index].lineNumber = currentLineNumber;
-        vehicleArray[index].directionName = currentDirectionName;
+        vehicleArray[index] = newVehicle;
 
         index++;
     }
 
+    // recalculate arrival times if needed
+    for (auto &e : additionalVehicleList)
+    {
+        if (e.lineNumber.empty())
+            break;
+
+        e.arrivalInMinutes = calculateArrivalTime(e);
+    }
+
+    // clean up if needed
+    auto end =
+        std::remove_if(additionalVehicleList.begin(), additionalVehicleList.end(),
+                       [this](LocalTransportVehicle &v) { return !isArrivalTimeInFuture(v); });
+    std::distance(end, additionalVehicleList.end());
+    additionalVehicleList.erase(end, additionalVehicleList.end());
+
+    // copy additional vehicles into our array
+    std::copy(additionalVehicleList.begin(), additionalVehicleList.end(),
+              vehicleArray.begin() + MaximumNumberVehiclesToShow);
+
     // sort by arrival time
     std::sort(vehicleArray.begin(), vehicleArray.end(), &localTransportVehicleSorter);
+}
+
+//--------------------------------------------------------------------------------------------------
+Time Dfi::getCurrentLocalTime()
+{
+    // get computers local time
+    std::tm *localTime = Timebase::getLocaltime(Timebase::getCurrentUTC());
+    return Time(localTime->tm_hour, localTime->tm_min);
+}
+
+//--------------------------------------------------------------------------------------------------
+bool Dfi::isArrivalTimeInFuture(LocalTransportVehicle &vehicle)
+{
+    if (vehicle.lineNumber.empty())
+        return false;
+
+    // high difference has high probability
+    // that the tram arrival time is before the current time
+    return vehicle.arrivalInMinutes < 12 * 60;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -147,4 +198,43 @@ void Dfi::logVehicles()
         ESP_LOGI(PrintTag, "Linie %s, %s, Abfahrt in (%d) %dmin", lineNumber,
                  vehicle.directionName.data(), vehicle.delay, vehicle.arrivalInMinutes);
     }
+}
+
+//--------------------------------------------------------------------------------------------------
+int Dfi::calculateArrivalTime(LocalTransportVehicle &vehicle)
+{
+    // calc the difference between two times, it can handle the time crossing at midnight.
+    // arrival times that are before the current time will be handled at time occuring next
+    // day resulting in high minutes difference, so there is a need to handle this
+    Time arrivalTime = vehicle.fpTime + vehicle.delay;
+    return Time::getDifferenceInMinutes(getCurrentLocalTime(), arrivalTime);
+}
+
+//--------------------------------------------------------------------------------------------------
+void Dfi::setAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
+{
+    for (auto &e : additionalVehicles)
+    {
+        if (e.lineNumber.empty())
+            break;
+
+        e.arrivalInMinutes = calculateArrivalTime(e);
+    }
+
+    // erase not valid entries and return new end iterator
+    auto end =
+        std::remove_if(additionalVehicles.begin(), additionalVehicles.end(),
+                       [this](LocalTransportVehicle &v) { return !isArrivalTimeInFuture(v); });
+    std::distance(end, additionalVehicles.end());
+    additionalVehicles.erase(end, additionalVehicles.end());
+
+    additionalVehicleList = additionalVehicles;
+
+    notify(1, util::wrappers::NotifyAction::SetBits);
+}
+
+//--------------------------------------------------------------------------------------------------
+void Dfi::getAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
+{
+    additionalVehicles = additionalVehicleList;
 }

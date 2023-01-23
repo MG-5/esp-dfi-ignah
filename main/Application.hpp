@@ -34,7 +34,7 @@ private:
     LedControl ledControl{};
     RenderTask renderTask{dfi, ledControl};
     LightSensor lightSensor{ledControl};
-    RestServer restServer{renderTask};
+    RestServer restServer{renderTask, dfi};
 
     inline static TimerHandle_t timeoutTimer = nullptr;
 

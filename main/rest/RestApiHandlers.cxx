@@ -10,10 +10,15 @@
 #include <fcntl.h>
 
 #include <algorithm>
+#include <sstream>
 
 //--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
 {
+    // Temporarily disable loading web server from flash
+    httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "No webserver currently exists");
+    return ESP_OK;
+
     std::string filePath;
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
@@ -274,6 +279,131 @@ esp_err_t RestApiHandlers::runningTextSetHandler(httpd_req_t *req)
     httpd_resp_set_status(req, HTTPD_200);
     httpd_resp_send(req, NULL, 0);
 
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "additionalVehiclesSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+    cJSON *vehicles = cJSON_GetObjectItem(root, "vehicles");
+
+    if (!vehicles || !cJSON_IsArray(vehicles))
+    {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "vehicles object does not exist or it not an array");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    Dfi::AdditionalVehicleList vehicleList{};
+    auto arraySize = std::min(cJSON_GetArraySize(vehicles), Dfi::MaximumNumberOfAdditionalVehicles);
+
+    for (size_t i = 0; i < arraySize; i++)
+    {
+        auto destinationObject =
+            cJSON_GetObjectItem(cJSON_GetArrayItem(vehicles, i), "destination");
+        auto fpTimeObject = cJSON_GetObjectItem(cJSON_GetArrayItem(vehicles, i), "departure");
+
+        if (destinationObject == nullptr || destinationObject->type != cJSON_String ||
+            fpTimeObject == nullptr || fpTimeObject->type != cJSON_String)
+        {
+            ESP_LOGE(PrintTag, "Array entry a index %d is not valid. This vehicle will be ignored.",
+                     i);
+            continue;
+        }
+
+        Dfi::LocalTransportVehicle newVehicle{};
+        newVehicle.lineNumber = "Str   77";
+        newVehicle.directionName = destinationObject->valuestring;
+
+        try
+        {
+            newVehicle.fpTime = Time(fpTimeObject->valuestring);
+        }
+        catch (...)
+        {
+            ESP_LOGE(PrintTag,
+                     "Cannot convert string \"%s\" to Time. This vehicle will be ignored.",
+                     fpTimeObject->valuestring);
+            continue;
+        }
+
+        vehicleList.emplace_back(newVehicle);
+
+        ESP_LOGI(PrintTag, "%s (%.2d:%.2d)", newVehicle.directionName.c_str(),
+                 newVehicle.fpTime.hour, newVehicle.fpTime.minute);
+    }
+
+    cJSON_Delete(root);
+
+    serverInstance->dfi.setAdditionalVehicles(vehicleList);
+
+    auto jsonRoot = cJSON_CreateObject();
+    auto newArray = cJSON_AddArrayToObject(jsonRoot, "vehicles");
+
+    for (auto &vehicle : vehicleList)
+    {
+        if (vehicle.lineNumber.empty())
+            break;
+
+        auto object = cJSON_CreateObject();
+        cJSON_AddItemToObject(object, "destination",
+                              cJSON_CreateString(vehicle.directionName.c_str()));
+
+        std::stringstream time;
+        time << vehicle.fpTime;
+
+        cJSON_AddItemToObject(object, "departure", cJSON_CreateString(time.str().c_str()));
+
+        cJSON_AddItemToArray(newArray, object);
+    }
+
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, jsonData.data());
+    cJSON_Delete(jsonRoot);
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::additionalVehiclesGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "additionalVehiclesGetHandler");
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+    Dfi::AdditionalVehicleList vehicleList{};
+    serverInstance->dfi.getAdditionalVehicles(vehicleList);
+
+    auto jsonRoot = cJSON_CreateObject();
+    auto newArray = cJSON_AddArrayToObject(jsonRoot, "vehicles");
+
+    for (auto it = vehicleList.begin(); it != vehicleList.end(); it++)
+    {
+        if (it->lineNumber.empty())
+            break;
+
+        auto object = cJSON_CreateObject();
+        cJSON_AddItemToObject(object, "destination", cJSON_CreateString(it->directionName.c_str()));
+
+        std::stringstream time;
+        time << it->fpTime;
+
+        cJSON_AddItemToObject(object, "departure", cJSON_CreateString(time.str().c_str()));
+
+        cJSON_AddItemToArray(newArray, object);
+    }
+
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, jsonData.data());
+    cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
 
