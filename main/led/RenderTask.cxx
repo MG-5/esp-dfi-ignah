@@ -146,9 +146,9 @@ void RenderTask::renderProjectInfos()
 {
     const esp_app_desc_t *appDesc = esp_ota_get_app_description();
 
-    snprintf(printBuffer, PrintBufferSize, "%s (%s)", appDesc->project_name, appDesc->version);
-    renderer.print({0, 0}, printBuffer);
-    renderer.print({0, 1}, appDesc->date);
+    renderer.print({0, 0}, appDesc->project_name);
+    snprintf(printBuffer, PrintBufferSize, "%s (%s)", appDesc->date, appDesc->version);
+    renderer.print({0, 1}, printBuffer);
     renderer.print({0, 2}, "by M. Grau und T. Wiesner");
 }
 
