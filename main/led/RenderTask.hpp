@@ -3,6 +3,7 @@
 #include "LedControl.hpp"
 #include "dfi/Dfi.hpp"
 #include "display-renderer/Renderer.hpp"
+#include "units/si/frequency.hpp"
 #include "util/gpio.hpp"
 #include "wrappers/Task.hpp"
 
@@ -29,9 +30,22 @@ public:
         state = newState;
     }
 
-    State getState() const
+    [[nodiscard]] State getState() const
     {
         return state;
+    }
+
+    void setFreeText(std::array<std::string, LedControl::Strips> &newFreeText)
+    {
+        freeText = newFreeText;
+    }
+
+    void setRunningText(std::string &newRunningText, units::si::Frequency newSpeed)
+    {
+        runningText = newRunningText;
+        runningTextSpeed = newSpeed;
+        runningTextPosition = LedControl::Columns / 2;
+        runningTextWidthInPixels = renderer.getLineWidth(runningText.c_str());
     }
 
 protected:
@@ -48,6 +62,14 @@ private:
     State state = State::InitializingWifi;
     uint8_t dotCounter = 1;
 
+    std::array<std::string, LedControl::Strips> freeText{"Zeile1", "Zeile2", "Zeile3", "Zeile4",
+                                                         "Zeile5"};
+
+    std::string runningText = "*** Lauftext ***";
+    size_t runningTextWidthInPixels{renderer.getLineWidth(runningText.c_str())};
+    units::si::Frequency runningTextSpeed = 40.0_Hz; // pixels per second
+    size_t runningTextPosition = 0;
+
     static constexpr auto PrintBufferSize = 72;
     char printBuffer[PrintBufferSize]{};
 
@@ -57,4 +79,5 @@ private:
     void renderProjectInfos();
     void renderConnectingToWifi();
     void renderTimesyncronization();
+    void renderRunningText();
 };

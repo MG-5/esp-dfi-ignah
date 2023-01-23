@@ -5,6 +5,7 @@
 #include "led/LedControl.hpp"
 #include "led/RenderTask.hpp"
 #include "light_sensor/LightSensor.hpp"
+#include "rest/RestServer.hpp"
 #include "wifi/Wireless.hpp"
 
 class Application
@@ -33,6 +34,7 @@ private:
     LedControl ledControl{};
     RenderTask renderTask{dfi, ledControl};
     LightSensor lightSensor{ledControl};
+    RestServer restServer{renderTask, dfi};
 
     inline static TimerHandle_t timeoutTimer = nullptr;
 

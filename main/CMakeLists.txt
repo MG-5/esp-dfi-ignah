@@ -8,6 +8,9 @@ idf_component_register(SRCS
     light_sensor/AD7417.cxx
     light_sensor/LightSensor.cxx
 
+    rest/RestApiHandlers.cxx
+    rest/RestServer.cxx
+
     wifi/Wireless.cxx
 
     Application.cxx
@@ -15,6 +18,16 @@ idf_component_register(SRCS
     #StatusLed.cxx
 
     INCLUDE_DIRS ".")
+
+# Load web data into SPIFFS
+set(WEB_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../web-ui/esp-dfi-ignah-ui")
+    if(EXISTS ${WEB_SRC_DIR}/dist)
+        #execute_process(COMMAND du -sh ${WEB_SRC_DIR}/dist OUTPUT_VARIABLE command_return)
+        #MESSAGE( STATUS "size of dist folder: " ${command_return})
+        #spiffs_create_partition_image(www ${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui FLASH_IN_PROJECT)
+    else()
+        #message(FATAL_ERROR "${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui doesn't exit. Please run 'ng build' in ${WEB_SRC_DIR}")
+    endif()
 
 # Unfortunately the pugixml library performs install and export.
 # Override install() and export() to do nothing instead.

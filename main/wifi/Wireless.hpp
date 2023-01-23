@@ -20,6 +20,10 @@ public:
     static void eventHandler(void *arg, esp_event_base_t eventBase, int32_t eventId,
                              void *eventData);
 
+    inline static wifi_event_sta_connected_t staInfos;
+    inline static esp_ip4_addr_t ipAdress;
+    static std::string_view getAuthModeAsString(wifi_auth_mode_t mode);
+
 protected:
     void taskMain(void *) override;
 

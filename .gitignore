@@ -5,3 +5,6 @@ build/
 !.vscode/tasks.json
 /main/loginData.hpp
 /sdkconfig.old
+
+# lock files for examples and components
+dependencies.lock
