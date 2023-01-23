@@ -125,7 +125,7 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
         case WIFI_EVENT_STA_CONNECTED:
             std::memcpy(&staInfos, eventData, sizeof(wifi_event_sta_connected_t));
             ESP_LOGI(PrintTag, "Established a wifi connection to %s, wait for  IP address now.",
-                     WifiSsid);
+                     staInfos.ssid);
             break;
 
         case WIFI_EVENT_AP_STACONNECTED:
