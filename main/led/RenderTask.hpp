@@ -65,10 +65,10 @@ private:
     std::array<std::string, LedControl::Strips> freeText{"Zeile1", "Zeile2", "Zeile3", "Zeile4",
                                                          "Zeile5"};
 
-    std::string runningText = "*** Lauftext ***";
+    std::string runningText{"*** Lauftext ***"};
     size_t runningTextWidthInPixels{renderer.getLineWidth(runningText.c_str())};
     units::si::Frequency runningTextSpeed = 40.0_Hz; // pixels per second
-    size_t runningTextPosition = 0;
+    size_t runningTextPosition{(LedControl::Columns / 2) + runningTextWidthInPixels};
 
     static constexpr auto PrintBufferSize = 72;
     char printBuffer[PrintBufferSize]{};
