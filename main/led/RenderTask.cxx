@@ -11,11 +11,13 @@ void RenderTask::taskMain(void *)
 
     bool blinkState = true;
     auto lastWakeTime = xTaskGetTickCount();
+    constexpr auto TaskNormalDelay = 1.0_s;
+
+    uint32_t prevTicks = lastWakeTime;
+    clearDisplayRam();
 
     while (true)
     {
-        clearDisplayRam();
-
         switch (state)
         {
         case State::InitializingWifi:
@@ -29,10 +31,33 @@ void RenderTask::taskMain(void *)
             break;
 
         case State::ShowVehicles:
-        case State::ShowVehiclesWithRunningText:
             renderTitleBar(blinkState);
             renderVehicles(blinkState);
             break;
+
+        case State::ShowVehiclesWithRunningText:
+        {
+            if (ticksToTime(lastWakeTime - prevTicks) >= TaskNormalDelay)
+            {
+                // due higher refresh rate causes by running text, we ensures the blinking state is
+                // still every one second and refresh content also only every second to reduce load
+                prevTicks = lastWakeTime;
+                blinkState = !blinkState;
+
+                clearDisplayRam();
+                renderTitleBar(blinkState);
+                renderVehicles(blinkState);
+            }
+
+            renderRunningText();
+
+            renderer.render();
+            xTaskDelayUntil(&lastWakeTime,
+                            toOsTicks((runningTextSpeed == 0.0_Hz) ? (1_ / TaskNormalDelay)
+                                                                   : runningTextSpeed));
+
+            continue;
+        }
 
         case State::ShowFreeText:
             renderer.print({0, 0}, freeText[0].c_str());
@@ -47,8 +72,8 @@ void RenderTask::taskMain(void *)
 
         blinkState = !blinkState;
 
-        constexpr auto TaskDelay = 1.0_s;
-        xTaskDelayUntil(&lastWakeTime, toOsTicks(TaskDelay));
+        xTaskDelayUntil(&lastWakeTime, toOsTicks(TaskNormalDelay));
+        clearDisplayRam();
     }
 }
 
@@ -153,4 +178,33 @@ void RenderTask::renderTimesyncronization()
         textToPrint += ".";
 
     renderer.print({0, LedControl::Strips - 1}, textToPrint.data());
+}
+
+//--------------------------------------------------------------------------------------------------
+void RenderTask::renderRunningText()
+{
+    constexpr auto LastPage = LedControl::Strips - 1;
+    renderer.clearPage(LastPage);
+
+    if (runningTextSpeed == 0.0_Hz)
+    {
+        // no speed -> pin text to left
+        renderer.print({0, LastPage}, runningText.c_str());
+        return;
+    }
+
+    renderer.print({runningTextPosition, LastPage}, runningText.c_str(),
+                   Renderer::Alignment::Right);
+
+    if (runningTextPosition < LedControl::Columns / 2)
+    {
+        // after the half strip is on the left side, move in the text second time from right side
+
+        size_t secondPosition =
+            (LedControl::Columns / 2) + runningTextPosition + runningTextWidthInPixels;
+        renderer.print({secondPosition, LastPage}, runningText.c_str(), Renderer::Alignment::Right);
+    }
+
+    if (--runningTextPosition == 0)
+        runningTextPosition = (LedControl::Columns / 2) + runningTextWidthInPixels;
 }

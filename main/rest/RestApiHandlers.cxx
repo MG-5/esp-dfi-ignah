@@ -257,15 +257,17 @@ esp_err_t RestApiHandlers::runningTextSetHandler(httpd_req_t *req)
     auto text = cJSON_GetObjectItem(root, "text");
     auto speed = cJSON_GetObjectItem(root, "speed");
 
-    if (!text || !speed)
+    if (!text || !speed || text->type != cJSON_String || speed->type != cJSON_Number)
     {
-        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "text or speed does not exist");
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "text or speed does not exist or are not right types (string for text "
+                            "and int for speed)");
         cJSON_Delete(root);
         return ESP_FAIL;
     }
 
-    std::string textString(text->string);
-    serverInstance->renderTask.setRunningText(textString, speed->valueint);
+    std::string textString(text->valuestring);
+    serverInstance->renderTask.setRunningText(textString, 1.0_Hz * (speed->valueint));
 
     cJSON_Delete(root);
 
