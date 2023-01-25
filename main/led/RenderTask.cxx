@@ -2,8 +2,8 @@
 #include "Timebase.hpp"
 #include "helpers/freertos.hpp"
 
+#include "esp_app_desc.h"
 #include "esp_log.h"
-#include "esp_ota_ops.h"
 
 void RenderTask::taskMain(void *)
 {
@@ -144,7 +144,7 @@ void RenderTask::renderVehicles(bool showCurrentVehicle)
 //--------------------------------------------------------------------------------------------------
 void RenderTask::renderProjectInfos()
 {
-    const esp_app_desc_t *appDesc = esp_ota_get_app_description();
+    const esp_app_desc_t *appDesc = esp_app_get_description();
 
     renderer.print({0, 0}, appDesc->project_name);
     snprintf(printBuffer, PrintBufferSize, "%s (%s)", appDesc->date, appDesc->version);

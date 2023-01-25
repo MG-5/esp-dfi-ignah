@@ -17,6 +17,16 @@ idf_component_register(SRCS
     sync.cxx
     #StatusLed.cxx
 
+    REQUIRES
+    driver
+    esp_http_client
+    esp_app_format
+    esp_http_server
+    esp_wifi
+    json
+    nvs_flash
+    spiffs
+
     INCLUDE_DIRS ".")
 
 # Load web data into SPIFFS

@@ -29,12 +29,12 @@ public:
     //--------------------------------------------------------------------------------------------------
     static void initTimeSychronization()
     {
-        sntp_stop();
+        esp_sntp_stop();
         ESP_LOGI(PrintTag, "Initializing SNTP");
-        sntp_setoperatingmode(SNTP_OPMODE_POLL);
-        sntp_setservername(0, "pool.ntp.org");
-        sntp_set_time_sync_notification_cb(timeSynchronizationCallback);
-        sntp_init();
+        esp_sntp_setoperatingmode(ESP_SNTP_OPMODE_POLL);
+        esp_sntp_setservername(0, "pool.ntp.org");
+        esp_sntp_set_time_sync_notification_cb(timeSynchronizationCallback);
+        esp_sntp_init();
         ESP_LOGI(PrintTag, "Update system time every %d minutes.",
                  CONFIG_LWIP_SNTP_UPDATE_DELAY / 1000 / 60);
 

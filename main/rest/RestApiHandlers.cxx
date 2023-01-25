@@ -4,8 +4,9 @@
 #include "wifi/Wireless.hpp"
 
 #include "cJSON.h"
+#include "esp_app_desc.h"
+#include "esp_chip_info.h"
 #include "esp_log.h"
-#include "esp_ota_ops.h"
 #include "esp_wifi.h"
 #include <fcntl.h>
 
@@ -98,7 +99,7 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
     cJSON *jsonRoot = cJSON_CreateObject();
     esp_chip_info_t chipInfo;
     esp_chip_info(&chipInfo);
-    const esp_app_desc_t *appDesc = esp_ota_get_app_description();
+    const esp_app_desc_t *appDesc = esp_app_get_description();
 
     cJSON_AddStringToObject(jsonRoot, "projectName", appDesc->project_name);
     cJSON_AddStringToObject(jsonRoot, "projectVersion", appDesc->version);

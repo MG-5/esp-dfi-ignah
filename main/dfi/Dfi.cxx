@@ -143,7 +143,6 @@ void Dfi::parseXml()
     auto end =
         std::remove_if(additionalVehicleList.begin(), additionalVehicleList.end(),
                        [this](LocalTransportVehicle &v) { return !isArrivalTimeInFuture(v); });
-    std::distance(end, additionalVehicleList.end());
     additionalVehicleList.erase(end, additionalVehicleList.end());
 
     // copy additional vehicles into our array
@@ -225,7 +224,6 @@ void Dfi::setAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
     auto end =
         std::remove_if(additionalVehicles.begin(), additionalVehicles.end(),
                        [this](LocalTransportVehicle &v) { return !isArrivalTimeInFuture(v); });
-    std::distance(end, additionalVehicles.end());
     additionalVehicles.erase(end, additionalVehicles.end());
 
     additionalVehicleList = additionalVehicles;

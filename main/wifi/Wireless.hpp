@@ -1,6 +1,9 @@
 #pragma once
 
 #include "esp_event.h"
+#include "esp_netif_ip_addr.h"
+#include "esp_wifi_types.h"
+
 #include "helpers/freertos.hpp"
 #include "wrappers/Task.hpp"
 
