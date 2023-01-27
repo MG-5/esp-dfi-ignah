@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio'; 
+import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider'; 
 import { MatTabsModule } from '@angular/material/tabs'; 
@@ -26,6 +27,7 @@ import { AdditionalVehiclesComponent } from './components/display/additional-veh
 import { StoreModule } from '@ngrx/store';
 import { ModeEffects, modeFeatureKey, modeReducer } from './store/mode';
 import { EffectsModule } from '@ngrx/effects';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,7 @@ import { EffectsModule } from '@ngrx/effects';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    HttpClientModule,
     LayoutModule,
     ReactiveFormsModule,
 
@@ -51,6 +54,7 @@ import { EffectsModule } from '@ngrx/effects';
     MatInputModule,
     MatListModule,
     MatRadioModule,
+    MatSelectModule,
     MatSidenavModule,
     MatSliderModule,
     MatTabsModule,

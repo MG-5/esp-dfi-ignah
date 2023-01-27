@@ -5,13 +5,25 @@
     <div>
       <h3>Anzeigemodus</h3>
 
-      <mat-radio-group class="mode-radio-group">
-        <mat-radio-button>Abfahrten</mat-radio-button>
-        <mat-radio-button>Abfahrten mit Lauftext</mat-radio-button>
-        <mat-radio-button>Freitext</mat-radio-button>
-      </mat-radio-group>
+      <!-- <mat-radio-group [value]="mode$ | async" class="mode-radio-group" #modeGroup>
+        <mat-radio-button [value]="Mode.Normal">Abfahrten</mat-radio-button>
+        <mat-radio-button [value]="Mode.RunningText">Abfahrten mit Lauftext</mat-radio-button>
+        <mat-radio-button [value]="Mode.FreeText">Freitext</mat-radio-button>
+      </mat-radio-group> -->
 
-      <button mat-flat-button color="accent" class="mode-action-button">Übernehmen</button>
+      <div>
+        <mat-form-field>
+          <mat-select [value]="mode$ | async" #modeSelect>
+            <mat-option [value]="Mode.Normal">Abfahrten</mat-option>
+            <mat-option [value]="Mode.RunningText">Abfahrten mit Lauftext</mat-option>
+            <mat-option [value]="Mode.FreeText">Freitext</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <button mat-flat-button color="accent" class="mode-action-button" (click)="saveMode(modeSelect.value)">Übernehmen</button>
+      </div>
     </div>
 
     <div class="mode-settings-container">
