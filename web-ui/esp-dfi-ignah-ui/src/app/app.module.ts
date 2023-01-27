@@ -23,6 +23,9 @@ import { DisplayComponent } from './components/display/display.component';
 import { FreeTextComponent } from './components/display/free-text/free-text.component';
 import { RunningTextComponent } from './components/display/running-text/running-text.component';
 import { AdditionalVehiclesComponent } from './components/display/additional-vehicles/additional-vehicles.component';
+import { StoreModule } from '@ngrx/store';
+import { ModeEffects, modeFeatureKey, modeReducer } from './store/mode';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [
@@ -52,6 +55,11 @@ import { AdditionalVehiclesComponent } from './components/display/additional-veh
     MatSliderModule,
     MatTabsModule,
     MatToolbarModule,
+
+    StoreModule.forRoot(),
+    StoreModule.forFeature(modeFeatureKey, modeReducer),
+    EffectsModule.forRoot(),
+    EffectsModule.forFeature([ModeEffects])
   ],
   providers: [],
   bootstrap: [AppComponent]
