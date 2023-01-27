@@ -1,4 +1,4 @@
-<form [formGroup]="freeTextFormGroup" class="free-text-container">
+<form [formGroup]="freeTextFormGroup" (ngSubmit)="saveFreeText()" class="free-text-container">
   <mat-form-field>
     <mat-label>Zeile 1</mat-label>
     <input matInput formControlName="line1">
