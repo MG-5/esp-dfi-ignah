@@ -1,6 +1,7 @@
+import { state } from "@angular/animations";
 import { createReducer, on } from "@ngrx/store";
 import { Mode } from "src/app/models/mode";
-import { gotMode } from "./mode.actions";
+import { getModeSuccess } from "./mode.actions";
 
 export interface ModeState {
   mode: Mode;
@@ -12,5 +13,8 @@ const initialState: ModeState = {
 
 export const modeReducer = createReducer(
   initialState,
-  on(gotMode, (state, {mode}) => state.mode = mode)
+  on(getModeSuccess, (state, {mode}) => ({
+    ...state,
+    mode
+  }))
 );
