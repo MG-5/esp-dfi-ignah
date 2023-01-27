@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, of } from "rxjs";
 import { ModeService } from "src/app/services/api/mode.service";
 import { TextService } from "src/app/services/api/text.service";
-import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError } from "./mode.actions";
+import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError } from "./mode.actions";
 
 @Injectable()
 export class ModeEffects {
@@ -41,6 +41,24 @@ export class ModeEffects {
       mergeMap(({runningText}) => this.textService.setRunningText(runningText)),
       map(() => setRunningTextSuccess()),
       catchError(() => of(setRunningTextError()))
+    );
+  });
+
+  getFreeText$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(getFreeText),
+      mergeMap(() => this.textService.getFreeText()),
+      map(freeText => getFreeTextSuccess({freeText})),
+      catchError(() => of(getFreeTextError()))
+    );
+  });
+
+  setFreeText$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(setFreeText),
+      mergeMap(({freeText}) => this.textService.setFreeText(freeText)),
+      map(() => setFreeTextSuccess()),
+      catchError(() => of(setFreeTextError()))
     );
   });
 

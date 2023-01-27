@@ -11,3 +11,7 @@ export const selectMode = createSelector(modeFeature,
 export const selectRunningText = createSelector(modeFeature,
   (state: ModeState) => state.runningText
 );
+
+export const selectFreeText = createSelector(modeFeature,
+  (state: ModeState) => state.freeText
+);

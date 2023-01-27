@@ -1,4 +1,5 @@
 import { createAction, props } from "@ngrx/store";
+import { FreeText } from "src/app/models/free-text";
 import { Mode } from "src/app/models/mode";
 import { RunningText } from "src/app/models/running-text";
 
@@ -35,27 +36,56 @@ export const setModeError = createAction(
 // Running text
 
 export const getRunningText = createAction(
-  '[RunningText] Get running text'
+  '[Mode] Get running text'
 );
 
 export const getRunningTextSuccess = createAction(
-  '[RunningText] Got running text',
+  '[Mode] Got running text',
   props<{runningText: RunningText}>()
 );
 
 export const getRunningTextError = createAction(
-  '[RunningText] Error getting running text'
+  '[Mode] Error getting running text'
 );
 
 export const setRunningText = createAction(
-  '[RunningText] Set running text',
+  '[Mode] Set running text',
   props<{runningText: RunningText}>()
 );
 
 export const setRunningTextSuccess = createAction(
-  '[RunningText] Set running text successfully'
+  '[Mode] Set running text successfully'
 );
 
 export const setRunningTextError = createAction(
-  '[RunningText] Error setting running text'
+  '[Mode] Error setting running text'
+);
+
+
+// Free text
+
+export const getFreeText = createAction(
+  '[Mode] Get free text'
+);
+
+export const getFreeTextSuccess = createAction(
+  '[Mode] Got free text',
+  props<{freeText: FreeText}>()
+);
+
+export const getFreeTextError = createAction(
+  '[Mode] Error getting free text'
+);
+
+export const setFreeText = createAction(
+  '[Mode] Set free text',
+  props<{freeText: FreeText}>()
+);
+
+export const setFreeTextSuccess = createAction(
+  '[Mode] Set free text successfully'
+);
+
+export const setFreeTextError = createAction(
+  '[Mode] Error setting free text'
 );

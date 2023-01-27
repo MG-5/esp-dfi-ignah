@@ -1,12 +1,13 @@
-import { state } from "@angular/animations";
 import { createReducer, on } from "@ngrx/store";
+import { FreeText } from "src/app/models/free-text";
 import { Mode } from "src/app/models/mode";
 import { RunningText } from "src/app/models/running-text";
-import { getModeSuccess, getRunningTextSuccess } from "./mode.actions";
+import { getFreeTextSuccess, getModeSuccess, getRunningTextSuccess } from "./mode.actions";
 
 export interface ModeState {
   mode: Mode;
   runningText: RunningText;
+  freeText: FreeText;
 }
 
 const initialState: ModeState = {
@@ -14,6 +15,9 @@ const initialState: ModeState = {
   runningText: {
     text: '',
     speed: 50
+  },
+  freeText: {
+    lines: []
   }
 };
 
@@ -26,5 +30,9 @@ export const modeReducer = createReducer(
   on(getRunningTextSuccess, (state, {runningText}) => ({
     ...state,
     runningText
+  })),
+  on(getFreeTextSuccess, (state, {freeText}) => ({
+    ...state,
+    freeText
   }))
 );
