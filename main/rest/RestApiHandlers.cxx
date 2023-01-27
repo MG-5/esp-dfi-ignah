@@ -53,6 +53,7 @@ esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
         if (fileStreamId == -1)
         {
             ESP_LOGE(PrintTag, "index.html does not exist!");
+            addCorsHeaders(req);
             httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Failed to find index.html file");
             return ESP_FAIL;
         }
@@ -74,6 +75,8 @@ esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
             {
                 close(fileStreamId);
                 ESP_LOGE(PrintTag, "Failed to send file %s", filePath.data());
+
+                addCorsHeaders(req);
                 httpd_resp_sendstr_chunk(req, nullptr); // Abort sending file
                 httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to send file");
                 return ESP_FAIL;
@@ -85,6 +88,7 @@ esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
     ESP_LOGI(PrintTag, "Sent file: %s", filePath.data());
 
     // Respond with an empty chunk to signal HTTP response completion
+    addCorsHeaders(req);
     httpd_resp_send_chunk(req, nullptr, 0);
     return ESP_OK;
 }
@@ -108,6 +112,7 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
     cJSON_AddNumberToObject(jsonRoot, "cores", chipInfo.cores);
 
     std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
     httpd_resp_sendstr(req, jsonData.data());
     cJSON_Delete(jsonRoot);
     return ESP_OK;
@@ -129,6 +134,7 @@ esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "timezone", Timebase::Timezone);
 
     std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
     httpd_resp_sendstr(req, jsonData.data());
     cJSON_Delete(jsonRoot);
     return ESP_OK;
@@ -162,6 +168,7 @@ esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "authMode", authMode.data());
 
     std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
     httpd_resp_sendstr(req, jsonData.data());
     cJSON_Delete(jsonRoot);
     return ESP_OK;
@@ -182,6 +189,7 @@ esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
 
     if (modeNumber != std::clamp(modeNumber, 0, 2))
     {
+        addCorsHeaders(req);
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "mode does not exist");
         return ESP_FAIL;
     }
@@ -190,6 +198,7 @@ esp_err_t RestApiHandlers::modeSetHandler(httpd_req_t *req)
     RenderTask::State state = static_cast<RenderTask::State>(modeNumber + 2);
     serverInstance->renderTask.setState(state);
 
+    addCorsHeaders(req);
     httpd_resp_set_status(req, HTTPD_200);
     httpd_resp_send(req, NULL, 0);
 
@@ -205,6 +214,7 @@ esp_err_t RestApiHandlers::modeGetHandler(httpd_req_t *req)
     // skip first two entries
     const size_t ModeNumber = static_cast<size_t>(serverInstance->renderTask.getState()) - 2;
 
+    addCorsHeaders(req);
     httpd_resp_sendstr(req, std::to_string(ModeNumber).data());
 
     return ESP_OK;
@@ -226,6 +236,7 @@ esp_err_t RestApiHandlers::freeTextSetHandler(httpd_req_t *req)
     auto jsonLines = cJSON_GetObjectItem(root, "lines");
     if (!cJSON_IsArray(jsonLines) || cJSON_GetArraySize(jsonLines) != NumberOfLines)
     {
+        addCorsHeaders(req);
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
                             "lines is not an array or does not contain five elements");
         cJSON_Delete(root);
@@ -241,6 +252,7 @@ esp_err_t RestApiHandlers::freeTextSetHandler(httpd_req_t *req)
 
     cJSON_Delete(root);
 
+    addCorsHeaders(req);
     httpd_resp_set_status(req, HTTPD_200);
     httpd_resp_send(req, NULL, 0);
 
@@ -264,6 +276,7 @@ esp_err_t RestApiHandlers::runningTextSetHandler(httpd_req_t *req)
 
     if (!text || !speed || text->type != cJSON_String || speed->type != cJSON_Number)
     {
+        addCorsHeaders(req);
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
                             "text or speed does not exist or are not right types (string for text "
                             "and int for speed)");
@@ -276,6 +289,7 @@ esp_err_t RestApiHandlers::runningTextSetHandler(httpd_req_t *req)
 
     cJSON_Delete(root);
 
+    addCorsHeaders(req);
     httpd_resp_set_status(req, HTTPD_200);
     httpd_resp_send(req, NULL, 0);
 
@@ -296,6 +310,7 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
 
     if (!vehicles || !cJSON_IsArray(vehicles))
     {
+        addCorsHeaders(req);
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
                             "vehicles object does not exist or it not an array");
         cJSON_Delete(root);
@@ -366,6 +381,7 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
     }
 
     std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
     httpd_resp_set_type(req, "application/json");
     httpd_resp_sendstr(req, jsonData.data());
     cJSON_Delete(jsonRoot);
@@ -401,6 +417,7 @@ esp_err_t RestApiHandlers::additionalVehiclesGetHandler(httpd_req_t *req)
     }
 
     std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
     httpd_resp_set_type(req, "application/json");
     httpd_resp_sendstr(req, jsonData.data());
     cJSON_Delete(jsonRoot);
@@ -415,6 +432,7 @@ esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
 
     if (contentLength >= serverInstance->ScratchBufferSize - 1)
     {
+        addCorsHeaders(req);
         httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "content too long");
         return ESP_FAIL;
     }
@@ -429,6 +447,7 @@ esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
 
         if (received <= 0)
         {
+            addCorsHeaders(req);
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to put/post value");
             return ESP_FAIL;
         }
@@ -438,4 +457,12 @@ esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
     serverInstance->scratchBuffer[contentLength] = '\0';
 
     return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+void RestApiHandlers::addCorsHeaders(httpd_req_t *req)
+{
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "GET, PUT, OPTIONS");
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type");
 }

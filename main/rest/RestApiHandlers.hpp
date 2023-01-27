@@ -26,4 +26,6 @@ public:
     static esp_err_t additionalVehiclesGetHandler(httpd_req_t *req);
 
     static esp_err_t loadContentToBuffer(httpd_req_t *req);
+
+    static void addCorsHeaders(httpd_req_t *req);
 };
