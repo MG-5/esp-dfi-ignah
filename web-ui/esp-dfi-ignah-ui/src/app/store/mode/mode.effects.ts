@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, of } from "rxjs";
 import { ModeService } from "src/app/services/api/mode.service";
-import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError } from "./mode.actions";
+import { TextService } from "src/app/services/api/text.service";
+import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError } from "./mode.actions";
 
 @Injectable()
 export class ModeEffects {
@@ -25,6 +26,24 @@ export class ModeEffects {
     )
   });
 
-  constructor(private actions$: Actions, private modeService: ModeService) { }
+  getRunningText$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(getRunningText),
+      mergeMap(() => this.textService.getRunningText()),
+      map(runningText => getRunningTextSuccess({runningText})),
+      catchError(() => of(getRunningTextError()))
+    );
+  });
+
+  setRunningText$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(setRunningText),
+      mergeMap(({runningText}) => this.textService.setRunningText(runningText)),
+      map(() => setRunningTextSuccess()),
+      catchError(() => of(setRunningTextError()))
+    );
+  });
+
+  constructor(private actions$: Actions, private modeService: ModeService, private textService: TextService) { }
 
 }

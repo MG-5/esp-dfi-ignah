@@ -2,7 +2,7 @@
 
   <mat-form-field>
     <mat-label>Lauftext</mat-label>
-    <textarea matInput></textarea>
+    <textarea matInput #text></textarea>
   </mat-form-field>
 
   <div class="slider-container">
@@ -13,6 +13,6 @@
     </mat-slider>
   </div>
 
-  <button mat-flat-button color="primary">Speichern</button>
+  <button mat-flat-button color="primary" (click)="saveRunningText(text.value)">Speichern</button>
 
 </div>
