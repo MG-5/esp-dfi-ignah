@@ -37,11 +37,10 @@ void Application::run()
     renderTask.setState(RenderTask::State::WaitForTimesyncronization);
     Timebase::initTimeSychronization();
 
-    restServer.initServer();
-
     resetTimer();
     sync::waitForAll(sync::TimeIsSynchronized);
     renderTask.setState(RenderTask::State::ShowVehicles);
+    restServer.initServer();
     stopTimer();
 
     while (true)
