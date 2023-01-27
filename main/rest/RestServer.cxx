@@ -124,11 +124,23 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                                   .user_ctx = this};
     httpd_register_uri_handler(server, &freeTextSetUri);
 
+    httpd_uri_t freeTextGetUri = {.uri = "/freetext",
+                                  .method = HTTP_GET,
+                                  .handler = RestApiHandlers::freeTextGetHandler,
+                                  .user_ctx = this};
+    httpd_register_uri_handler(server, &freeTextGetUri);
+
     httpd_uri_t runningTextSetUri = {.uri = "/runningtext",
                                      .method = HTTP_PUT,
                                      .handler = RestApiHandlers::runningTextSetHandler,
                                      .user_ctx = this};
     httpd_register_uri_handler(server, &runningTextSetUri);
+
+    httpd_uri_t runningTextGetUri = {.uri = "/runningtext",
+                                     .method = HTTP_GET,
+                                     .handler = RestApiHandlers::runningTextGetHandler,
+                                     .user_ctx = this};
+    httpd_register_uri_handler(server, &runningTextGetUri);
 
     httpd_uri_t additionalVehiclesSetUri = {.uri = "/additionalvehicles",
                                             .method = HTTP_PUT,

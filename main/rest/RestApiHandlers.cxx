@@ -260,6 +260,63 @@ esp_err_t RestApiHandlers::freeTextSetHandler(httpd_req_t *req)
 }
 
 //--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::freeTextGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "freeTextGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto jsonRoot = cJSON_CreateObject();
+
+    auto lines = serverInstance->renderTask.getFreeText();
+
+    auto createStringArray = [&]() -> cJSON *
+    {
+        cJSON *str = nullptr;
+        cJSON *prev = nullptr;
+        cJSON *array = nullptr;
+
+        array = cJSON_CreateArray();
+
+        for (int i = 0; array && (i < lines.size()); i++)
+        {
+            str = cJSON_CreateString(lines[i].c_str());
+            if (!str)
+            {
+                cJSON_Delete(array);
+                return nullptr;
+            }
+
+            if (!i)
+                array->child = str;
+
+            else
+            {
+                prev->next = str;
+                str->prev = prev;
+            }
+
+            prev = str;
+        }
+
+        if (array && array->child)
+            array->child->prev = str;
+
+        return array;
+    };
+
+    auto jsonArray = createStringArray();
+    cJSON_AddItemToObject(jsonRoot, "lines", jsonArray);
+
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, jsonData.data());
+    cJSON_Delete(jsonRoot);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::runningTextSetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "runningTextSetHandler");
@@ -292,6 +349,27 @@ esp_err_t RestApiHandlers::runningTextSetHandler(httpd_req_t *req)
     addCorsHeaders(req);
     httpd_resp_set_status(req, HTTPD_200);
     httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::runningTextGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "runningTextGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto jsonRoot = cJSON_CreateObject();
+    auto runningTextParameters = serverInstance->renderTask.getRunningText();
+
+    cJSON_AddStringToObject(jsonRoot, "text", runningTextParameters.first.c_str());
+    cJSON_AddNumberToObject(jsonRoot, "speed", runningTextParameters.second.getMagnitude());
+
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, jsonData.data());
+    cJSON_Delete(jsonRoot);
 
     return ESP_OK;
 }

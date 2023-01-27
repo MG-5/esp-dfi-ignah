@@ -20,7 +20,9 @@ public:
     static esp_err_t modeGetHandler(httpd_req_t *req);
 
     static esp_err_t freeTextSetHandler(httpd_req_t *req);
+    static esp_err_t freeTextGetHandler(httpd_req_t *req);
     static esp_err_t runningTextSetHandler(httpd_req_t *req);
+    static esp_err_t runningTextGetHandler(httpd_req_t *req);
 
     static esp_err_t additionalVehiclesSetHandler(httpd_req_t *req);
     static esp_err_t additionalVehiclesGetHandler(httpd_req_t *req);

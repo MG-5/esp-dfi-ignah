@@ -40,12 +40,22 @@ public:
         freeText = newFreeText;
     }
 
+    std::array<std::string, LedControl::Strips> getFreeText()
+    {
+        return freeText;
+    }
+
     void setRunningText(std::string &newRunningText, units::si::Frequency newSpeed)
     {
         runningText = newRunningText;
         runningTextSpeed = newSpeed;
         runningTextPosition = LedControl::Columns / 2;
         runningTextWidthInPixels = renderer.getLineWidth(runningText.c_str());
+    }
+
+    std::pair<std::string, units::si::Frequency> getRunningText()
+    {
+        return std::make_pair(runningText, runningTextSpeed);
     }
 
 protected:
