@@ -37,17 +37,15 @@ void Dfi::taskMain(void *)
     {
         if (lastWakeTime - prevTime >= toOsTicks(RequestDelay))
         {
+            prevTime = lastWakeTime;
             shouldLog = true;
 
             if (!isConnected)
                 ESP_LOGW(PrintTag, "No connection. Use old data.");
 
             else if (httpClient.requestData(currentStation->stationNumber))
-            {
                 loadXmlFromBuffer();
-                prevTime = lastWakeTime;
-            }
-        }
+                }
 
         // parse XML buffer, regardless of connection state
         // so we can use old data if there is no connection
