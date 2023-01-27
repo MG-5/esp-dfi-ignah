@@ -151,6 +151,22 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                                 .user_ctx = this};
     httpd_register_uri_handler(server, &commonGetUri);
 
+    httpd_uri_t optionsUri = {.uri = "/*", //
+                              .method = HTTP_OPTIONS,
+                              .handler =
+                                  [](httpd_req_t *req)
+                              {
+                                  ESP_LOGI("RestApiHandlers", "HTTP_OPTIONS");
+
+                                  RestApiHandlers::addCorsHeaders(req);
+                                  httpd_resp_set_status(req, HTTPD_200);
+                                  httpd_resp_send(req, NULL, 0);
+
+                                  return ESP_OK;
+                              },
+                              .user_ctx = this};
+    httpd_register_uri_handler(server, &optionsUri);
+
     return ESP_OK;
 }
 
