@@ -1,16 +1,18 @@
-<div>
+<div class="running-text-container">
 
   <mat-form-field>
     <mat-label>Lauftext</mat-label>
     <textarea matInput></textarea>
   </mat-form-field>
-  
-  <mat-slider min="1" max="100" step="1" value="50">
-    <input matSliderThumb [(ngModel)]="speed">
-  </mat-slider>
 
-  <label>{{speed}} px/s</label>
-  
-  <button mat-flat-button >Übernehmen</button>
+  <div class="slider-container">
+    <label>Laufgeschwindigkeit: {{speed}} Pixel/Sekunde</label>
+
+    <mat-slider min="1" max="100" step="1" value="50" class="speed-slider">
+      <input matSliderThumb [(ngModel)]="speed">
+    </mat-slider>
+  </div>
+
+  <button mat-flat-button color="primary">Speichern</button>
 
 </div>

@@ -1,8 +1,37 @@
 @import "@fontsource/material-icons";
+@import "media";
 
 html, body, mat-sidenav-container { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .button--icon {
-    margin-right: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.container {
+  margin-left: 15px;
+  margin-right: 15px;
+  
+  max-width: 100%;
+
+  @include sm {
+    max-width: 540px;
+  }
+
+  @include md {
+    max-width: 720px;
+  }
+
+  @include lg {
+    max-width: 960px;
+  }
+
+  @include xl {
+    max-width: 1140px;
+  }
 }

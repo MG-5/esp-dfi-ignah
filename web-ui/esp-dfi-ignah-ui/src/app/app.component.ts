@@ -1,6 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnInit } from '@angular/core';
 import { EMPTY, map, Observable } from 'rxjs';
+import { navigationEntries } from './data/navigation';
 import { Theme, ThemingService } from './services/theming.service';
 
 @Component({
@@ -14,6 +15,8 @@ export class AppComponent implements OnInit {
   isSmallLayout$: Observable<boolean> = EMPTY;
 
   theme = Theme;
+
+  navigationEntries = navigationEntries;
 
   constructor(private breakpointObserver: BreakpointObserver, public themingService: ThemingService) { }
 

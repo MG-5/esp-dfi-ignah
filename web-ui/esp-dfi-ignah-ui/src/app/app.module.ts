@@ -9,7 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field'; 
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input'; 
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio'; 
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider'; 
@@ -45,6 +46,7 @@ import { AdditionalVehiclesComponent } from './components/display/additional-veh
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatListModule,
     MatRadioModule,
     MatSidenavModule,
     MatSliderModule,
