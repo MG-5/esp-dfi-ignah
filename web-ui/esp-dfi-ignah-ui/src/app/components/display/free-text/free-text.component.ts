@@ -24,7 +24,7 @@ export class FreeTextComponent implements OnInit, OnDestroy {
   constructor(private formBuilder: FormBuilder, private store: Store) { }
 
   ngOnInit(): void {
-    // this.store.dispatch(getFreeText());
+    this.store.dispatch(getFreeText());
 
     this.store.select(selectFreeText).subscribe(freeText => {
       const lines = {

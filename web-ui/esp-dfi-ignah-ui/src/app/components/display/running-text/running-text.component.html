@@ -2,7 +2,7 @@
 
   <mat-form-field>
     <mat-label>Lauftext</mat-label>
-    <textarea matInput #text></textarea>
+    <textarea matInput [value]="(runningText$ | async)?.text" #text></textarea>
   </mat-form-field>
 
   <div class="slider-container">

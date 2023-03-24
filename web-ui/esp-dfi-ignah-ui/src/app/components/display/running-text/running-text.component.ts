@@ -16,7 +16,7 @@ export class RunningTextComponent implements OnInit {
   constructor(private store: Store) { }
 
   ngOnInit(): void {
-    // this.store.dispatch(getRunningText());
+    this.store.dispatch(getRunningText());
   }
 
   saveRunningText(text: string): void {
