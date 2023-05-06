@@ -1,3 +1,7 @@
 <ol>
   <ul *ngFor="let vehicle of vehicles$ | async">{{vehicle.destination}}</ul>
 </ol>
+
+<div>
+  <button mat-flat-button color="primary" (click)="addVehicle()">Fahrzeug hinzufügen</button>
+</div>

@@ -1,10 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { catchError, map, mergeMap, of } from "rxjs";
+import { catchError, combineLatest, map, mergeMap, of, withLatestFrom } from "rxjs";
 import { ModeService } from "src/app/services/api/mode.service";
 import { TextService } from "src/app/services/api/text.service";
 import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError, fetchVehicles, fetchVehiclesSuccess, fetchVehiclesError, pushVehicles, pushVehiclesSuccess, pushVehiclesError } from "./mode.actions";
 import { VehicleService } from "src/app/services/api/vehicle.service";
+import { Store } from "@ngrx/store";
+import { selectAdditionalVehicles } from "./mode.selectors";
 
 @Injectable()
 export class ModeEffects {
@@ -75,7 +77,8 @@ export class ModeEffects {
   pushVehicles$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(pushVehicles),
-      mergeMap(({vehicles}) => this.vehicleService.setAdditionalVehicles({vehicles: vehicles})),
+      withLatestFrom(this.store.select(selectAdditionalVehicles)),
+      mergeMap(([_, additionalVehicles]) => this.vehicleService.setAdditionalVehicles({vehicles: additionalVehicles})),
       map(() => pushVehiclesSuccess()),
       catchError(() => of(pushVehiclesError()))
     );
@@ -83,6 +86,7 @@ export class ModeEffects {
 
   constructor(
     private actions$: Actions,
+    private store: Store,
     private modeService: ModeService,
     private textService: TextService,
     private vehicleService: VehicleService) { }

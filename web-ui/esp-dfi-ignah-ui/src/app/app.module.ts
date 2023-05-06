@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog'; 
 import { MatFormFieldModule } from '@angular/material/form-field'; 
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -28,6 +29,7 @@ import { StoreModule } from '@ngrx/store';
 import { ModeEffects, modeFeatureKey, modeReducer } from './store/mode';
 import { EffectsModule } from '@ngrx/effects';
 import { HttpClientModule } from '@angular/common/http';
+import { VehicleDialogComponent } from './components/display/additional-vehicles/vehicle-dialog/vehicle-dialog.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { HttpClientModule } from '@angular/common/http';
     DisplayComponent,
     FreeTextComponent,
     RunningTextComponent,
-    AdditionalVehiclesComponent
+    AdditionalVehiclesComponent,
+    VehicleDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -49,6 +52,7 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule,
 
     MatButtonModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,

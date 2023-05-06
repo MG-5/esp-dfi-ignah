@@ -113,8 +113,7 @@ export const fetchVehiclesError = createAction(
 );
 
 export const pushVehicles = createAction(
-  '[Vehicle] Push',
-  props<{vehicles: AdditionalVehicle[]}>()
+  '[Vehicle] Push'
 );
 
 export const pushVehiclesSuccess = createAction(

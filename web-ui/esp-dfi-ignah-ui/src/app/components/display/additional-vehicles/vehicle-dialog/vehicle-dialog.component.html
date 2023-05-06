@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Fahrzeug hinzufügen</h1>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+    <mat-form-field>
+      <mat-label>Ziel</mat-label>
+      <input matInput formControlName="destination">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Uhrzeit</mat-label>
+      <input matInput formControlName="departure">
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions [align]="'end'">
+  <button mat-button mat-dialog-close>Abbrechen</button>
+  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="addVehicle()">Hinzufügen</button>
+</mat-dialog-actions>
