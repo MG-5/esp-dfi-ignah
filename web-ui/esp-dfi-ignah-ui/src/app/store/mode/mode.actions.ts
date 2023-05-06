@@ -1,4 +1,5 @@
 import { createAction, props } from "@ngrx/store";
+import { AdditionalVehicle } from "src/app/models/additional-vehicles";
 import { FreeText } from "src/app/models/free-text";
 import { Mode } from "src/app/models/mode";
 import { RunningText } from "src/app/models/running-text";
@@ -88,4 +89,38 @@ export const setFreeTextSuccess = createAction(
 
 export const setFreeTextError = createAction(
   '[Mode] Error setting free text'
+);
+
+
+// Additional vehicles
+
+export const addVehicle = createAction(
+  '[Vehicle] Add',
+  props<{vehicle: AdditionalVehicle}>()
+);
+
+export const fetchVehicles = createAction(
+  '[Vehicle] Fetch'
+);
+
+export const fetchVehiclesSuccess = createAction(
+  '[Vehicle] Fetch succeeded',
+  props<{vehicles: AdditionalVehicle[]}>()
+);
+
+export const fetchVehiclesError = createAction(
+  '[Vehicle] Fetch failed'
+);
+
+export const pushVehicles = createAction(
+  '[Vehicle] Push',
+  props<{vehicles: AdditionalVehicle[]}>()
+);
+
+export const pushVehiclesSuccess = createAction(
+  '[Vehicle] Push succeded'
+);
+
+export const pushVehiclesError = createAction(
+  '[Vehicle] Push failed'
 );

@@ -1,1 +1,3 @@
-<p>additional-vehicles works!</p>
+<ol>
+  <ul *ngFor="let vehicle of vehicles$ | async">{{vehicle.destination}}</ul>
+</ol>

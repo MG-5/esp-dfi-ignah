@@ -15,3 +15,7 @@ export const selectRunningText = createSelector(modeFeature,
 export const selectFreeText = createSelector(modeFeature,
   (state: ModeState) => state.freeText
 );
+
+export const selectAdditionalVehicles = createSelector(modeFeature,
+  (state: ModeState) => state.additionalVehicles
+);

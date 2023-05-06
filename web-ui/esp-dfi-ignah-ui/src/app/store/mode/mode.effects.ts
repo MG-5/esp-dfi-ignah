@@ -3,7 +3,8 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, mergeMap, of } from "rxjs";
 import { ModeService } from "src/app/services/api/mode.service";
 import { TextService } from "src/app/services/api/text.service";
-import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError } from "./mode.actions";
+import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError, fetchVehicles, fetchVehiclesSuccess, fetchVehiclesError, pushVehicles, pushVehiclesSuccess, pushVehiclesError } from "./mode.actions";
+import { VehicleService } from "src/app/services/api/vehicle.service";
 
 @Injectable()
 export class ModeEffects {
@@ -62,6 +63,28 @@ export class ModeEffects {
     );
   });
 
-  constructor(private actions$: Actions, private modeService: ModeService, private textService: TextService) { }
+  fetchVehicles$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(fetchVehicles),
+      mergeMap(() => this.vehicleService.getAdditionalVehicles()),
+      map(vehicles => fetchVehiclesSuccess({vehicles: vehicles.vehicles})),
+      catchError(() => of(fetchVehiclesError()))
+    );
+  });
+
+  pushVehicles$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(pushVehicles),
+      mergeMap(({vehicles}) => this.vehicleService.setAdditionalVehicles({vehicles: vehicles})),
+      map(() => pushVehiclesSuccess()),
+      catchError(() => of(pushVehiclesError()))
+    );
+  });
+
+  constructor(
+    private actions$: Actions,
+    private modeService: ModeService,
+    private textService: TextService,
+    private vehicleService: VehicleService) { }
 
 }

@@ -1,3 +1,8 @@
+export interface AdditionalVehicle {
+  destination: string;
+  departure: string;
+}
+
 export interface AdditionalVehicles {
-  vehicles: { destination: string; departure: string }[];
+  vehicles: AdditionalVehicle[];
 }
