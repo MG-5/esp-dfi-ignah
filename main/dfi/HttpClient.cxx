@@ -1,6 +1,8 @@
 #include "HttpClient.hpp"
 #include "esp_log.h"
 
+#include <string>
+
 namespace
 {
 constexpr auto PrintTag = "[HttpClient]";
@@ -95,6 +97,11 @@ esp_err_t HttpClient::httpEventHandler(esp_http_client_event_t *event)
 
     case HTTP_EVENT_DISCONNECTED:
         ESP_LOGD(PrintTag, "HTTP_EVENT_DISCONNECTED");
+        break;
+
+    case HTTP_EVENT_REDIRECT:
+        ESP_LOGD(PrintTag, "HTTP_EVENT_REDIRECT");
+        return esp_http_client_set_redirection(event->client);
         break;
     }
     return ESP_OK;

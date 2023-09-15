@@ -19,8 +19,8 @@ extern "C" void app_main(void) // NOLINT
     auto currentHeapFreeSpace = esp_get_free_heap_size();
 
     ESP_LOGI(Application::PrintTag, "Moin");
-    ESP_LOGI(Application::PrintTag, "Free memory: %d bytes", currentHeapFreeSpace);
-    ESP_LOGI(Application::PrintTag, "Application consumes %d bytes on heap",
+    ESP_LOGI(Application::PrintTag, "Free memory: %lu bytes", currentHeapFreeSpace);
+    ESP_LOGI(Application::PrintTag, "Application consumes %lu bytes on heap",
              (previousHeapFreeSpace - currentHeapFreeSpace));
 
     vTaskDelay(toOsTicks(100.0_ms));

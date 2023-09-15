@@ -32,5 +32,5 @@ jobs:
     - name: esp-idf build
       uses: espressif/esp-idf-ci-action@v1
       with:
-        esp_idf_version: release-v4.4
+        esp_idf_version: release-v5.1
         target: esp32

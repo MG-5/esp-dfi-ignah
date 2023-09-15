@@ -5,6 +5,7 @@
 
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "freertos/event_groups.h"
@@ -170,7 +171,7 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
         break;
 
         default:
-            ESP_LOGD(PrintTag, "event: %d", eventId);
+            ESP_LOGD(PrintTag, "event: %ld", eventId);
             break;
         }
     }
