@@ -15,18 +15,23 @@ export class AdditionalVehiclesComponent {
 
   protected vehicles$: Observable<AdditionalVehicle[]> = this.store.select(selectAdditionalVehicles);
 
-  constructor(private store: Store, private dialog: MatDialog) {}
+  constructor(private store: Store, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.store.dispatch(fetchVehicles());
   }
 
   protected addVehicle(): void {
-    const dialogRef = this.dialog.open(VehicleDialogComponent);
+    const dialogRef = this.dialog.open(VehicleDialogComponent, { data: { vehicle: null, vehicleIndex: null } });
     dialogRef.afterClosed().subscribe(() => this.store.dispatch(pushVehicles()));
   }
 
   protected onDeleteVehicle(index: number): void {
-    this.store.dispatch(removeVehicle({vehicleIndex: index}));
+    this.store.dispatch(removeVehicle({ vehicleIndex: index }));
+  }
+
+  protected onEditVehicle(vehicle: AdditionalVehicle, index: number): void {
+    const dialogRef = this.dialog.open(VehicleDialogComponent, { data: { vehicle: vehicle, vehicleIndex: index } });
+    dialogRef.afterClosed().subscribe(() => this.store.dispatch(pushVehicles()));
   }
 }

@@ -5,6 +5,10 @@
       <span matListItemLine>{{vehicle.departure}}</span>
 
       <span matListItemMeta>
+        <button mat-icon-button (click)="onEditVehicle(vehicle, i)">
+          <mat-icon>edit</mat-icon>
+        </button>
+
         <button mat-icon-button (click)="onDeleteVehicle(i)">
           <mat-icon>delete</mat-icon>
         </button>

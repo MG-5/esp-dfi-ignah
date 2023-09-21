@@ -13,7 +13,7 @@ export const getMode = createAction(
 
 export const getModeSuccess = createAction(
   '[Mode] Got mode',
-  props<{mode: Mode}>()
+  props<{ mode: Mode }>()
 );
 
 export const getModeError = createAction(
@@ -22,7 +22,7 @@ export const getModeError = createAction(
 
 export const setMode = createAction(
   '[Mode] Set mode',
-  props<{mode: Mode}>()
+  props<{ mode: Mode }>()
 );
 
 export const setModeSuccess = createAction(
@@ -42,7 +42,7 @@ export const getRunningText = createAction(
 
 export const getRunningTextSuccess = createAction(
   '[Mode] Got running text',
-  props<{runningText: RunningText}>()
+  props<{ runningText: RunningText }>()
 );
 
 export const getRunningTextError = createAction(
@@ -51,7 +51,7 @@ export const getRunningTextError = createAction(
 
 export const setRunningText = createAction(
   '[Mode] Set running text',
-  props<{runningText: RunningText}>()
+  props<{ runningText: RunningText }>()
 );
 
 export const setRunningTextSuccess = createAction(
@@ -71,7 +71,7 @@ export const getFreeText = createAction(
 
 export const getFreeTextSuccess = createAction(
   '[Mode] Got free text',
-  props<{freeText: FreeText}>()
+  props<{ freeText: FreeText }>()
 );
 
 export const getFreeTextError = createAction(
@@ -80,7 +80,7 @@ export const getFreeTextError = createAction(
 
 export const setFreeText = createAction(
   '[Mode] Set free text',
-  props<{freeText: FreeText}>()
+  props<{ freeText: FreeText }>()
 );
 
 export const setFreeTextSuccess = createAction(
@@ -96,12 +96,17 @@ export const setFreeTextError = createAction(
 
 export const addVehicle = createAction(
   '[Vehicle] Add',
-  props<{vehicle: AdditionalVehicle}>()
+  props<{ vehicle: AdditionalVehicle }>()
 );
 
 export const removeVehicle = createAction(
   '[Vehicle] Remove',
-  props<{vehicleIndex: number}>()
+  props<{ vehicleIndex: number }>()
+);
+
+export const updateVehicle = createAction(
+  '[Vehicle] Update',
+  props<{ vehicle: AdditionalVehicle, vehicleIndex: number }>()
 );
 
 export const fetchVehicles = createAction(
@@ -110,7 +115,7 @@ export const fetchVehicles = createAction(
 
 export const fetchVehiclesSuccess = createAction(
   '[Vehicle] Fetch succeeded',
-  props<{vehicles: AdditionalVehicle[]}>()
+  props<{ vehicles: AdditionalVehicle[] }>()
 );
 
 export const fetchVehiclesError = createAction(

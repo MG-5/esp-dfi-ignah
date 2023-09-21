@@ -1,7 +1,10 @@
-<h1 mat-dialog-title>Fahrzeug hinzufügen</h1>
+<h1 mat-dialog-title *ngIf="action === 'Add'; else editTitle">Fahrzeug hinzufügen</h1>
+<ng-template #editTitle>
+  <h1 mat-dialog-title>Fahrzeug bearbeiten</h1>
+</ng-template>
 
 <mat-dialog-content>
-  <form [formGroup]="form">
+  <form [formGroup]="vehicleForm">
     <mat-form-field>
       <mat-label>Ziel</mat-label>
       <input matInput formControlName="destination">
@@ -15,5 +18,9 @@
 
 <mat-dialog-actions [align]="'end'">
   <button mat-button mat-dialog-close>Abbrechen</button>
-  <button mat-flat-button color="primary" [disabled]="form.invalid" (click)="addVehicle()">Hinzufügen</button>
+  <button mat-flat-button color="primary" [disabled]="vehicleForm.invalid" (click)="addVehicle()"
+    *ngIf="action === 'Add'; else editButton">Hinzufügen</button>
+  <ng-template #editButton>
+    <button mat-flat-button color="primary" [disabled]="vehicleForm.invalid" (click)="editVehicle()">Speichern</button>
+  </ng-template>
 </mat-dialog-actions>
