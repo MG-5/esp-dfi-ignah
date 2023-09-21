@@ -2,7 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 import { FreeText } from "src/app/models/free-text";
 import { Mode } from "src/app/models/mode";
 import { RunningText } from "src/app/models/running-text";
-import { addVehicle, fetchVehiclesSuccess, getFreeTextSuccess, getModeSuccess, getRunningTextSuccess } from "./mode.actions";
+import { addVehicle, fetchVehiclesSuccess, getFreeTextSuccess, getModeSuccess, getRunningTextSuccess, removeVehicle } from "./mode.actions";
 import { AdditionalVehicle } from "src/app/models/additional-vehicles";
 
 export interface ModeState {
@@ -42,6 +42,15 @@ export const modeReducer = createReducer(
     ...state,
     additionalVehicles: state.additionalVehicles.concat(vehicle)
   })),
+  on(removeVehicle, (state, {vehicleIndex}) => {
+    let newVehicles = [...state.additionalVehicles];
+    newVehicles.splice(vehicleIndex, 1);
+
+    return {
+      ...state,
+      additionalVehicles: newVehicles
+    };
+  }),
   on(fetchVehiclesSuccess, (state, {vehicles}) => ({
     ...state,
     additionalVehicles: vehicles

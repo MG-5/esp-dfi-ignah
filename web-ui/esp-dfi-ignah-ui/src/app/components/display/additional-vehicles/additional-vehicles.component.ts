@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AdditionalVehicle } from 'src/app/models/additional-vehicles';
-import { fetchVehicles, pushVehicles, selectAdditionalVehicles } from 'src/app/store/mode';
+import { fetchVehicles, pushVehicles, removeVehicle, selectAdditionalVehicles } from 'src/app/store/mode';
 import { VehicleDialogComponent } from './vehicle-dialog/vehicle-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -13,7 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class AdditionalVehiclesComponent {
 
-  vehicles$: Observable<AdditionalVehicle[]> = this.store.select(selectAdditionalVehicles);
+  protected vehicles$: Observable<AdditionalVehicle[]> = this.store.select(selectAdditionalVehicles);
 
   constructor(private store: Store, private dialog: MatDialog) {}
 
@@ -21,8 +21,12 @@ export class AdditionalVehiclesComponent {
     this.store.dispatch(fetchVehicles());
   }
 
-  addVehicle(): void {
+  protected addVehicle(): void {
     const dialogRef = this.dialog.open(VehicleDialogComponent);
     dialogRef.afterClosed().subscribe(() => this.store.dispatch(pushVehicles()));
+  }
+
+  protected onDeleteVehicle(index: number): void {
+    this.store.dispatch(removeVehicle({vehicleIndex: index}));
   }
 }

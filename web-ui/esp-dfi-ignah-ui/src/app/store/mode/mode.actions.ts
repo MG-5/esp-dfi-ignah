@@ -99,6 +99,11 @@ export const addVehicle = createAction(
   props<{vehicle: AdditionalVehicle}>()
 );
 
+export const removeVehicle = createAction(
+  '[Vehicle] Remove',
+  props<{vehicleIndex: number}>()
+);
+
 export const fetchVehicles = createAction(
   '[Vehicle] Fetch'
 );
