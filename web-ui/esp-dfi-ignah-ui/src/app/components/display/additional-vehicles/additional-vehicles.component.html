@@ -1,6 +1,12 @@
-<ol>
-  <ul *ngFor="let vehicle of vehicles$ | async">{{vehicle.destination}}</ul>
-</ol>
+<mat-list *ngIf="vehicles$ | async as vehicles">
+  <ng-container *ngFor="let vehicle of vehicles; index as i">
+    <mat-list-item>
+      <span matListItemTitle>{{vehicle.destination}}</span>
+      <span matListItemLine>{{vehicle.departure}}</span>
+    </mat-list-item>
+    <mat-divider *ngIf="i !== vehicles.length - 1"></mat-divider>
+  </ng-container>
+</mat-list>
 
 <div>
   <button mat-flat-button color="primary" (click)="addVehicle()">Fahrzeug hinzufügen</button>
