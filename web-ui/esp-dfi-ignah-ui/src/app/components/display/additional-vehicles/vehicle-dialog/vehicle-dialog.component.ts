@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -18,6 +18,13 @@ export class VehicleDialogComponent {
   });
 
   constructor(public dialogRef: MatDialogRef<VehicleDialogComponent>, private formBuilder: FormBuilder, private store: Store) {}
+
+  @HostListener('window:keyup.Enter')
+  onPressEnter(): void {
+    if (this.form.valid) {
+      this.addVehicle();
+    }
+  }
 
   addVehicle(): void {
     const vehicle: AdditionalVehicle = {
