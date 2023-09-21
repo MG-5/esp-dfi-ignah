@@ -1,5 +1,12 @@
 @import "../../../media";
 
+.outer-container {
+  padding-left: 15px;
+  padding-right: 15px;
+  display: flex;
+  justify-content: center;
+}
+
 .mode-radio-group {
   display: flex;
   flex-direction: column;
@@ -22,5 +29,6 @@
 }
 
 .mode-settings-container {
-  margin-top: 2rem;
+  flex-grow: 1;
+  margin-top: 1rem;
 }

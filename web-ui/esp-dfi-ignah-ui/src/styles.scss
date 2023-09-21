@@ -1,8 +1,16 @@
 @import "@fontsource/material-icons";
 @import "media";
 
-html, body, mat-sidenav-container { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body,
+mat-sidenav-container {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 a {
   text-decoration: none;
@@ -14,9 +22,9 @@ a {
 }
 
 .container {
-  margin-left: 15px;
-  margin-right: 15px;
-  
+  padding-left: 15px;
+  padding-right: 15px;
+
   max-width: 100%;
 
   @include sm {
