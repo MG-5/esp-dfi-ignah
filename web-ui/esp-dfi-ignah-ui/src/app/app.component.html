@@ -1,0 +1,43 @@
+<mat-sidenav-container>
+
+  <mat-sidenav #sidenav>
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let navigationItem of navigationEntries"
+        [routerLink]="navigationItem.path">{{navigationItem.displayName}}</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+
+    <mat-toolbar [color]="themingService.getCurrentTheme() === theme.Light ? 'primary' : ''">
+      <span class="button--icon">
+        <button mat-icon-button *ngIf="isSmallLayout$ | async" (click)="sidenav.open()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </span>
+      <span>ESP DFI IGNah</span>
+
+      <ng-container *ngIf="!(isSmallLayout$ | async)">
+        <span *ngFor="let navigationItem of navigationEntries">
+          <a class="navigation-link mat-body-2" [routerLink]="navigationItem.path">{{navigationItem.displayName}}</a>
+        </span>
+      </ng-container>
+
+      <span class="spacer"></span>
+
+      <button mat-icon-button (click)="themingService.setDarkTheme()"
+        *ngIf="themingService.getCurrentTheme() === theme.Light; else darkModeButton">
+        <mat-icon>light_mode</mat-icon>
+      </button>
+      <ng-template #darkModeButton>
+        <button mat-icon-button (click)="themingService.setLightTheme()">
+          <mat-icon>dark_mode</mat-icon>
+        </button>
+      </ng-template>
+
+    </mat-toolbar>
+
+    <router-outlet></router-outlet>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

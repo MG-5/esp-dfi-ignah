@@ -1,0 +1,50 @@
+<div class="outer-container">
+  <div class="container mode-settings-container">
+    <h2>Anzeigeeinstellungen</h2>
+
+    <div>
+      <h3>Anzeigemodus</h3>
+
+      <div>
+        <mat-form-field>
+          <mat-select [value]="mode$ | async" #modeSelect>
+            <mat-option [value]="Mode.Normal">Abfahrten</mat-option>
+            <mat-option [value]="Mode.RunningText">Abfahrten + Lauftext</mat-option>
+            <mat-option [value]="Mode.FreeText">Freitext</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div>
+        <button mat-flat-button color="accent" class="mode-action-button"
+          (click)="saveMode(modeSelect.value)">Übernehmen</button>
+      </div>
+    </div>
+
+    <div class="mode-settings-container">
+      <h3>Moduseinstellungen</h3>
+
+      <mat-tab-group>
+
+        <mat-tab label="Lauftext">
+          <ng-template matTabContent>
+            <app-running-text></app-running-text>
+          </ng-template>
+        </mat-tab>
+
+        <mat-tab label="Freitext">
+          <ng-template matTabContent>
+            <app-free-text></app-free-text>
+          </ng-template>
+        </mat-tab>
+
+        <mat-tab label="Zusätzliche Fahrzeuge">
+          <ng-template matTabContent>
+            <app-additional-vehicles></app-additional-vehicles>
+          </ng-template>
+        </mat-tab>
+
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
