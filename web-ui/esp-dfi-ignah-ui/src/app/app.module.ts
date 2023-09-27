@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout'; 
@@ -30,6 +30,7 @@ import { ModeEffects, modeFeatureKey, modeReducer } from './store/mode';
 import { EffectsModule } from '@ngrx/effects';
 import { HttpClientModule } from '@angular/common/http';
 import { VehicleDialogComponent } from './components/display/additional-vehicles/vehicle-dialog/vehicle-dialog.component';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,8 @@ import { VehicleDialogComponent } from './components/display/additional-vehicles
     StoreModule.forRoot(),
     StoreModule.forFeature(modeFeatureKey, modeReducer),
     EffectsModule.forRoot(),
-    EffectsModule.forFeature([ModeEffects])
+    EffectsModule.forFeature([ModeEffects]),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
   ],
   providers: [],
   bootstrap: [AppComponent]
