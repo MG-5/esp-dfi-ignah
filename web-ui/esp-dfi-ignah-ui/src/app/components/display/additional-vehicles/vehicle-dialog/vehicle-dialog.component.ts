@@ -19,7 +19,7 @@ export class VehicleDialogComponent implements OnInit {
     departure: ['', Validators.required]
   });
 
-  protected action: VehicleAction = (this.data.vehicle && this.data.vehicleIndex) ? 'Edit' : 'Add';
+  protected action: VehicleAction = (this.data.vehicle != null && this.data.vehicleIndex != null) ? 'Edit' : 'Add';
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { vehicle?: AdditionalVehicle, vehicleIndex?: number }, public dialogRef: MatDialogRef<VehicleDialogComponent>, private formBuilder: FormBuilder, private store: Store) { }
 
