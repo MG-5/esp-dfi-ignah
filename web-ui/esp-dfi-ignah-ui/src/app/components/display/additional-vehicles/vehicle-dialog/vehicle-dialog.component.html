@@ -6,6 +6,10 @@
 <mat-dialog-content>
   <form [formGroup]="vehicleForm">
     <mat-form-field>
+    <mat-label>Linie</mat-label>
+      <input matInput formControlName="lineNumber">
+    </mat-form-field>
+    <mat-form-field>
       <mat-label>Ziel</mat-label>
       <input matInput formControlName="destination">
     </mat-form-field>

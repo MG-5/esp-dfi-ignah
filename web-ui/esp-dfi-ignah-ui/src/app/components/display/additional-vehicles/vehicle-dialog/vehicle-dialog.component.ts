@@ -15,6 +15,7 @@ type VehicleAction = 'Add' | 'Edit';
 export class VehicleDialogComponent implements OnInit {
 
   protected vehicleForm = this.formBuilder.group({
+    lineNumber: ['', Validators.required],
     destination: ['', Validators.required],
     departure: ['', Validators.required]
   });
@@ -33,6 +34,7 @@ export class VehicleDialogComponent implements OnInit {
   ngOnInit(): void {
     if (this.data.vehicle) {
       this.vehicleForm.setValue({
+        lineNumber: this.data.vehicle.lineNumber,
         destination: this.data.vehicle.destination,
         departure: this.data.vehicle.departure
       });
@@ -41,6 +43,7 @@ export class VehicleDialogComponent implements OnInit {
 
   addVehicle(): void {
     const vehicle: AdditionalVehicle = {
+      lineNumber: this.vehicleForm.value.lineNumber || '',
       destination: this.vehicleForm.value.destination || '',
       departure: this.vehicleForm.value.departure || ''
     };
@@ -51,6 +54,7 @@ export class VehicleDialogComponent implements OnInit {
 
   editVehicle(): void {
     const vehicle: AdditionalVehicle = {
+      lineNumber: this.data.vehicle?.lineNumber || '',
       destination: this.vehicleForm.value.destination || '',
       departure: this.vehicleForm.value.departure || ''
     };

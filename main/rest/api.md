@@ -138,12 +138,14 @@
     {
       "vehicles": [
         {
+          "lineNumber": "77",
           "destination": "Herrenkrug",
-          "departure": "hh:mm"
+          "departure": "13:30"
         },
         {
+          "lineNumber": "N11",
           "destination": "Alter Markt",
-          "departure": "hh:mm"
+          "departure": "23:15"
         }
       ]
     }
@@ -163,14 +165,16 @@
 * **Example GET Content:**
     ```json
     {
-      "vehicle": [
+      "vehicles": [
         {
+          "lineNumber": "77",
           "destination": "Herrenkrug",
-          "departure": "hh:mm"
+          "departure": "13:30"
         },
         {
+          "lineNumber": "N11",
           "destination": "Alter Markt",
-          "departure": "hh:mm"
+          "departure": "23:15"
         }
       ]
     }

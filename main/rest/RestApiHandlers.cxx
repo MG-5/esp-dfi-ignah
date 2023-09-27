@@ -401,11 +401,13 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
 
     for (size_t i = 0; i < arraySize; i++)
     {
+        auto lineNumberObject = cJSON_GetObjectItem(cJSON_GetArrayItem(vehicles, i), "lineNumber");
         auto destinationObject =
             cJSON_GetObjectItem(cJSON_GetArrayItem(vehicles, i), "destination");
         auto fpTimeObject = cJSON_GetObjectItem(cJSON_GetArrayItem(vehicles, i), "departure");
 
-        if (destinationObject == nullptr || destinationObject->type != cJSON_String ||
+        if (lineNumberObject == nullptr || lineNumberObject->type != cJSON_String ||
+            destinationObject == nullptr || destinationObject->type != cJSON_String ||
             fpTimeObject == nullptr || fpTimeObject->type != cJSON_String)
         {
             ESP_LOGE(PrintTag, "Array entry a index %d is not valid. This vehicle will be ignored.",
@@ -414,7 +416,8 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
         }
 
         Dfi::LocalTransportVehicle newVehicle{};
-        newVehicle.lineNumber = "Str   77";
+        newVehicle.lineNumber = "Str   ";
+        newVehicle.lineNumber += lineNumberObject->valuestring;
         newVehicle.directionName = destinationObject->valuestring;
 
         try
@@ -431,8 +434,9 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
 
         vehicleList.emplace_back(newVehicle);
 
-        ESP_LOGI(PrintTag, "%s (%.2d:%.2d)", newVehicle.directionName.c_str(),
-                 newVehicle.fpTime.hour, newVehicle.fpTime.minute);
+        ESP_LOGI(PrintTag, "Linie %s %s (%.2d:%.2d)", newVehicle.lineNumber.c_str(),
+                 newVehicle.directionName.c_str(), newVehicle.fpTime.hour,
+                 newVehicle.fpTime.minute);
     }
 
     cJSON_Delete(root);
@@ -448,6 +452,7 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
             break;
 
         auto object = cJSON_CreateObject();
+        cJSON_AddItemToObject(object, "lineNumber", cJSON_CreateString(vehicle.lineNumber.c_str()));
         cJSON_AddItemToObject(object, "destination",
                               cJSON_CreateString(vehicle.directionName.c_str()));
 
@@ -485,6 +490,21 @@ esp_err_t RestApiHandlers::additionalVehiclesGetHandler(httpd_req_t *req)
             break;
 
         auto object = cJSON_CreateObject();
+
+        const char *lineNumber;
+
+        try
+        {
+            lineNumber = it->lineNumber.substr(6).data();
+        }
+
+        catch (const std::exception &e)
+        {
+            ESP_LOGE(PrintTag, "line number is not valid, reject it: %s", it->lineNumber.data());
+            continue;
+        }
+
+        cJSON_AddItemToObject(object, "lineNumber", cJSON_CreateString(lineNumber));
         cJSON_AddItemToObject(object, "destination", cJSON_CreateString(it->directionName.c_str()));
 
         std::stringstream time;
