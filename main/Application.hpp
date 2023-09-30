@@ -5,6 +5,7 @@
 #include "led/LedControl.hpp"
 #include "led/RenderTask.hpp"
 #include "light_sensor/LightSensor.hpp"
+#include "nvm/NonVolatileMemory.hpp"
 #include "rest/RestServer.hpp"
 #include "wifi/Wireless.hpp"
 
@@ -35,6 +36,7 @@ private:
     RenderTask renderTask{dfi, ledControl};
     LightSensor lightSensor{ledControl};
     RestServer restServer{renderTask, dfi};
+    NonVolatileMemory nvm{};
 
     inline static TimerHandle_t timeoutTimer = nullptr;
 

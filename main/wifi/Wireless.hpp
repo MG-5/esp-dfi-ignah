@@ -35,7 +35,6 @@ private:
 
     inline static uint8_t reconnectionCounter = 0;
 
-    void startNvs();
     void init();
     void configureStation();
     void configureSoftAp();

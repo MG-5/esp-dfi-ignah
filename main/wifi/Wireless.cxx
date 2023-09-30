@@ -18,9 +18,8 @@ using namespace util::wrappers;
 //--------------------------------------------------------------------------------------------------
 void Wireless::taskMain(void *)
 {
-    sync::waitForAll(sync::LedDriverStarted);
+    sync::waitForAll(sync::LedDriverStarted | sync::ConfigurationLoaded);
 
-    startNvs();
     init();
     configureStation();
     configureSoftAp();
@@ -39,19 +38,6 @@ void Wireless::taskMain(void *)
             isConnected = true;
         }
     }
-}
-
-//--------------------------------------------------------------------------------------------------
-void Wireless::startNvs()
-{
-    esp_err_t ret = nvs_flash_init();
-
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
 }
 
 //--------------------------------------------------------------------------------------------------
