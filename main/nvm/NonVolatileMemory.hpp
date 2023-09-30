@@ -20,6 +20,48 @@ public:
         : TaskWithMemberFunctionBase("nvmTask", 2048, osPriorityAboveNormal2) //
           {};
 
+    template <typename T>
+    void read(std::string_view key, T &value)
+    {
+        esp_err_t err = handle->get_item(key.data(), value);
+
+        switch (err)
+        {
+        case ESP_OK:
+            break;
+
+        case ESP_ERR_NVS_NOT_FOUND:
+            ESP_LOGE(PrintTag, "The value \"%s\" is not initialized yet!", key.data());
+            break;
+
+        default:
+            ESP_LOGE(PrintTag, "Error (%s) while reading %s from NVS!\n", esp_err_to_name(err),
+                     key.data());
+            break;
+        }
+    }
+
+    template <typename T>
+    void write(std::string_view key, T &value)
+    {
+        esp_err_t err = handle->set_item(key.data(), value);
+
+        if (err != ESP_OK)
+            ESP_LOGE(PrintTag, "Error (%s) while writing %s to %s!\n", esp_err_to_name(err), value,
+                     key.data());
+    }
+
+    void commitValues()
+    {
+        ESP_LOGI(PrintTag, "Committing values to NVS ... ");
+
+        esp_err_t err = handle->commit();
+
+        if (err != ESP_OK)
+            ESP_LOGE(PrintTag, "Error (%s) while committing values to NVS!\n",
+                     esp_err_to_name(err));
+    }
+
 protected:
     void taskMain(void *) override
     {
