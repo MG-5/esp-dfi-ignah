@@ -141,3 +141,24 @@
 
 * **Returned code at PUT**
   * 200 with valid body as response, otherwise empty list
+
+----
+## station getter/setter
+  Get/Set the station name, number and its destination blocklist
+
+* **URL:** `/dfi/station`
+
+* **Method:** `GET` `PUT`
+
+* **Example GET/PUT Content:**
+    ```json
+    {
+      "name": "Ambrosiusplatz",
+      "number": 7303,
+      "blocklist": ["Sudenburg", "Friedenshöhe", "Reform"] 
+    }
+    ```
+
+* **Returned code at PUT**
+  * 200 at success
+  * 400 bad request

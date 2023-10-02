@@ -31,12 +31,13 @@ private:
     Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
 
-    Dfi dfi{isConnected};
+    NonVolatileMemory nvm{};
+    Settings settings{nvm};
+    Dfi dfi{isConnected, settings};
     LedControl ledControl{};
     RenderTask renderTask{dfi, ledControl};
     LightSensor lightSensor{ledControl};
-    RestServer restServer{renderTask, dfi};
-    NonVolatileMemory nvm{};
+    RestServer restServer{renderTask, dfi, settings};
 
     inline static TimerHandle_t timeoutTimer = nullptr;
 

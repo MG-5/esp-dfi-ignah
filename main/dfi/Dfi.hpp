@@ -6,6 +6,7 @@
 #include "wrappers/Task.hpp"
 
 #include "led/LedControl.hpp"
+#include "nvm/Settings.hpp"
 
 class Dfi : public util::wrappers::TaskWithMemberFunctionBase
 {
@@ -15,19 +16,11 @@ public:
     static constexpr auto MaximumNumberVehiclesToShow = 8;
     static constexpr auto MaximumNumberOfAdditionalVehicles = 8;
 
-    using BlacklistArray = std::array<std::string_view, 8>;
-
-    struct Station
-    {
-        uint16_t stationNumber = 0;
-        std::string_view stationName = "";
-        BlacklistArray blacklist{};
-    };
-
-    static constexpr Dfi::Station AmbrosiusplatzRtgStadt{
-        7307,                                                                              //
-        "Ambrosiusplatz",                                                                  //
-        {"Sudenburg", "Reform", "Friedenshöhe", "Magdeburg, Sudenburg, Braunlager Str."}}; //
+    Dfi(bool &isConnected, Settings &settings)
+        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
+          isConnected(isConnected), //
+          settings(settings)        //
+          {};
 
     struct LocalTransportVehicle
     {
@@ -38,11 +31,7 @@ public:
         int arrivalInMinutes = 0;
     };
 
-    static bool localTransportVehicleSorter(LocalTransportVehicle const &lhs,
-                                            LocalTransportVehicle const &rhs)
-    {
-        return lhs.arrivalInMinutes < rhs.arrivalInMinutes;
-    }
+    using BlocklistArray = std::array<std::string, 8>;
 
     using LocalTransportVehicleArray =
         std::array<LocalTransportVehicle,
@@ -50,20 +39,28 @@ public:
 
     using AdditionalVehicleList = std::vector<LocalTransportVehicle>;
 
-    explicit Dfi(bool &isConnected)
-        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
-          isConnected(isConnected) //
-          {};
-
-    std::string_view getStationName()
+    static bool localTransportVehicleSorter(LocalTransportVehicle const &lhs,
+                                            LocalTransportVehicle const &rhs)
     {
-        return currentStation->stationName;
+        return lhs.arrivalInMinutes < rhs.arrivalInMinutes;
     }
 
     const LocalTransportVehicleArray &getVehicles() const
     {
         return vehicleArray;
     }
+
+    const std::string &getStationName() const
+    {
+        return settings.stationName;
+    }
+
+    const BlocklistArray &getBlocklist() const
+    {
+        return blocklist;
+    }
+
+    void updateBlocklist();
 
     void setAdditionalVehicles(AdditionalVehicleList &additionalVehicles);
     void getAdditionalVehicles(AdditionalVehicleList &additionalVehicles);
@@ -73,11 +70,12 @@ protected:
 
 private:
     bool &isConnected;
-    const Station *currentStation = &AmbrosiusplatzRtgStadt;
+    Settings &settings;
 
     HttpClient httpClient{MaximumNumberVehiclesRequest};
     pugi::xml_document xmlDocument{};
     LocalTransportVehicleArray vehicleArray{};
+    BlocklistArray blocklist{};
 
     AdditionalVehicleList additionalVehicleList{MaximumNumberOfAdditionalVehicles};
 

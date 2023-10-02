@@ -6,6 +6,7 @@
 
 #include "dfi/Dfi.hpp"
 #include "led/RenderTask.hpp"
+#include "nvm/Settings.hpp"
 
 #include <string>
 
@@ -19,7 +20,11 @@ public:
     static constexpr auto WebMountPoint = "/www";
     static constexpr auto UseGzipCompression = true;
 
-    explicit RestServer(RenderTask &renderTask, Dfi &dfi) : renderTask(renderTask), dfi(dfi){};
+    explicit RestServer(RenderTask &renderTask, Dfi &dfi, Settings &settings)
+        : renderTask(renderTask), //
+          dfi(dfi),               //
+          settings(settings)                //
+          {};
 
     void initServer();
 
@@ -29,6 +34,7 @@ private:
 
     RenderTask &renderTask;
     Dfi &dfi;
+    Settings &settings;
 
     void initialiseMdns();
     esp_err_t initFileSystem();

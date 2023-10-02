@@ -14,7 +14,7 @@ constexpr auto Path = "/bin/stboard.exe/dn";
 size_t HttpClient::bufferIndex = 0;
 std::array<char, MaximumBufferSize> HttpClient::dataBuffer;
 
-bool HttpClient::requestData(uint16_t stationNumber)
+bool HttpClient::requestData(uint32_t stationNumber)
 {
     bufferIndex = 0;
     dataBuffer.fill(0);
