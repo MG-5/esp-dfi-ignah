@@ -156,6 +156,19 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                                             .user_ctx = this};
     httpd_register_uri_handler(server, &additionalVehiclesGetUri);
 
+    httpd_uri_t stationGetUri = {.uri = "/dfi/station",
+                                 .method = HTTP_GET,
+                                 .handler = RestApiHandlers::stationGetHandler,
+                                 .user_ctx = this};
+    httpd_register_uri_handler(server, &stationGetUri);
+    /*
+    httpd_uri_t stationSetUri = {.uri = "/dfi/station",
+                                 .method = HTTP_PUT,
+                                 .handler = RestApiHandlers::stationSetHandler,
+                                 .user_ctx = this};
+    httpd_register_uri_handler(server, &stationSetUri);
+    */
+
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //
                                 .method = HTTP_GET,

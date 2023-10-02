@@ -524,6 +524,30 @@ esp_err_t RestApiHandlers::additionalVehiclesGetHandler(httpd_req_t *req)
 }
 
 //--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::stationGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "stationGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto jsonRoot = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(jsonRoot, "name", serverInstance->settings.stationName.c_str());
+    cJSON_AddNumberToObject(jsonRoot, "number", serverInstance->settings.stationNumber);
+    auto blocklistArray = cJSON_AddArrayToObject(jsonRoot, "blocklist");
+
+    for (auto &blockEntry : serverInstance->dfi.getBlocklist())
+        cJSON_AddItemToArray(blocklistArray, cJSON_CreateString(blockEntry.c_str()));
+
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, jsonData.data());
+    cJSON_Delete(jsonRoot);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
 {
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
