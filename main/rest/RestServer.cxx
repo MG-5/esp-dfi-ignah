@@ -169,6 +169,18 @@ esp_err_t RestServer::startServer(std::string newBasePath)
     httpd_register_uri_handler(server, &stationSetUri);
     */
 
+    httpd_uri_t lightSensorGetUri = {.uri = "/lightsensor",
+                                     .method = HTTP_GET,
+                                     .handler = RestApiHandlers::lightSensorGetHandler,
+                                     .user_ctx = this};
+    httpd_register_uri_handler(server, &lightSensorGetUri);
+
+    httpd_uri_t lightSensorSetUri = {.uri = "/lightsensor",
+                                     .method = HTTP_PUT,
+                                     .handler = RestApiHandlers::lightSensorSetHandler,
+                                     .user_ctx = this};
+    httpd_register_uri_handler(server, &lightSensorSetUri);
+
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //
                                 .method = HTTP_GET,

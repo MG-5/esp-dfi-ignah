@@ -32,6 +32,9 @@ public:
     static esp_err_t stationSetHandler(httpd_req_t *req);
     static esp_err_t stationGetHandler(httpd_req_t *req);
 
+    static esp_err_t lightSensorSetHandler(httpd_req_t *req);
+    static esp_err_t lightSensorGetHandler(httpd_req_t *req);
+
     static esp_err_t loadContentToBuffer(httpd_req_t *req);
 
     static void addCorsHeaders(httpd_req_t *req);

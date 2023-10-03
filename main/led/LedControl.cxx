@@ -1,6 +1,7 @@
 #include "LedControl.hpp"
 #include "esp_log.h"
 #include "helpers/freertos.hpp"
+#include "nvm/Settings.hpp"
 #include "sync.hpp"
 
 using namespace util::wrappers;
@@ -60,7 +61,7 @@ void LedControl::initGpios()
 void LedControl::initPwm()
 {
     ledc_timer_config_t ledcTimer = {.speed_mode = PwmMode,
-                                     .duty_resolution = PwmResolution,
+                                     .duty_resolution = Settings::PwmResolution,
                                      .timer_num = LEDC_TIMER_0,
                                      .freq_hz = 20000, // frequency in Hz
                                      .clk_cfg = LEDC_AUTO_CLK};
@@ -72,7 +73,7 @@ void LedControl::initPwm()
         .channel = PwmChannel,
         .intr_type = LEDC_INTR_DISABLE,
         .timer_sel = LEDC_TIMER_0,
-        .duty = PwmMaximumDuty / 4, // Set duty to 25%
+        .duty = Settings::PwmMaximumDuty / 4, // Set duty to 25%
         .hpoint = 0,
         .flags = {1} // invert output
     };
@@ -82,8 +83,8 @@ void LedControl::initPwm()
 //--------------------------------------------------------------------------------------------------
 void LedControl::setPwmDuty(size_t dutyCycle)
 {
-    if (dutyCycle > PwmMaximumDuty)
-        dutyCycle = PwmMaximumDuty;
+    if (dutyCycle > Settings::PwmMaximumDuty)
+        dutyCycle = Settings::PwmMaximumDuty;
 
     ESP_ERROR_CHECK(ledc_set_duty(PwmMode, PwmChannel, dutyCycle));
     ESP_ERROR_CHECK(ledc_update_duty(PwmMode, PwmChannel));

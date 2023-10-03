@@ -11,7 +11,7 @@ void LightSensor::taskMain(void *)
     auto lastWakeTime = xTaskGetTickCount();
     while (true)
     {
-        vTaskDelayUntil(&lastWakeTime, toOsTicks(50.0_Hz));
+        vTaskDelayUntil(&lastWakeTime, toOsTicks(25.0_Hz));
 
         if (!isSensorOkay)
         {
@@ -88,7 +88,7 @@ bool LightSensor::readSensor()
     if (!optionalResult)
         return false;
 
-    rawValue = optionalResult.value() * Gain;
+    rawValue = optionalResult.value();
 
     return sensor.shutdown();
 }
@@ -96,16 +96,17 @@ bool LightSensor::readSensor()
 //--------------------------------------------------------------------------------------------------
 void LightSensor::updatePwm()
 {
-    constexpr uint16_t PwmMaximum = 4095 * 0.8;
-    constexpr uint16_t InputMaximum = ((1 << Resolution) - 1) * Gain;
+    constexpr uint16_t InputMaximum = ((1 << Resolution) - 1);
 
-    uint16_t pwmValue =
-        util::mapValue<uint16_t, uint16_t>(0, InputMaximum, 0, PwmMaximum, filteredValue);
+    uint16_t pwmValue = util::mapValue<uint16_t, uint16_t>(0, InputMaximum, settings.pwmMinimum,
+                                                           settings.pwmMaximum, filteredValue);
 
-    pwmValue += 100;
+    pwmValue *= settings.pwmGain;
 
-    if (pwmValue > PwmMaximum)
-        pwmValue = PwmMaximum;
+    if (pwmValue > settings.pwmMaximum)
+        pwmValue = settings.pwmMaximum;
 
     ledControl.setPwmDuty(pwmValue);
+
+    ESP_LOGD(PrintTag, "pwm value: %d", pwmValue);
 }

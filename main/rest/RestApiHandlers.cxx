@@ -524,6 +524,70 @@ esp_err_t RestApiHandlers::stationGetHandler(httpd_req_t *req)
 }
 
 //--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::lightSensorGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "lightSensorGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto jsonRoot = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(jsonRoot, "pwmMinimum", serverInstance->settings.pwmMinimum);
+    cJSON_AddNumberToObject(jsonRoot, "pwmMaximum", serverInstance->settings.pwmMaximum);
+    cJSON_AddNumberToObject(jsonRoot, "pwmGain", serverInstance->settings.pwmGain);
+
+    sendJsonResponse(req, jsonRoot);
+    cJSON_Delete(jsonRoot);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::lightSensorSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "lightSensorSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+
+    auto pwmMinimum = cJSON_GetObjectItem(root, "pwmMinimum");
+    auto pwmMaximum = cJSON_GetObjectItem(root, "pwmMaximum");
+    auto pwmGain = cJSON_GetObjectItem(root, "pwmGain");
+
+    if (!pwmMinimum || !pwmMaximum || !pwmGain || pwmMinimum->type != cJSON_Number ||
+        pwmMaximum->type != cJSON_Number || pwmGain->type != cJSON_Number)
+    {
+        addCorsHeaders(req);
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "pwmMinimum, pwmMaximum or pwmGain does not exist or it not a number");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    serverInstance->settings.updateValue(Settings::PwmMinimumName,
+                                         serverInstance->settings.pwmMinimum,
+                                         static_cast<size_t>(pwmMinimum->valueint));
+
+    serverInstance->settings.updateValue(Settings::PwmMaximumName,
+                                         serverInstance->settings.pwmMaximum,
+                                         static_cast<size_t>(pwmMaximum->valueint));
+
+    serverInstance->settings.updateValue(Settings::PwmGainName, serverInstance->settings.pwmGain,
+                                         static_cast<float>(pwmGain->valuedouble));
+
+    cJSON_Delete(root);
+
+    addCorsHeaders(req);
+    httpd_resp_set_status(req, HTTPD_200);
+    httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::loadContentToBuffer(httpd_req_t *req)
 {
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);

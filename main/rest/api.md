@@ -162,3 +162,24 @@
 * **Returned code at PUT**
   * 200 at success
   * 400 bad request
+
+----
+## light sensor getter/setter
+  Get/Set the settings for light sensor.
+
+* **URL:** `/lightsensor`
+
+* **Method:** `GET` `PUT`
+
+* **Example GET/PUT Content:**
+    ```json
+    {
+      "pwmMinimum": 100,
+      "pwmMaximum": 1023,
+      "pwmGain": 1.0000 
+    }
+    ```
+
+* **Returned code at PUT**
+  * 200 at success
+  * 400 bad request

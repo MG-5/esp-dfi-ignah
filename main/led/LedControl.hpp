@@ -42,8 +42,6 @@ public:
     static constexpr auto PwmChannel = LEDC_CHANNEL_0;
 
     static constexpr auto PwmMode = LEDC_LOW_SPEED_MODE;
-    static constexpr auto PwmResolution = LEDC_TIMER_10_BIT;
-    static constexpr auto PwmMaximumDuty = (1 << PwmResolution) - 1;
 
     void initGpios();
 
