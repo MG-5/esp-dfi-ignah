@@ -22,31 +22,72 @@ public:
     template <typename T>
     void read(std::string_view key, T &value)
     {
-        esp_err_t err = handle->get_item(key.data(), value);
-
-        switch (err)
+        esp_err_t err;
+        if constexpr (std::is_same_v<float, T>)
         {
-        case ESP_OK:
-            ESP_LOGI(PrintTag, "Load \"%s\" from NVS.", key.data());
-            break;
+            uint32_t tempValue = 0;
+            err = handle->get_item(key.data(), tempValue);
+            value = tempValue / 1000.0;
 
-        case ESP_ERR_NVS_NOT_FOUND:
-            ESP_LOGE(PrintTag,
-                     "The value \"%s\" is not initialized yet! Set it to internal default value.",
-                     key.data());
-            write(key, value); // value contains default value
-            break;
+            if (err == ESP_OK)
+                ESP_LOGI(PrintTag, "Load \"%s\" from NVS: %f", key.data(), value);
 
-        default:
+            else if (err == ESP_ERR_NVS_NOT_FOUND)
+            {
+                ESP_LOGE(
+                    PrintTag,
+                    "The value \"%s\" is not initialized yet! Set it to internal default value: %f",
+                    key.data(), value);
+
+                // value contains default value
+                write(key, static_cast<size_t>(value * 1000));
+            }
+        }
+        else if constexpr (std::is_same_v<std::string, T>)
+        {
+            err = handle->get_item(key.data(), *value.data());
+
+            if (err == ESP_OK)
+                ESP_LOGI(PrintTag, "Load \"%s\" from NVS: %s", key.data(), value.data());
+
+            else if (err == ESP_ERR_NVS_NOT_FOUND)
+            {
+                ESP_LOGE(
+                    PrintTag,
+                    "The value \"%s\" is not initialized yet! Set it to internal default value: %s",
+                    key.data(), value.data());
+
+                // value contains default value
+                write(key, *value.data());
+            }
+        }
+        else // for integers
+        {
+            err = handle->get_item(key.data(), value);
+
+            if (err == ESP_OK)
+                ESP_LOGI(PrintTag, "Load \"%s\" from NVS: %du", key.data(), value);
+
+            else if (err == ESP_ERR_NVS_NOT_FOUND)
+            {
+                ESP_LOGE(PrintTag,
+                         "The value \"%s\" is not initialized yet! Set it to internal default "
+                         "value: %du",
+                         key.data(), value);
+
+                // value contains default value
+                write(key, value);
+            }
+        }
+
+        if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND)
             ESP_LOGE(PrintTag, "Error (%s) while reading %s from NVS!\n", esp_err_to_name(err),
                      key.data());
-            break;
-        }
     }
 
     /// multithread-safe write to NVS
     template <typename T>
-    void write(std::string_view key, T &value)
+    void write(std::string_view key, const T &value)
     {
         esp_err_t err = handle->set_item(key.data(), value);
 
@@ -56,7 +97,7 @@ public:
     }
 
     template <typename T>
-    void updateValue(std::string_view key, T &value)
+    void updateValue(std::string_view key, const T &value)
     {
         write(key, value);
         // commitValues(); // not needed at IDF 5.1.1

@@ -21,7 +21,7 @@ void Dfi::taskMain(void *)
 {
     sync::waitForAll(sync::ConnectedToWifi | sync::TimeIsSynchronized | sync::ConfigurationLoaded);
 
-    ESP_LOGI(PrintTag, "Station %s with number %lu", settings.stationName.data(),
+    ESP_LOGI(PrintTag, "Station %s with number %du", settings.stationName.data(),
              settings.stationNumber);
     updateBlocklist();
 

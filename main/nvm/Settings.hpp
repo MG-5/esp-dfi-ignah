@@ -16,7 +16,7 @@ public:
           nvm(nvm){};
 
     static constexpr auto StationNumberName = "stationNumber";
-    static constexpr auto StationNumberDefault = 7307;
+    static constexpr size_t StationNumberDefault = 7307;
 
     static constexpr auto StationNameName = "stationName";
     static constexpr auto StationNameDefault = "Ambrosiusplatz";
@@ -25,14 +25,14 @@ public:
     static constexpr auto StationBlocklistDefault =
         "Sudenburg;Reform;Friedenshöhe;Magdeburg, Sudenburg, Braunlager Str.";
 
-    uint32_t stationNumber = StationNumberDefault;
+    size_t stationNumber = StationNumberDefault;
     std::string stationName = StationNameDefault;
     std::string stationBlocklist = StationBlocklistDefault;
 
 protected:
     void taskMain(void *)
     {
-        sync::waitForOne(sync::NvmInitialized);
+        sync::waitForAll(sync::NvmInitialized | sync::LedDriverStarted);
         loadValues();
         sync::signal(sync::ConfigurationLoaded);
     }
@@ -45,13 +45,7 @@ private:
         ESP_LOGI(PrintTag, "Loading values from NVS ... ");
 
         nvm.read(StationNumberName, stationNumber);
-        nvm.read(StationNameName, *stationName.data());
-        nvm.read(StationBlocklistName, *stationBlocklist.data());
-
-        ESP_LOGI(PrintTag, "%s with value \"%lu\"", StationNumberName, stationNumber);
-
-        ESP_LOGI(PrintTag, "%s with value \"%s\"", StationNameName, stationName.data());
-
-        ESP_LOGI(PrintTag, "%s with value \"%s\"", StationBlocklistName, stationBlocklist.data());
+        nvm.read(StationNameName, stationName);
+        nvm.read(StationBlocklistName, stationBlocklist);
     }
 };
