@@ -98,7 +98,6 @@ esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
 esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "systemInfoGetHandler");
-    httpd_resp_set_type(req, "application/json");
 
     cJSON *jsonRoot = cJSON_CreateObject();
     esp_chip_info_t chipInfo;
@@ -112,9 +111,7 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
     cJSON_AddNumberToObject(jsonRoot, "model", chipInfo.model);
     cJSON_AddNumberToObject(jsonRoot, "cores", chipInfo.cores);
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -123,7 +120,6 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
 esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "systemClockGetHandler");
-    httpd_resp_set_type(req, "application/json");
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
     auto localTime = Timebase::getLocaltime(Timebase::getCurrentUTC());
@@ -134,9 +130,7 @@ esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "clock", serverInstance->scratchBuffer);
     cJSON_AddStringToObject(jsonRoot, "timezone", Timebase::Timezone);
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -145,7 +139,6 @@ esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
 esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "wifiStationGetHandler");
-    httpd_resp_set_type(req, "application/json");
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
 
@@ -168,9 +161,7 @@ esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
     cJSON_AddNumberToObject(jsonRoot, "channel", Wireless::staInfos.channel);
     cJSON_AddStringToObject(jsonRoot, "authMode", authMode.data());
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -308,10 +299,7 @@ esp_err_t RestApiHandlers::freeTextGetHandler(httpd_req_t *req)
     auto jsonArray = createStringArray();
     cJSON_AddItemToObject(jsonRoot, "lines", jsonArray);
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
 
     return ESP_OK;
@@ -366,10 +354,7 @@ esp_err_t RestApiHandlers::runningTextGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "text", runningTextParameters.first.c_str());
     cJSON_AddNumberToObject(jsonRoot, "speed", runningTextParameters.second.getMagnitude());
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
 
     return ESP_OK;
@@ -464,10 +449,7 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
         cJSON_AddItemToArray(newArray, object);
     }
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -515,10 +497,7 @@ esp_err_t RestApiHandlers::additionalVehiclesGetHandler(httpd_req_t *req)
         cJSON_AddItemToArray(newArray, object);
     }
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -538,10 +517,7 @@ esp_err_t RestApiHandlers::stationGetHandler(httpd_req_t *req)
     for (auto &blockEntry : serverInstance->dfi.getBlocklist())
         cJSON_AddItemToArray(blocklistArray, cJSON_CreateString(blockEntry.c_str()));
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
 
     return ESP_OK;
@@ -588,4 +564,14 @@ void RestApiHandlers::addCorsHeaders(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "GET, PUT, OPTIONS");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type");
+}
+
+//--------------------------------------------------------------------------------------------------
+// build a json object from the request body and send it
+void RestApiHandlers::sendJsonResponse(httpd_req_t *req, cJSON *jsonRoot)
+{
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, jsonData.data());
 }

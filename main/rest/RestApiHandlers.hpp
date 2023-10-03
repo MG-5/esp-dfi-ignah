@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cJSON.h"
 #include "esp_http_server.h"
 
 class RestApiHandlers
@@ -34,4 +35,6 @@ public:
     static esp_err_t loadContentToBuffer(httpd_req_t *req);
 
     static void addCorsHeaders(httpd_req_t *req);
+
+    static void sendJsonResponse(httpd_req_t *req, cJSON *jsonRoot);
 };
