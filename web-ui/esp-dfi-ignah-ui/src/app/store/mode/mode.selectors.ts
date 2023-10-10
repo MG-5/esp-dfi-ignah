@@ -19,3 +19,5 @@ export const selectFreeText = createSelector(modeFeature,
 export const selectAdditionalVehicles = createSelector(modeFeature,
   (state: ModeState) => state.additionalVehicles
 );
+
+export const selectLightSensorSettings = createSelector(modeFeature, (state: ModeState) => state.lightSensorSettings);

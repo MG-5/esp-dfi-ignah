@@ -1,6 +1,7 @@
 import { createAction, props } from "@ngrx/store";
 import { AdditionalVehicle } from "src/app/models/additional-vehicles";
 import { FreeText } from "src/app/models/free-text";
+import { LightSensorSettings } from "src/app/models/light-sensor";
 import { Mode } from "src/app/models/mode";
 import { RunningText } from "src/app/models/running-text";
 
@@ -132,4 +133,33 @@ export const pushVehiclesSuccess = createAction(
 
 export const pushVehiclesError = createAction(
   '[Vehicle] Push failed'
+);
+
+
+// Light sensor
+
+export const getLightSensor = createAction(
+  '[LightSensor] Get light sensor settings'
+);
+
+export const getLightSensorSuccess = createAction(
+  '[LightSensor] Got light sensor settings',
+  props<{ settings: LightSensorSettings }>()
+);
+
+export const getLightSensorError = createAction(
+  '[LightSensor] Error getting light sensor settings'
+);
+
+export const setLightSensor = createAction(
+  '[LightSensor] Set light sensor settings',
+  props<{ settings: LightSensorSettings }>()
+);
+
+export const setLightSensorSuccess = createAction(
+  '[LightSensor] Set mode successfully'
+);
+
+export const setLightSensorError = createAction(
+  '[LightSensor] Error setting light sensor settings'
 );
