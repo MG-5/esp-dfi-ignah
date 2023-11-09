@@ -21,3 +21,5 @@ export const selectAdditionalVehicles = createSelector(modeFeature,
 );
 
 export const selectLightSensorSettings = createSelector(modeFeature, (state: ModeState) => state.lightSensorSettings);
+
+export const selectDfiStationSettings = createSelector(modeFeature, (state: ModeState) => state.stationSettings);

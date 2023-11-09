@@ -1,5 +1,6 @@
 import { createAction, props } from "@ngrx/store";
 import { AdditionalVehicle } from "src/app/models/additional-vehicles";
+import { DfiStationSettings } from "src/app/models/dfi-station-settings";
 import { FreeText } from "src/app/models/free-text";
 import { LightSensorSettings } from "src/app/models/light-sensor";
 import { Mode } from "src/app/models/mode";
@@ -157,9 +158,38 @@ export const setLightSensor = createAction(
 );
 
 export const setLightSensorSuccess = createAction(
-  '[LightSensor] Set mode successfully'
+  '[LightSensor] Set light sensor settings successfully'
 );
 
 export const setLightSensorError = createAction(
   '[LightSensor] Error setting light sensor settings'
+);
+
+
+// Station
+
+export const getDfiStationSettings = createAction(
+  '[DfiStationSettings] Get station settings'
+);
+
+export const getDfiStationSettingsSuccess = createAction(
+  '[DfiStationSettings] Got station settings',
+  props<{ settings: DfiStationSettings }>()
+);
+
+export const getDfiStationSettingsError = createAction(
+  '[DfiStationSettings] Error getting station settings'
+);
+
+export const setDfiStationSettings = createAction(
+  '[DfiStationSettings] Set station settings',
+  props<{ settings: DfiStationSettings }>()
+);
+
+export const setDfiStationSettingsSuccess = createAction(
+  '[DfiStationSettings] Set station settings successfully'
+);
+
+export const setDfiStationSettingsError = createAction(
+  '[DfiStationSettings] Error setting station settings'
 );
