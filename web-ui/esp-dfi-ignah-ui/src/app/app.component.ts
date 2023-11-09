@@ -22,5 +22,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.isSmallLayout$ = this.breakpointObserver.observe([Breakpoints.Small, Breakpoints.XSmall]).pipe(map(state => state.matches));
+
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', event => {
+      if (event.matches) {
+        this.themingService.setLightTheme();
+      } else {
+        this.themingService.setDarkTheme();
+      }
+  });
   }
 }

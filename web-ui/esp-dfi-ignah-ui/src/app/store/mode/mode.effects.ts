@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, combineLatest, map, mergeMap, of, withLatestFrom } from "rxjs";
 import { ModeService } from "src/app/services/api/mode.service";
 import { TextService } from "src/app/services/api/text.service";
-import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError, fetchVehicles, fetchVehiclesSuccess, fetchVehiclesError, pushVehicles, pushVehiclesSuccess, pushVehiclesError, setLightSensor, setLightSensorSuccess, setLightSensorError, getLightSensor, getLightSensorSuccess, getLightSensorError } from "./mode.actions";
+import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError, fetchVehicles, fetchVehiclesSuccess, fetchVehiclesError, pushVehicles, pushVehiclesSuccess, pushVehiclesError, setLightSensor, setLightSensorSuccess, setLightSensorError, getLightSensor, getLightSensorSuccess, getLightSensorError, getDfiStationSettings, setDfiStationSettings, getDfiStationSettingsSuccess, setDfiStationSettingsSuccess, setDfiStationSettingsError, getDfiStationSettingsError } from "./mode.actions";
 import { VehicleService } from "src/app/services/api/vehicle.service";
 import { Store } from "@ngrx/store";
 import { selectAdditionalVehicles } from "./mode.selectors";
@@ -100,6 +100,24 @@ export class ModeEffects {
       mergeMap(({ settings }) => this.systemService.setLightSensor(settings)),
       map(() => setLightSensorSuccess()),
       catchError(() => of(setLightSensorError()))
+    );
+  });
+
+  getDfiStationSettings$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(getDfiStationSettings),
+      mergeMap(() => this.systemService.getDfiStationSettings()),
+      map((settings) => getDfiStationSettingsSuccess({ settings })),
+      catchError(() => of(getDfiStationSettingsError()))
+    );
+  });
+
+  setDfiStationSettings$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(setDfiStationSettings),
+      mergeMap(({ settings }) => this.systemService.setDfiStationSettings(settings)),
+      map(() => setDfiStationSettingsSuccess()),
+      catchError(() => of(setDfiStationSettingsError()))
     );
   });
 

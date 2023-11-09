@@ -34,46 +34,41 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    DisplayComponent,
-    FreeTextComponent,
-    RunningTextComponent,
-    AdditionalVehiclesComponent,
-    VehicleDialogComponent,
-    SettingsComponent
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    HttpClientModule,
-    LayoutModule,
-    ReactiveFormsModule,
-
-    AppRoutingModule,
-
-    MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatRadioModule,
-    MatSelectModule,
-    MatSidenavModule,
-    MatSliderModule,
-    MatTabsModule,
-    MatToolbarModule,
-
-    StoreModule.forRoot(),
-    StoreModule.forFeature(modeFeatureKey, modeReducer),
-    EffectsModule.forRoot(),
-    EffectsModule.forFeature([ModeEffects]),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    declarations: [AppComponent],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        HttpClientModule,
+        LayoutModule,
+        ReactiveFormsModule,
+        AppRoutingModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatListModule,
+        MatRadioModule,
+        MatSelectModule,
+        MatSidenavModule,
+        MatSliderModule,
+        MatTabsModule,
+        MatToolbarModule,
+        StoreModule.forRoot(),
+        StoreModule.forFeature(modeFeatureKey, modeReducer),
+        EffectsModule.forRoot(),
+        EffectsModule.forFeature([ModeEffects]),
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        HomeComponent,
+        DisplayComponent,
+        FreeTextComponent,
+        RunningTextComponent,
+        AdditionalVehiclesComponent,
+        VehicleDialogComponent,
+        SettingsComponent
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -7,21 +7,21 @@
         <h3>Station</h3>
 
         <div>
-          <mat-form-field>
+          <mat-form-field class="xs-full-width">
             <mat-label>Name</mat-label>
             <input matInput type="text" formControlName="name">
           </mat-form-field>
         </div>
         <div>
-          <mat-form-field>
+          <mat-form-field class="xs-full-width">
             <mat-label>Nummer</mat-label>
             <input matInput type="text" formControlName="number">
           </mat-form-field>
         </div>
-        <div>
+        <!-- <div>
           <label for="station-name">Sperrliste:</label>
           <input matInput type="text" id="station-blocklist" name="station-blocklist" value="string array">
-        </div>
+        </div> -->
       </div>
 
       <div formGroupName="lightSensor">
@@ -48,6 +48,10 @@
         <mat-slider step="0.25" [min]="lightSensorGainMin" [max]="lightSensorGainMax" showTickMarks class="control">
           <input matSliderThumb formControlName="gain">
         </mat-slider>
+      </div>
+
+      <div class="action-button-bar">
+        <button mat-flat-button color="primary" class="xs-full-width" (click)="saveStationSettings()">Übernehmen</button>
       </div>
     </form>
   </div>
