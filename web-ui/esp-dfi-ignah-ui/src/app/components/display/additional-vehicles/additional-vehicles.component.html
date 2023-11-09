@@ -1,22 +1,28 @@
-<mat-list *ngIf="vehicles$ | async as vehicles">
-  <ng-container *ngFor="let vehicle of vehicles; index as i">
-    <mat-list-item>
-      <span matListItemTitle>Linie {{vehicle.lineNumber}}: {{vehicle.destination}}</span>
-      <span matListItemLine>{{vehicle.departure}}</span>
+@if (vehicles$ | async; as vehicles) {
+<mat-list>
+  @for (vehicle of vehicles; track vehicle; let i = $index) {
 
-      <span matListItemMeta>
-        <button mat-icon-button (click)="onEditVehicle(vehicle, i)">
-          <mat-icon>edit</mat-icon>
-        </button>
+  <mat-list-item>
+    <span matListItemTitle>Linie {{vehicle.lineNumber}}: {{vehicle.destination}}</span>
+    <span matListItemLine>{{vehicle.departure}}</span>
 
-        <button mat-icon-button (click)="onDeleteVehicle(i)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </span>
-    </mat-list-item>
-    <mat-divider *ngIf="i !== vehicles.length - 1"></mat-divider>
-  </ng-container>
+    <span matListItemMeta>
+      <button mat-icon-button (click)="onEditVehicle(vehicle, i)">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="onDeleteVehicle(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </span>
+  </mat-list-item>
+  @if (i !== vehicles.length - 1) {
+  <mat-divider></mat-divider>
+  }
+
+  }
 </mat-list>
+}
 
 <div>
   <button mat-stroked-button color="primary" (click)="onRefresh()">Aktualisieren</button>

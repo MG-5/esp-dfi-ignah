@@ -61,8 +61,8 @@ public:
         }
         else if constexpr (std::is_same_v<std::string, T>)
         {
-            ESP_LOGI(PrintTag, "Updating %s to %s", name, value);
-            nvm.updateValue(name, value.c_str());
+            ESP_LOGI(PrintTag, "Updating %s to %s", name, value.c_str());
+            nvm.updateValue(name, value);
         }
         else
         {

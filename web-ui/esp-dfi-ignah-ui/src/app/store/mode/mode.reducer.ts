@@ -2,14 +2,18 @@ import { createReducer, on } from "@ngrx/store";
 import { FreeText } from "src/app/models/free-text";
 import { Mode } from "src/app/models/mode";
 import { RunningText } from "src/app/models/running-text";
-import { addVehicle, fetchVehiclesSuccess, getFreeTextSuccess, getModeSuccess, getRunningTextSuccess, removeVehicle, updateVehicle } from "./mode.actions";
+import { addVehicle, fetchVehiclesSuccess, getFreeTextSuccess, getLightSensorSuccess, getModeSuccess, getRunningTextSuccess, getDfiStationSettingsSuccess, removeVehicle, updateVehicle } from "./mode.actions";
 import { AdditionalVehicle } from "src/app/models/additional-vehicles";
+import { LightSensorSettings } from "src/app/models/light-sensor";
+import { DfiStationSettings } from "src/app/models/dfi-station-settings";
 
 export interface ModeState {
   mode: Mode;
   runningText: RunningText;
   freeText: FreeText;
   additionalVehicles: AdditionalVehicle[];
+  lightSensorSettings: LightSensorSettings;
+  stationSettings: DfiStationSettings;
 }
 
 const initialState: ModeState = {
@@ -21,7 +25,17 @@ const initialState: ModeState = {
   freeText: {
     lines: []
   },
-  additionalVehicles: []
+  additionalVehicles: [],
+  lightSensorSettings: {
+    pwmMinimum: 50,
+    pwmMaximum: 1023,
+    pwmGain: 0,
+  },
+  stationSettings: {
+    blocklist: [],
+    name: '',
+    number: -1,
+  }
 };
 
 export const modeReducer = createReducer(
@@ -63,5 +77,13 @@ export const modeReducer = createReducer(
   on(fetchVehiclesSuccess, (state, { vehicles }) => ({
     ...state,
     additionalVehicles: vehicles
-  }))
+  })),
+  on(getLightSensorSuccess, (state, { settings }) => ({
+    ...state,
+    lightSensorSettings: settings
+  })),
+  on(getDfiStationSettingsSuccess, (state, { settings }) => ({
+    ...state,
+    stationSettings: settings
+  })),
 );

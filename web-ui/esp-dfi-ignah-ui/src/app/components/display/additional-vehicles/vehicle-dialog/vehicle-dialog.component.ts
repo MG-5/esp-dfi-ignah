@@ -1,16 +1,21 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { AdditionalVehicle } from 'src/app/models/additional-vehicles';
 import { addVehicle, updateVehicle } from 'src/app/store/mode';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 type VehicleAction = 'Add' | 'Edit';
 
 @Component({
-  selector: 'app-vehicle-dialog',
-  templateUrl: './vehicle-dialog.component.html',
-  styleUrls: ['./vehicle-dialog.component.scss']
+    selector: 'app-vehicle-dialog',
+    templateUrl: './vehicle-dialog.component.html',
+    styleUrls: ['./vehicle-dialog.component.scss'],
+    standalone: true,
+    imports: [MatDialogTitle, MatDialogContent, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatDialogActions, MatButtonModule, MatDialogClose]
 })
 export class VehicleDialogComponent implements OnInit {
 
