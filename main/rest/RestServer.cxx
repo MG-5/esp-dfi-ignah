@@ -81,7 +81,7 @@ esp_err_t RestServer::startServer(std::string newBasePath)
 
     httpd_handle_t server = nullptr;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.max_uri_handlers = 16;
+    config.max_uri_handlers = 32;
 
     config.uri_match_fn = httpd_uri_match_wildcard;
 
@@ -161,13 +161,12 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                                  .handler = RestApiHandlers::stationGetHandler,
                                  .user_ctx = this};
     httpd_register_uri_handler(server, &stationGetUri);
-    /*
+
     httpd_uri_t stationSetUri = {.uri = "/dfi/station",
                                  .method = HTTP_PUT,
                                  .handler = RestApiHandlers::stationSetHandler,
                                  .user_ctx = this};
     httpd_register_uri_handler(server, &stationSetUri);
-    */
 
     httpd_uri_t lightSensorGetUri = {.uri = "/lightsensor",
                                      .method = HTTP_GET,

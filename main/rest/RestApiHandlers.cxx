@@ -524,6 +524,56 @@ esp_err_t RestApiHandlers::stationGetHandler(httpd_req_t *req)
 }
 
 //--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::stationSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "stationSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+
+    auto name = cJSON_GetObjectItem(root, "name");
+    auto number = cJSON_GetObjectItem(root, "number");
+    // auto blocklist = cJSON_GetObjectItem(root, "pwmGain");
+
+    if (!name || !number || //! blocklist ||
+        name->type != cJSON_String || number->type != cJSON_Number
+        //|| blocklist->type != cJSON_Array
+    )
+    {
+        addCorsHeaders(req);
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "name, number or blocklist does not exist or it not the correct type");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    std::string nameAsString(static_cast<const char *>(name->valuestring));
+
+    serverInstance->settings.updateValue(Settings::StationNameName,
+                                         serverInstance->settings.stationName, nameAsString);
+
+    serverInstance->settings.updateValue(Settings::StationNumberName,
+                                         serverInstance->settings.stationNumber,
+                                         static_cast<size_t>(number->valueint));
+
+    // serverInstance->settings.updateValue(Settings::StationBlocklistName,
+    // serverInstance->settings.stationBlocklist,
+    //  static_cast<float>(blocklist));
+
+    cJSON_Delete(root);
+
+    addCorsHeaders(req);
+    httpd_resp_set_status(req, HTTPD_200);
+    httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::lightSensorGetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "lightSensorGetHandler");
