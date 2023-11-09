@@ -1,15 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { DfiStationSettings } from 'src/app/models/dfi-station-settings';
 import { getLightSensor, selectLightSensorSettings, setLightSensor } from 'src/app/store/mode';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 // import { getDfiStationSettings } from 'src/app/store/actions/system.actions';
 // import { setDfiStationSettings } from 'src/app/store/actions/system.actions';
 
 @Component({
-  selector: 'app-system-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+    selector: 'app-system-settings',
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.scss'],
+    standalone: true,
+    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule]
 })
 export class SettingsComponent implements OnInit {
 
