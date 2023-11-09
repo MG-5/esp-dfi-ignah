@@ -45,7 +45,7 @@ public:
         }
         else if constexpr (std::is_same_v<std::string, T>)
         {
-            err = handle->get_item(key.data(), *value.data());
+            err = handle->get_string(key.data(), value.data(), value.max_size());
 
             if (err == ESP_OK)
                 ESP_LOGI(PrintTag, "Load \"%s\" from NVS: %s", key.data(), value.data());
@@ -58,7 +58,7 @@ public:
                     key.data(), value.data());
 
                 // value contains default value
-                write(key, *value.data());
+                write(key, value);
             }
         }
         else // for integers
@@ -89,7 +89,12 @@ public:
     template <typename T>
     void write(std::string_view key, const T &value)
     {
-        esp_err_t err = handle->set_item(key.data(), value);
+        esp_err_t err = ESP_OK;
+
+        if constexpr (std::is_same_v<std::string, T>)
+            err = handle->set_string(key.data(), value.c_str());
+        else
+            err = handle->set_item(key.data(), value);
 
         if (err != ESP_OK)
             ESP_LOGE(PrintTag, "Error (%s) while writing to %s!\n", esp_err_to_name(err),
