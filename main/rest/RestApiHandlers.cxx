@@ -98,7 +98,6 @@ esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
 esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "systemInfoGetHandler");
-    httpd_resp_set_type(req, "application/json");
 
     cJSON *jsonRoot = cJSON_CreateObject();
     esp_chip_info_t chipInfo;
@@ -112,9 +111,7 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
     cJSON_AddNumberToObject(jsonRoot, "model", chipInfo.model);
     cJSON_AddNumberToObject(jsonRoot, "cores", chipInfo.cores);
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -123,7 +120,6 @@ esp_err_t RestApiHandlers::systemInfoGetHandler(httpd_req_t *req)
 esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "systemClockGetHandler");
-    httpd_resp_set_type(req, "application/json");
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
     auto localTime = Timebase::getLocaltime(Timebase::getCurrentUTC());
@@ -134,9 +130,7 @@ esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "clock", serverInstance->scratchBuffer);
     cJSON_AddStringToObject(jsonRoot, "timezone", Timebase::Timezone);
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -145,7 +139,6 @@ esp_err_t RestApiHandlers::systemClockGetHandler(httpd_req_t *req)
 esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
 {
     ESP_LOGI(PrintTag, "wifiStationGetHandler");
-    httpd_resp_set_type(req, "application/json");
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
 
@@ -168,9 +161,7 @@ esp_err_t RestApiHandlers::wifiStationGetHandler(httpd_req_t *req)
     cJSON_AddNumberToObject(jsonRoot, "channel", Wireless::staInfos.channel);
     cJSON_AddStringToObject(jsonRoot, "authMode", authMode.data());
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -308,10 +299,7 @@ esp_err_t RestApiHandlers::freeTextGetHandler(httpd_req_t *req)
     auto jsonArray = createStringArray();
     cJSON_AddItemToObject(jsonRoot, "lines", jsonArray);
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
 
     return ESP_OK;
@@ -366,10 +354,7 @@ esp_err_t RestApiHandlers::runningTextGetHandler(httpd_req_t *req)
     cJSON_AddStringToObject(jsonRoot, "text", runningTextParameters.first.c_str());
     cJSON_AddNumberToObject(jsonRoot, "speed", runningTextParameters.second.getMagnitude());
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
 
     return ESP_OK;
@@ -464,10 +449,7 @@ esp_err_t RestApiHandlers::additionalVehiclesSetHandler(httpd_req_t *req)
         cJSON_AddItemToArray(newArray, object);
     }
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
     return ESP_OK;
 }
@@ -515,11 +497,143 @@ esp_err_t RestApiHandlers::additionalVehiclesGetHandler(httpd_req_t *req)
         cJSON_AddItemToArray(newArray, object);
     }
 
-    std::string_view jsonData = cJSON_Print(jsonRoot);
-    addCorsHeaders(req);
-    httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, jsonData.data());
+    sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::stationGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "stationGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto jsonRoot = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(jsonRoot, "name", serverInstance->settings.stationName.c_str());
+    cJSON_AddNumberToObject(jsonRoot, "number", serverInstance->settings.stationNumber);
+    auto blocklistArray = cJSON_AddArrayToObject(jsonRoot, "blocklist");
+
+    for (auto &blockEntry : serverInstance->dfi.getBlocklist())
+        cJSON_AddItemToArray(blocklistArray, cJSON_CreateString(blockEntry.c_str()));
+
+    sendJsonResponse(req, jsonRoot);
+    cJSON_Delete(jsonRoot);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::stationSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "stationSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+
+    auto name = cJSON_GetObjectItem(root, "name");
+    auto number = cJSON_GetObjectItem(root, "number");
+    // auto blocklist = cJSON_GetObjectItem(root, "pwmGain");
+
+    if (!name || !number || //! blocklist ||
+        name->type != cJSON_String || number->type != cJSON_Number
+        //|| blocklist->type != cJSON_Array
+    )
+    {
+        addCorsHeaders(req);
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "name, number or blocklist does not exist or it not the correct type");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    std::string nameAsString(static_cast<const char *>(name->valuestring));
+
+    serverInstance->settings.updateValue(Settings::StationNameName,
+                                         serverInstance->settings.stationName, nameAsString);
+
+    serverInstance->settings.updateValue(Settings::StationNumberName,
+                                         serverInstance->settings.stationNumber,
+                                         static_cast<size_t>(number->valueint));
+
+    // serverInstance->settings.updateValue(Settings::StationBlocklistName,
+    // serverInstance->settings.stationBlocklist,
+    //  static_cast<float>(blocklist));
+
+    cJSON_Delete(root);
+
+    addCorsHeaders(req);
+    httpd_resp_set_status(req, HTTPD_200);
+    httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::lightSensorGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "lightSensorGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto jsonRoot = cJSON_CreateObject();
+
+    cJSON_AddNumberToObject(jsonRoot, "pwmMinimum", serverInstance->settings.pwmMinimum);
+    cJSON_AddNumberToObject(jsonRoot, "pwmMaximum", serverInstance->settings.pwmMaximum);
+    cJSON_AddNumberToObject(jsonRoot, "pwmGain", serverInstance->settings.pwmGain);
+
+    sendJsonResponse(req, jsonRoot);
+    cJSON_Delete(jsonRoot);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::lightSensorSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "lightSensorSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+
+    auto pwmMinimum = cJSON_GetObjectItem(root, "pwmMinimum");
+    auto pwmMaximum = cJSON_GetObjectItem(root, "pwmMaximum");
+    auto pwmGain = cJSON_GetObjectItem(root, "pwmGain");
+
+    if (!pwmMinimum || !pwmMaximum || !pwmGain || pwmMinimum->type != cJSON_Number ||
+        pwmMaximum->type != cJSON_Number || pwmGain->type != cJSON_Number)
+    {
+        addCorsHeaders(req);
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "pwmMinimum, pwmMaximum or pwmGain does not exist or it not a number");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    serverInstance->settings.updateValue(Settings::PwmMinimumName,
+                                         serverInstance->settings.pwmMinimum,
+                                         static_cast<size_t>(pwmMinimum->valueint));
+
+    serverInstance->settings.updateValue(Settings::PwmMaximumName,
+                                         serverInstance->settings.pwmMaximum,
+                                         static_cast<size_t>(pwmMaximum->valueint));
+
+    serverInstance->settings.updateValue(Settings::PwmGainName, serverInstance->settings.pwmGain,
+                                         static_cast<float>(pwmGain->valuedouble));
+
+    cJSON_Delete(root);
+
+    addCorsHeaders(req);
+    httpd_resp_set_status(req, HTTPD_200);
+    httpd_resp_send(req, NULL, 0);
+
     return ESP_OK;
 }
 
@@ -564,4 +678,14 @@ void RestApiHandlers::addCorsHeaders(httpd_req_t *req)
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "GET, PUT, OPTIONS");
     httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type");
+}
+
+//--------------------------------------------------------------------------------------------------
+// build a json object from the request body and send it
+void RestApiHandlers::sendJsonResponse(httpd_req_t *req, cJSON *jsonRoot)
+{
+    std::string_view jsonData = cJSON_Print(jsonRoot);
+    addCorsHeaders(req);
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_sendstr(req, jsonData.data());
 }

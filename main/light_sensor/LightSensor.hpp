@@ -3,6 +3,7 @@
 #include "AD7417.hpp"
 #include "driver/i2c.h"
 #include "led/LedControl.hpp"
+#include "nvm/Settings.hpp"
 #include "util/gpio.hpp"
 #include "wrappers/Task.hpp"
 
@@ -10,9 +11,11 @@ class LightSensor : public util::wrappers::TaskWithMemberFunctionBase
 {
 
 public:
-    LightSensor(LedControl &ledControl)
+    LightSensor(LedControl &ledControl, Settings &settings)
         : TaskWithMemberFunctionBase("lightSensorTask", 1024, osPriorityBelowNormal3), //
-          ledControl(ledControl){};
+          ledControl(ledControl),                                                      //
+          settings(settings)                                                           //
+          {};
 
     static constexpr auto I2cPort = I2C_NUM_0;
     static constexpr auto SdaPin = GPIO_NUM_21;
@@ -25,9 +28,9 @@ private:
     static constexpr auto PrintTag = "[LightSensor]";
     static constexpr auto Resolution = 10;
     static constexpr auto FilterSampleSize = 64;
-    static constexpr auto Gain = 50;
 
     LedControl &ledControl;
+    Settings &settings;
 
     EspI2cBusAccessor espI2cBusAccessor{I2cPort};
     AD7417 sensor{espI2cBusAccessor, 0b111};

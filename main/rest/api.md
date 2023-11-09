@@ -58,62 +58,50 @@
 * 1 -> like normal mode but last strip is showing running text
 * 2 -> free text mode on all lines
 
-## mode request
-  Return the current mode
+## mode getter/setter
+  Get/Set the mode
 
 * **URL:** `/mode`
 
-* **Method:** `GET`
-
-* **Example Response Content:**
-    ```
-    1
-    ```
-
-## mode setter
-  Set the mode
-
-* **URL:** `/mode`
-
-* **Method:** `PUT`
+* **Method:** `GET` `PUT`
 
 * **Example PUT Content:**
     ```
     1
     ```
 
-* **Returned code**
+* **Returned code at PUT**
   * 200 at success
   * 404 mode not found
   
 ----
-## free text setter
-  Set the free text showing on all strips
+## free text getter/setter
+  Get/Set the free text showing on all strips
 
 * **URL:** `/freetext`
 
-* **Method:** `PUT`
+* **Method:** `GET` `PUT`
 
-* **Example PUT Content:**
+* **Example GET/PUT Content:**
     ```json
     {
       "lines": ["line1","line2","line3","line4","line5"]
     }
     ```
 
-* **Returned code**
+* **Returned code at PUT**
   * 200 at success
   * 400 bad request
 
 ----
-## running text setter
-  Set the running tet showing on last strip
+## running text getter/setter
+  Get/Set the running text showing on last strip
 
 * **URL:** `/runningtext`
 
-* **Method:** `PUT`
+* **Method:** `GET` `PUT`
 
-* **Example PUT Content:**
+* **Example GET/PUT Content:**
     ```json
     {
       "text": "Hello World",
@@ -121,19 +109,19 @@
     }
     ```
 
-* **Returned code**
+* **Returned code at PUT**
   * 200 at success
   * 400 bad request
 
 ----
-## additional vehicles setter
-  Set a list of additional vehicles to show on display
+## additional vehicles getter/setter
+  Get/Set a list of additional vehicles to show on display
 
 * **URL:** `/additionalvehicles`
 
-* **Method:** `PUT`
+* **Method:** `GET` `PUT`
 
-* **Example PUT Content:**
+* **Example GET/PUT Content:**
     ```json
     {
       "vehicles": [
@@ -151,31 +139,47 @@
     }
     ```
 
-* **Returned code**
+* **Returned code at PUT**
   * 200 with valid body as response, otherwise empty list
 
 ----
-## additional vehicles getter
-  Return a list of additional vehicles
+## station getter/setter
+  Get/Set the station name, number and its destination blocklist
 
-* **URL:** `/additionalvehicles`
+* **URL:** `/dfi/station`
 
-* **Method:** `GET`
+* **Method:** `GET` `PUT`
 
-* **Example GET Content:**
+* **Example GET/PUT Content:**
     ```json
     {
-      "vehicles": [
-        {
-          "lineNumber": "77",
-          "destination": "Herrenkrug",
-          "departure": "13:30"
-        },
-        {
-          "lineNumber": "N11",
-          "destination": "Alter Markt",
-          "departure": "23:15"
-        }
-      ]
+      "name": "Ambrosiusplatz",
+      "number": 7303,
+      "blocklist": ["Sudenburg", "Friedenshöhe", "Reform"] 
     }
     ```
+
+* **Returned code at PUT**
+  * 200 at success
+  * 400 bad request
+
+----
+## light sensor getter/setter
+  Get/Set the settings for light sensor.
+
+* **URL:** `/lightsensor`
+
+* **Method:** `GET` `PUT`
+
+* **Example GET/PUT Content:**
+    ```json
+    {
+      "pwmMinimum": 100,
+      "pwmMaximum": 1023,
+      "pwmGain": 1.0000 
+    }
+    ```
+
+* **Returned code at PUT**
+  * 200 at success
+  * 400 bad request

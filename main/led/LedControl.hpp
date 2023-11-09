@@ -38,14 +38,10 @@ public:
     Gpio ShiftClock2{GPIO_NUM_18};   // SRCK for rows 3, 4, 7 and 8
     Gpio ShiftClock1{GPIO_NUM_19};   // SRCK for rows 1, 2, 5 and 6
 
-    static constexpr auto PwmPin1 = GPIO_NUM_2;
-    static constexpr auto PwmPin2 = GPIO_NUM_15;
-    static constexpr auto PwmChannel1 = LEDC_CHANNEL_0;
-    static constexpr auto PwmChannel2 = LEDC_CHANNEL_1;
+    static constexpr auto PwmPin = GPIO_NUM_15;
+    static constexpr auto PwmChannel = LEDC_CHANNEL_0;
 
     static constexpr auto PwmMode = LEDC_LOW_SPEED_MODE;
-    static constexpr auto PwmResolution = LEDC_TIMER_10_BIT;
-    static constexpr auto PwmMaximumDuty = (1 << PwmResolution) - 1;
 
     void initGpios();
 

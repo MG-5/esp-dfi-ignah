@@ -10,6 +10,7 @@
 #include <codecvt>
 #include <ctime>
 #include <locale>
+#include <sstream>
 #include <string>
 #include <sys/time.h>
 
@@ -18,8 +19,11 @@ using namespace util::wrappers;
 //--------------------------------------------------------------------------------------------------
 void Dfi::taskMain(void *)
 {
-    sync::waitForAll(sync::ConnectedToWifi);
-    sync::waitForAll(sync::TimeIsSynchronized);
+    sync::waitForAll(sync::ConnectedToWifi | sync::TimeIsSynchronized | sync::ConfigurationLoaded);
+
+    ESP_LOGI(PrintTag, "Station %s with number %du", settings.stationName.data(),
+             settings.stationNumber);
+    updateBlocklist();
 
     constexpr auto RequestDelay = 60.0_s;
     constexpr auto ParseDelay = 15.0_s;
@@ -43,9 +47,9 @@ void Dfi::taskMain(void *)
             if (!isConnected)
                 ESP_LOGW(PrintTag, "No connection. Use old data.");
 
-            else if (httpClient.requestData(currentStation->stationNumber))
+            else if (httpClient.requestData(settings.stationNumber))
                 loadXmlFromBuffer();
-                }
+        }
 
         // parse XML buffer, regardless of connection state
         // so we can use old data if there is no connection
@@ -105,20 +109,20 @@ void Dfi::parseXml()
         if (!isArrivalTimeInFuture(newVehicle))
             continue; // reject it
 
-        bool directionIsInBlacklist = false;
-        for (auto &blacklistStation : currentStation->blacklist)
+        bool directionIsInBlocklist = false;
+        for (auto &blocklistStation : blocklist)
         {
-            if (blacklistStation == "")
+            if (blocklistStation == "")
                 break;
 
-            if (newVehicle.directionName == blacklistStation)
+            if (newVehicle.directionName == blocklistStation)
             {
-                directionIsInBlacklist = true;
+                directionIsInBlocklist = true;
                 break;
             }
         }
 
-        if (directionIsInBlacklist)
+        if (directionIsInBlocklist)
             // tram is in blacklist, reject this
             continue;
 
@@ -233,4 +237,23 @@ void Dfi::setAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
 void Dfi::getAdditionalVehicles(AdditionalVehicleList &additionalVehicles)
 {
     additionalVehicles = additionalVehicleList;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Dfi::updateBlocklist()
+{
+    blocklist.fill("");
+    std::istringstream iss(settings.stationBlocklist);
+    std::string substring;
+
+    size_t index = 0;
+    while (std::getline(iss, substring, ';'))
+    {
+        blocklist[index] = substring;
+        index++;
+        if (index >= blocklist.size())
+            break;
+    }
+    for (size_t i = 0; i < blocklist.size(); i++)
+        ESP_LOGI(PrintTag, "Blocklist %d: %s", i, blocklist[i].c_str());
 }

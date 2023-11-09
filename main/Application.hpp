@@ -5,6 +5,7 @@
 #include "led/LedControl.hpp"
 #include "led/RenderTask.hpp"
 #include "light_sensor/LightSensor.hpp"
+#include "nvm/NonVolatileMemory.hpp"
 #include "rest/RestServer.hpp"
 #include "wifi/Wireless.hpp"
 
@@ -30,11 +31,13 @@ private:
     Wireless wireless{isConnected};
     // StatusLed statusLed{isConnected, pulseDetected};
 
-    Dfi dfi{isConnected};
+    NonVolatileMemory nvm{};
+    Settings settings{nvm};
+    Dfi dfi{isConnected, settings};
     LedControl ledControl{};
     RenderTask renderTask{dfi, ledControl};
-    LightSensor lightSensor{ledControl};
-    RestServer restServer{renderTask, dfi};
+    LightSensor lightSensor{ledControl, settings};
+    RestServer restServer{renderTask, dfi, settings};
 
     inline static TimerHandle_t timeoutTimer = nullptr;
 

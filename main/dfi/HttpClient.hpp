@@ -17,7 +17,7 @@ public:
 
     static esp_err_t httpEventHandler(esp_http_client_event_t *event);
 
-    bool requestData(uint16_t stationNumber);
+    bool requestData(uint32_t stationNumber);
 
     static std::array<char, MaximumBufferSize> dataBuffer;
 
