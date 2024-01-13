@@ -20,7 +20,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './components/home/home.component';
 import { DisplayComponent } from './components/display/display.component';
 import { FreeTextComponent } from './components/display/free-text/free-text.component';
 import { RunningTextComponent } from './components/display/running-text/running-text.component';
@@ -60,7 +59,6 @@ import { SettingsComponent } from './components/settings/settings.component';
         EffectsModule.forRoot(),
         EffectsModule.forFeature([ModeEffects]),
         StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        HomeComponent,
         DisplayComponent,
         FreeTextComponent,
         RunningTextComponent,
