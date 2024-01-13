@@ -16,7 +16,7 @@ void RestServer::initServer()
     netbiosns_init();
     netbiosns_set_name(MdnsHostName);
 
-    // ESP_ERROR_CHECK(initFileSystem());
+    ESP_ERROR_CHECK(initFileSystem());
     ESP_ERROR_CHECK(startServer(WebMountPoint));
 }
 
@@ -81,6 +81,7 @@ esp_err_t RestServer::startServer(std::string newBasePath)
 
     httpd_handle_t server = nullptr;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.task_priority = osPriorityAboveNormal;
     config.max_uri_handlers = 32;
 
     config.uri_match_fn = httpd_uri_match_wildcard;

@@ -16,10 +16,6 @@
 //--------------------------------------------------------------------------------------------------
 esp_err_t RestApiHandlers::commonGetHandler(httpd_req_t *req)
 {
-    // Temporarily disable loading web server from flash
-    httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "No webserver currently exists");
-    return ESP_OK;
-
     std::string filePath;
 
     auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);

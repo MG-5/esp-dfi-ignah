@@ -15,15 +15,15 @@ class RestApiHandlers;
 class RestServer
 {
 public:
-    static constexpr auto MdnsHostName = "esp-home";
-    static constexpr auto FriendlyName = "esp home web server";
+    static constexpr auto MdnsHostName = "esp-dfi";
+    static constexpr auto FriendlyName = "ESP-DFI IGNah";
     static constexpr auto WebMountPoint = "/www";
     static constexpr auto UseGzipCompression = true;
 
     explicit RestServer(RenderTask &renderTask, Dfi &dfi, Settings &settings)
         : renderTask(renderTask), //
           dfi(dfi),               //
-          settings(settings)                //
+          settings(settings)      //
           {};
 
     void initServer();
