@@ -62,6 +62,7 @@ void Wireless::init()
                                                         &Wireless::eventHandler, nullptr, nullptr));
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
+    ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
 }
 //--------------------------------------------------------------------------------------------------
 void Wireless::configureStation()
