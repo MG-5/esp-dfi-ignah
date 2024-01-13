@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.2.3](https://github.com/espressif/esp-protocols/commits/mdns-v1.2.3)
+
+### Bug Fixes
+
+- fixed CI issues for host and afl tests ([4be5efc84e](https://github.com/espressif/esp-protocols/commit/4be5efc84e))
+- fix copy delegated host addr ([19fb36000c](https://github.com/espressif/esp-protocols/commit/19fb36000c))
+- enable CONFIG_ESP_WIFI_ENABLED if CONFIG_SOC_WIFI_SUPPORTED is also enabled (for ESP-IDF <= 5.1) ([d20a718320](https://github.com/espressif/esp-protocols/commit/d20a718320))
+- remove protocol_examples_common ([1ee9dae6bf](https://github.com/espressif/esp-protocols/commit/1ee9dae6bf))
+- move the example into a subdirectory ([d28232b9f8](https://github.com/espressif/esp-protocols/commit/d28232b9f8))
+- reference protocol_examples_common from IDF ([c83b76ea8f](https://github.com/espressif/esp-protocols/commit/c83b76ea8f))
+
+## [1.2.2](https://github.com/espressif/esp-protocols/commits/mdns-v1.2.2)
+
+### Bug Fixes
+
+- add terminator for the getting host name ([b6a4d94](https://github.com/espressif/esp-protocols/commit/b6a4d94))
+- Enable ESP_WIFI_CONFIG when ESP-IDF <= 5.1 ([0b783c0](https://github.com/espressif/esp-protocols/commit/0b783c0))
+- set host list NULL on destroy ([ea54eef](https://github.com/espressif/esp-protocols/commit/ea54eef))
+- removed Wno-format flag and fixed formatting warnings ([c48e442](https://github.com/espressif/esp-protocols/commit/c48e442))
+- remove the the range of MDNS_MAX_SERVICES and fix issues of string functions ([3dadce2](https://github.com/espressif/esp-protocols/commit/3dadce2))
+
 ## [1.2.1](https://github.com/espressif/esp-protocols/commits/mdns-v1.2.1)
 
 ### Features
