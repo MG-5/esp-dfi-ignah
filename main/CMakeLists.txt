@@ -37,7 +37,7 @@ set(WEB_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../web-ui/esp-dfi-ignah-ui")
        # uncomment if web data should be updated/written
        # spiffs_create_partition_image(www ${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui FLASH_IN_PROJECT)
     else()
-        message(FATAL_ERROR "${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui doesn't exit. Please run 'ng build' in ${WEB_SRC_DIR}")
+        # message(FATAL_ERROR "${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui doesn't exit. Please run 'ng build' in ${WEB_SRC_DIR}")
     endif()
 
 # Unfortunately the pugixml library performs install and export.
