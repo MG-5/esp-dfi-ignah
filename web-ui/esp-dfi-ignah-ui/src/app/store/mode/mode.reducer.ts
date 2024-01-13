@@ -20,7 +20,7 @@ const initialState: ModeState = {
   mode: Mode.Normal,
   runningText: {
     text: '',
-    speed: 50
+    speed: 35
   },
   freeText: {
     lines: []

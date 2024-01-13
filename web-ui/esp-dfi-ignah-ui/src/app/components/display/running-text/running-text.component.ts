@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'app-running-text',
@@ -16,15 +17,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     imports: [MatFormFieldModule, MatInputModule, MatSliderModule, FormsModule, MatButtonModule, AsyncPipe]
 })
 export class RunningTextComponent implements OnInit {
-  
-  speed = 50;
 
+  speed = 35;
   runningText$ = this.store.select(selectRunningText);
 
   constructor(private store: Store) { }
 
   ngOnInit(): void {
     this.store.dispatch(getRunningText());
+
+    // Abonniere auf das Observable und aktualisiere die 'speed'-Variable
+    this.runningText$.pipe(
+      map(runningText => runningText.speed)
+    ).subscribe(speed => this.speed = speed);
   }
 
   saveRunningText(text: string): void {

@@ -77,7 +77,7 @@ private:
 
     std::string runningText{"*** Lauftext ***"};
     size_t runningTextWidthInPixels{renderer.getLineWidth(runningText.c_str())};
-    units::si::Frequency runningTextSpeed = 40.0_Hz; // pixels per second
+    units::si::Frequency runningTextSpeed = 35.0_Hz; // pixels per second
     size_t runningTextPosition{(LedControl::Columns / 2) + runningTextWidthInPixels};
 
     static constexpr auto PrintBufferSize = 72;
