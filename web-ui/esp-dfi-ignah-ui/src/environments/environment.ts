@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  hostname: 'esp-dfi-ignah'
+  hostname: 'esp-dfi.local'
 };
 
 /*
