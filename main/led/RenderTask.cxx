@@ -157,7 +157,9 @@ void RenderTask::renderProjectInfos()
     renderer.print({0, 0}, appDesc->project_name);
     snprintf(printBuffer, PrintBufferSize, "%s (%s)", appDesc->date, appDesc->version);
     renderer.print({0, 1}, printBuffer);
-    renderer.print({0, 2}, "by M. Grau und T. Wiesner");
+    snprintf(printBuffer, PrintBufferSize, "ESP-IDF: (%s)", appDesc->idf_ver);
+    renderer.print({0, 2}, printBuffer);
+    renderer.print({0, 3}, "by M. Grau und T. Wiesner");
 }
 
 //--------------------------------------------------------------------------------------------------
