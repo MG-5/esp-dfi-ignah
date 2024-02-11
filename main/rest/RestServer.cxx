@@ -81,7 +81,7 @@ esp_err_t RestServer::startServer(std::string newBasePath)
 
     httpd_handle_t server = nullptr;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.task_priority = osPriorityAboveNormal;
+    config.task_priority = osPriorityHigh;
     config.max_uri_handlers = 32;
 
     config.uri_match_fn = httpd_uri_match_wildcard;

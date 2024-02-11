@@ -11,7 +11,7 @@ class RenderTask : public util::wrappers::TaskWithMemberFunctionBase
 {
 public:
     explicit RenderTask(Dfi &dfi, LedControl &ledControl)
-        : TaskWithMemberFunctionBase("renderTask", 1024, osPriorityNormal5), //
+        : TaskWithMemberFunctionBase("renderTask", 1024, osPriorityNormal3), //
           dfi(dfi),                                                          //
           ledControl(ledControl)                                             //
           {};

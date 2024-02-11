@@ -17,7 +17,7 @@ public:
     static constexpr auto MaximumNumberOfAdditionalVehicles = 8;
 
     Dfi(bool &isConnected, Settings &settings)
-        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityNormal3),
+        : TaskWithMemberFunctionBase("dfiTask", 2048, osPriorityAboveNormal),
           isConnected(isConnected), //
           settings(settings)        //
           {};
