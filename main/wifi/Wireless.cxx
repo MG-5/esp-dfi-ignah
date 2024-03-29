@@ -22,7 +22,7 @@ void Wireless::taskMain(void *)
 
     init();
     configureStation();
-    configureSoftAp();
+    // configureSoftAp();
     startWifi();
 
     while (true)
@@ -61,7 +61,8 @@ void Wireless::init()
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
                                                         &Wireless::eventHandler, nullptr, nullptr));
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
+    // ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
 }
 //--------------------------------------------------------------------------------------------------
