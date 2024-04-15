@@ -128,13 +128,7 @@ void RenderTask::renderVehicles(bool showCurrentVehicle)
         // print line direction, blinking when train is at station
         if (!IsTrainAtStation || showCurrentVehicle)
         {
-            std::string directionName = "";
-            if (vehicle.directionName == "Klinikum Olvenstedt")
-                directionName = "Kl. Olvenstedt";
-            else
-                directionName = vehicle.directionName;
-
-            renderer.print({lineNumberPixelWidth, pageCounter}, directionName.data());
+            renderer.print({lineNumberPixelWidth, pageCounter}, vehicle.directionName.data());
         }
 
         if (!IsTrainAtStation)

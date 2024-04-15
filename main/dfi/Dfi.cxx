@@ -109,20 +109,9 @@ void Dfi::parseXml()
         if (!isArrivalTimeInFuture(newVehicle))
             continue; // reject it
 
-        bool directionIsInBlocklist = false;
-        for (auto &blocklistStation : blocklist)
-        {
-            if (blocklistStation == "")
-                break;
+        replaceSubstringsInDirectionName(newVehicle.directionName);
 
-            if (newVehicle.directionName == blocklistStation)
-            {
-                directionIsInBlocklist = true;
-                break;
-            }
-        }
-
-        if (directionIsInBlocklist)
+        if (isDirectionInBlacklist(newVehicle.directionName))
             // tram is in blacklist, reject this
             continue;
 
@@ -153,6 +142,41 @@ void Dfi::parseXml()
 
     // sort by arrival time
     std::sort(vehicleArray.begin(), vehicleArray.end(), &localTransportVehicleSorter);
+}
+
+//--------------------------------------------------------------------------------------------------
+bool Dfi::isDirectionInBlacklist(const std::string &directionName)
+{
+    for (auto &blocklistStation : blocklist)
+    {
+        if (blocklistStation == "")
+            break;
+
+        if (directionName == blocklistStation)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Dfi::replaceSubstringsInDirectionName(std::string &directionName)
+{
+    std::array<std::pair<std::string, std::string>, 4> substringsToReplace{
+        std::make_pair("Magdeburg, ", ""),                      //
+        std::make_pair(", Kroatenweg", ""),                     //
+        std::make_pair("Elbauenpark", "Elbp."),                 //
+        std::make_pair("Klinikum Olvenstedt", "Kl. Olvenstedt") //
+    };
+
+    for (auto &substring : substringsToReplace)
+    {
+        auto findResult = directionName.find(substring.first);
+        if (findResult != std::string::npos)
+            directionName.replace(findResult, substring.first.length(), substring.second);
+    }
 }
 
 //--------------------------------------------------------------------------------------------------

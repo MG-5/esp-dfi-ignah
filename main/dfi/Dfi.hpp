@@ -82,6 +82,9 @@ private:
     bool loadXmlFromBuffer();
     void parseXml();
 
+    bool isDirectionInBlacklist(const std::string &directionName);
+    void replaceSubstringsInDirectionName(std::string &directionName);
+
     [[nodiscard]] Time getCurrentLocalTime();
     [[nodiscard]] bool isArrivalTimeInFuture(LocalTransportVehicle &vehicle);
     [[nodiscard]] int calculateArrivalTime(LocalTransportVehicle &vehicle);

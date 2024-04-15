@@ -23,8 +23,7 @@ public:
     static constexpr auto StationNameDefault = "Ambrosiusplatz";
 
     static constexpr auto StationBlocklistName = "stationBlcklst";
-    static constexpr auto StationBlocklistDefault =
-        "Sudenburg;Reform;Friedenshöhe;Magdeburg, Sudenburg, Braunlager Str.";
+    static constexpr auto StationBlocklistDefault = "Sudenburg;Reform;Friedenshöhe;Bördepark West";
 
     static constexpr auto PwmResolution = LEDC_TIMER_10_BIT;
     static constexpr auto PwmMaximumDuty = (1 << PwmResolution) - 1;
