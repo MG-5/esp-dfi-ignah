@@ -45,11 +45,16 @@ public:
         }
         else if constexpr (std::is_same_v<std::string, T>)
         {
-            err = handle->get_string(key.data(), value.data(), value.max_size());
+            size_t bufferSize = 128;
+            char *buffer = new char[bufferSize];
+
+            err = handle->get_string(key.data(), buffer, bufferSize);
 
             if (err == ESP_OK)
+            {
                 ESP_LOGI(PrintTag, "Load \"%s\" from NVS: %s", key.data(), value.data());
-
+                value = buffer;
+            }
             else if (err == ESP_ERR_NVS_NOT_FOUND)
             {
                 ESP_LOGE(
