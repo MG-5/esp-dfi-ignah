@@ -10,8 +10,10 @@ class AD7417
 {
 public:
     AD7417(I2cBusAccessor &i2cBusAccessor, I2cBusAccessor::DeviceAddress chipSelectBits)
-        : i2cBusAccessor(i2cBusAccessor),
-          deviceAddress(BaseAddress | (chipSelectBits & ChipSelectMask)){};
+        : i2cBusAccessor(i2cBusAccessor)
+    {
+        deviceHandle = i2cBusAccessor.addDevice(BaseAddress | (chipSelectBits & ChipSelectMask));
+    };
 
     enum class Mode : uint8_t
     {
@@ -64,7 +66,7 @@ public:
 
 private:
     I2cBusAccessor &i2cBusAccessor;
-    I2cBusAccessor::DeviceAddress deviceAddress = BaseAddress; // 7-bit
+    i2c_master_dev_handle_t deviceHandle;
 
     static constexpr auto BaseAddress = 0b0101 << 3;
     static constexpr auto ChipSelectMask = 0b111;

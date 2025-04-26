@@ -18,7 +18,9 @@ idf_component_register(SRCS
     #StatusLed.cxx
 
     REQUIRES
-    driver
+    esp_driver_gpio
+    esp_driver_i2c
+    esp_driver_ledc
     esp_http_client
     esp_app_format
     esp_http_server

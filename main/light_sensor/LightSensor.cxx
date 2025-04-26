@@ -4,7 +4,6 @@
 //--------------------------------------------------------------------------------------------------
 void LightSensor::taskMain(void *)
 {
-    initI2c();
     powerEnable.init(GPIO_MODE_OUTPUT);
 
     bool hasPrintedOnce = false;
@@ -45,22 +44,6 @@ void LightSensor::taskMain(void *)
             updatePwm();
         }
     }
-}
-
-//--------------------------------------------------------------------------------------------------
-void LightSensor::initI2c()
-{
-    i2c_config_t config{};
-    config.mode = I2C_MODE_MASTER;
-    config.sda_io_num = SdaPin;
-    config.scl_io_num = SclPin;
-    config.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    config.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    config.master.clk_speed = 400'000;
-
-    i2c_param_config(I2cPort, &config);
-
-    ESP_ERROR_CHECK(i2c_driver_install(I2cPort, config.mode, 0, 0, 0));
 }
 
 //--------------------------------------------------------------------------------------------------
