@@ -152,7 +152,7 @@ bool AD7417::setFaultQueue(uint8_t size)
     if (!result)
         return false;
 
-    std::clamp<uint8_t>(size, 1, 6);
+    size = std::clamp<uint8_t>(size, 1, 6);
 
     uint8_t config = result.value();
     config &= ~(Configuration::FaultQueueMask << Configuration::FaultQueuePos);
@@ -218,7 +218,7 @@ bool AD7417::wakeUp()
 //--------------------------------------------------------------------------------------------------
 bool AD7417::readByteFromRegister(Register registerAddress, uint8_t &byte)
 {
-    i2cBusAccessor.beginTransaction(deviceAddress);
+    i2cBusAccessor.beginTransaction(deviceHandle);
     bool sucess = i2cBusAccessor.readByteFromRegister(static_cast<uint8_t>(registerAddress), byte);
     i2cBusAccessor.endTransaction();
 
@@ -228,7 +228,7 @@ bool AD7417::readByteFromRegister(Register registerAddress, uint8_t &byte)
 //--------------------------------------------------------------------------------------------------
 bool AD7417::readWordFromRegister(Register registerAddress, uint16_t &word)
 {
-    i2cBusAccessor.beginTransaction(deviceAddress);
+    i2cBusAccessor.beginTransaction(deviceHandle);
     bool sucess = i2cBusAccessor.readWordFromRegister(static_cast<uint8_t>(registerAddress), word);
     i2cBusAccessor.endTransaction();
 
@@ -238,7 +238,7 @@ bool AD7417::readWordFromRegister(Register registerAddress, uint16_t &word)
 //--------------------------------------------------------------------------------------------------
 bool AD7417::writeByteToRegister(Register registerAddress, uint8_t byte)
 {
-    i2cBusAccessor.beginTransaction(deviceAddress);
+    i2cBusAccessor.beginTransaction(deviceHandle);
     bool sucess = i2cBusAccessor.writeByteToRegister(static_cast<uint8_t>(registerAddress), byte);
     i2cBusAccessor.endTransaction();
 
@@ -248,7 +248,7 @@ bool AD7417::writeByteToRegister(Register registerAddress, uint8_t byte)
 //--------------------------------------------------------------------------------------------------
 bool AD7417::writeWordToRegister(Register registerAddress, uint16_t word)
 {
-    i2cBusAccessor.beginTransaction(deviceAddress);
+    i2cBusAccessor.beginTransaction(deviceHandle);
     bool sucess = i2cBusAccessor.writeWordToRegister(static_cast<uint8_t>(registerAddress), word);
     i2cBusAccessor.endTransaction();
 
