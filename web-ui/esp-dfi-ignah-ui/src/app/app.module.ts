@@ -29,7 +29,6 @@ import { ModeEffects, modeFeatureKey, modeReducer } from './store/mode';
 import { EffectsModule } from '@ngrx/effects';
 import { HttpClientModule } from '@angular/common/http';
 import { VehicleDialogComponent } from './components/display/additional-vehicles/vehicle-dialog/vehicle-dialog.component';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
@@ -58,7 +57,6 @@ import { SettingsComponent } from './components/settings/settings.component';
         StoreModule.forFeature(modeFeatureKey, modeReducer),
         EffectsModule.forRoot(),
         EffectsModule.forFeature([ModeEffects]),
-        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
         DisplayComponent,
         FreeTextComponent,
         RunningTextComponent,
