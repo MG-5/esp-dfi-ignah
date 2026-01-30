@@ -13,7 +13,6 @@ import { map } from 'rxjs/operators';
     selector: 'app-running-text',
     templateUrl: './running-text.component.html',
     styleUrls: ['./running-text.component.scss'],
-    standalone: true,
     imports: [MatFormFieldModule, MatInputModule, MatSliderModule, FormsModule, MatButtonModule, AsyncPipe]
 })
 export class RunningTextComponent implements OnInit {

@@ -14,7 +14,6 @@ type VehicleAction = 'Add' | 'Edit';
     selector: 'app-vehicle-dialog',
     templateUrl: './vehicle-dialog.component.html',
     styleUrls: ['./vehicle-dialog.component.scss'],
-    standalone: true,
     imports: [MatDialogTitle, MatDialogContent, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatDialogActions, MatButtonModule, MatDialogClose]
 })
 export class VehicleDialogComponent implements OnInit {

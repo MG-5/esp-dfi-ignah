@@ -1,4 +1,4 @@
-@import "../../../media";
+@use "../../../media";
 
 .outer-container {
   padding-left: 15px;
@@ -23,7 +23,7 @@
 .mode-action-button {
   width: 100%;
 
-  @include sm {
+  @include media.sm {
     width: auto;
   }
 }

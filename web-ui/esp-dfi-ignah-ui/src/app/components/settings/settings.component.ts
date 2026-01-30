@@ -14,7 +14,6 @@ import { LightSensorSettings } from 'src/app/models/light-sensor';
     selector: 'app-system-settings',
     templateUrl: './settings.component.html',
     styleUrls: ['./settings.component.scss'],
-    standalone: true,
     imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule]
 })
 export class SettingsComponent {

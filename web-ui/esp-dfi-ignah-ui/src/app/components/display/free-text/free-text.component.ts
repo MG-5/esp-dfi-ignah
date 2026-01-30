@@ -11,7 +11,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     selector: 'app-free-text',
     templateUrl: './free-text.component.html',
     styleUrls: ['./free-text.component.scss'],
-    standalone: true,
     imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule]
 })
 export class FreeTextComponent implements OnInit, OnDestroy {

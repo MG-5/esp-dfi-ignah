@@ -1,5 +1,5 @@
-@import "@fontsource/material-icons";
-@import "media";
+@use "@fontsource/material-icons";
+@use "media";
 
 html,
 body,
@@ -27,19 +27,19 @@ a {
 
   max-width: 100%;
 
-  @include sm {
+  @include media.sm {
     max-width: 540px;
   }
 
-  @include md {
+  @include media.md {
     max-width: 720px;
   }
 
-  @include lg {
+  @include media.lg {
     max-width: 960px;
   }
 
-  @include xl {
+  @include media.xl {
     max-width: 1140px;
   }
 }

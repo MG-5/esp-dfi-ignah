@@ -15,7 +15,6 @@ import { MatListModule } from '@angular/material/list';
     selector: 'app-additional-vehicles',
     templateUrl: './additional-vehicles.component.html',
     styleUrls: ['./additional-vehicles.component.scss'],
-    standalone: true,
     imports: [MatListModule, MatButtonModule, MatIconModule, MatDividerModule, AsyncPipe]
 })
 export class AdditionalVehiclesComponent {

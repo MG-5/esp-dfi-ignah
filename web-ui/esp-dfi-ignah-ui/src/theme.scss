@@ -1,21 +1,21 @@
 @use '@angular/material' as mat;
+@use './color-palettes';
 
 @include mat.all-component-typographies();
-@include mat.core();
-
-@import './color-palettes';
+@include mat.elevation-classes();
+@include mat.app-background();
 
 // Define a light theme
-$light-primary: mat.define-palette($mvb-light-primary);
-$light-accent: mat.define-palette($mvb-light-accent);
-$light-theme: mat.define-light-theme((color: (primary: $light-primary,
+$light-primary: mat.m2-define-palette(color-palettes.$mvb-light-primary);
+$light-accent: mat.m2-define-palette(color-palettes.$mvb-light-accent);
+$light-theme: mat.m2-define-light-theme((color: (primary: $light-primary,
         accent: $light-accent,
       )));
 
 // Define a dark theme
-$dark-primary: mat.define-palette($mvb-light-primary, 200);
-$dark-accent: mat.define-palette($mvb-light-accent, 300);
-$dark-theme: mat.define-dark-theme((color: (primary: $dark-primary,
+$dark-primary: mat.m2-define-palette(color-palettes.$mvb-light-primary, 200);
+$dark-accent: mat.m2-define-palette(color-palettes.$mvb-light-accent, 300);
+$dark-theme: mat.m2-define-dark-theme((color: (primary: $dark-primary,
         accent: $dark-accent,
       )));
 

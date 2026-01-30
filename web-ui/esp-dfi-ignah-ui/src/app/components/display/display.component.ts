@@ -16,7 +16,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     selector: 'app-display',
     templateUrl: './display.component.html',
     styleUrls: ['./display.component.scss'],
-    standalone: true,
     imports: [MatFormFieldModule, MatSelectModule, MatOptionModule, MatButtonModule, MatTabsModule, RunningTextComponent, FreeTextComponent, AdditionalVehiclesComponent, AsyncPipe]
 })
 export class DisplayComponent implements OnInit {
