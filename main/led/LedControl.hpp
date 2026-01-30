@@ -26,19 +26,21 @@ protected:
 public:
     static constexpr auto PrintTag = "[LedControl]";
 
-    Gpio MultiplexerOut1{GPIO_NUM_4};
-    Gpio MultiplexerOut2{GPIO_NUM_13};
-    Gpio ControlShiftInput{GPIO_NUM_12};
-    Gpio ControlShiftClock{GPIO_NUM_14};
-    Gpio ControlEnableOutput{GPIO_NUM_27};
-    Gpio RegisterClear{GPIO_NUM_26}; // SRCLR -active low
-    Gpio RegisterClock{GPIO_NUM_25}; // RCK
-    Gpio ShiftDataIn2{GPIO_NUM_33};  // DI for rows 3, 4, 7 and 8
-    Gpio ShiftDataIn1{GPIO_NUM_32};  // DI for rows 1, 2, 5 and 6
-    Gpio ShiftClock2{GPIO_NUM_18};   // SRCK for rows 3, 4, 7 and 8
-    Gpio ShiftClock1{GPIO_NUM_19};   // SRCK for rows 1, 2, 5 and 6
+    // multiplexer pin will be not used because ESP32-C3 has no enough GPIOs
+    // Gpio MultiplexerOut1{--}; // comparator 1 out 2 or comparator 2 out 2
+    // Gpio MultiplexerOut2{--}; // comparator 1 out 1 or comparator 2 out 1
 
-    static constexpr auto PwmPin = GPIO_NUM_15;
+    Gpio ControlShiftInput{GPIO_NUM_20};
+    Gpio ControlShiftClock{GPIO_NUM_21};
+    Gpio ControlEnableOutput{GPIO_NUM_0};
+    Gpio RegisterClear{GPIO_NUM_1}; // SRCLR -active low
+    Gpio RegisterClock{GPIO_NUM_2}; // RCK
+    Gpio ShiftDataIn2{GPIO_NUM_3};  // DI for rows 3, 4, 7 and 8
+    Gpio ShiftDataIn1{GPIO_NUM_4};  // DI for rows 1, 2, 5 and 6
+    Gpio ShiftClock2{GPIO_NUM_5};   // SRCK for rows 3, 4, 7 and 8
+    Gpio ShiftClock1{GPIO_NUM_6};   // SRCK for rows 1, 2, 5 and 6
+
+    static constexpr auto PwmPin = GPIO_NUM_8;
     static constexpr auto PwmChannel = LEDC_CHANNEL_0;
 
     static constexpr auto PwmMode = LEDC_LOW_SPEED_MODE;
