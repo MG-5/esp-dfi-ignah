@@ -5,6 +5,7 @@ import { FreeText } from "src/app/models/free-text";
 import { LightSensorSettings } from "src/app/models/light-sensor";
 import { Mode } from "src/app/models/mode";
 import { RunningText } from "src/app/models/running-text";
+import { DestinationBlocklist } from "src/app/models/destination-blocklist";
 
 
 // Mode
@@ -192,4 +193,46 @@ export const setDfiStationSettingsSuccess = createAction(
 
 export const setDfiStationSettingsError = createAction(
   '[DfiStationSettings] Error setting station settings'
+);
+
+// Destination Blocklist
+
+export const addDestination = createAction(
+  '[DestinationBlocklist] Add',
+  props<{ destination: string }>()
+);
+
+export const removeDestination = createAction(
+  '[DestinationBlocklist] Remove',
+  props<{ destinationIndex: number }>()
+);
+
+export const updateDestination = createAction(
+  '[DestinationBlocklist] Update',
+  props<{ destination: string, destinationIndex: number }>()
+);
+
+export const fetchDestinationBlocklist = createAction(
+  '[DestinationBlocklist] Fetch destination blocklist'
+);
+
+export const fetchDestinationBlocklistSuccess = createAction(
+  '[DestinationBlocklist] Fetched destination blocklist',
+  props<{ destinations: string[] }>()
+);
+
+export const fetchDestinationBlocklistError = createAction(
+  '[DestinationBlocklist] Error fetching destination blocklist'
+);
+
+export const pushDestinationBlocklist = createAction(
+  '[DestinationBlocklist] Push destination blocklist'
+);
+
+export const pushDestinationBlocklistSuccess = createAction(
+  '[DestinationBlocklist] Push destination blocklist successfully'
+);
+
+export const pushDestinationBlocklistError = createAction(
+  '[DestinationBlocklist] Error pushing destination blocklist'
 );

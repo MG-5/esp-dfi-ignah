@@ -9,12 +9,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LightSensorSettings } from 'src/app/models/light-sensor';
+import { DestinationBlocklistComponent } from './destination-blocklist/destination-blocklist.component';
 
 @Component({
-    selector: 'app-system-settings',
-    templateUrl: './settings.component.html',
-    styleUrls: ['./settings.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule]
+  selector: 'app-system-settings',
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss'],
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule, DestinationBlocklistComponent]
 })
 export class SettingsComponent {
 
@@ -36,7 +37,7 @@ export class SettingsComponent {
     })
   });
 
-  constructor(private store: Store, private fb: FormBuilder) { 
+  constructor(private store: Store, private fb: FormBuilder) {
     this.store.dispatch(getDfiStationSettings());
     this.store.dispatch(getLightSensor());
 
@@ -58,7 +59,7 @@ export class SettingsComponent {
         }
       });
     });
-   }
+  }
 
   protected saveStationSettings(): void {
     const stationSettings: DfiStationSettings = {

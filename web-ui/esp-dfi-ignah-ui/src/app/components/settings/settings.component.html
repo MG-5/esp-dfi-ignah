@@ -51,7 +51,14 @@
       </div>
 
       <div class="action-button-bar">
-        <button mat-flat-button color="primary" class="xs-full-width" (click)="saveStationSettings()">Übernehmen</button>
+        <button mat-flat-button color="primary" class="xs-full-width"
+          (click)="saveStationSettings()">Übernehmen</button>
+      </div>
+
+      <div formGroupName="destination-blocklist">
+        <h3>Ziele, die ignoriert werden</h3>
+
+        <app-destination-blocklist></app-destination-blocklist>
       </div>
     </form>
   </div>

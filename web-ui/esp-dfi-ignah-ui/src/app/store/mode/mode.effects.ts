@@ -3,11 +3,12 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, combineLatest, map, mergeMap, of, withLatestFrom } from "rxjs";
 import { ModeService } from "src/app/services/api/mode.service";
 import { TextService } from "src/app/services/api/text.service";
-import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError, fetchVehicles, fetchVehiclesSuccess, fetchVehiclesError, pushVehicles, pushVehiclesSuccess, pushVehiclesError, setLightSensor, setLightSensorSuccess, setLightSensorError, getLightSensor, getLightSensorSuccess, getLightSensorError, getDfiStationSettings, setDfiStationSettings, getDfiStationSettingsSuccess, setDfiStationSettingsSuccess, setDfiStationSettingsError, getDfiStationSettingsError } from "./mode.actions";
+import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError, fetchVehicles, fetchVehiclesSuccess, fetchVehiclesError, pushVehicles, pushVehiclesSuccess, pushVehiclesError, setLightSensor, setLightSensorSuccess, setLightSensorError, getLightSensor, getLightSensorSuccess, getLightSensorError, getDfiStationSettings, setDfiStationSettings, getDfiStationSettingsSuccess, setDfiStationSettingsSuccess, setDfiStationSettingsError, getDfiStationSettingsError, fetchDestinationBlocklist, fetchDestinationBlocklistSuccess, fetchDestinationBlocklistError, pushDestinationBlocklist, pushDestinationBlocklistSuccess, pushDestinationBlocklistError } from "./mode.actions";
 import { VehicleService } from "src/app/services/api/vehicle.service";
 import { Store } from "@ngrx/store";
-import { selectAdditionalVehicles } from "./mode.selectors";
+import { selectAdditionalVehicles, selectDestinationBlocklist } from "./mode.selectors";
 import { SystemService } from "src/app/services/api/system.service";
+import { DestinationBlocklistService } from "src/app/services/api/destination";
 
 @Injectable()
 export class ModeEffects {
@@ -70,7 +71,7 @@ export class ModeEffects {
     return this.actions$.pipe(
       ofType(fetchVehicles),
       mergeMap(() => this.vehicleService.getAdditionalVehicles()),
-      map(vehicles => fetchVehiclesSuccess({ vehicles: vehicles.vehicles })),
+      map(data => fetchVehiclesSuccess({ vehicles: data.vehicles })),
       catchError(() => of(fetchVehiclesError()))
     );
   });
@@ -121,12 +122,34 @@ export class ModeEffects {
     );
   });
 
+  fetchDestinationBlocklist$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(fetchDestinationBlocklist),
+      mergeMap(() => this.destinationBlocklistService.getDestinationBlocklist()),
+      map(data => fetchDestinationBlocklistSuccess({ destinations: data.destinationBlocklist })),
+      catchError(() => of(fetchDestinationBlocklistError()))
+    );
+  });
+
+  pushDestinationBlocklist$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(pushDestinationBlocklist),
+      withLatestFrom(this.store.select(selectDestinationBlocklist)),
+      mergeMap(([_, foo]) => this.destinationBlocklistService.setDestinationBlocklist({ destinationBlocklist: foo })),
+      map(() => pushDestinationBlocklistSuccess()),
+      catchError(() => of(pushDestinationBlocklistError()))
+    );
+  });
+
+
+
   constructor(
     private actions$: Actions,
     private store: Store,
     private modeService: ModeService,
     private textService: TextService,
     private vehicleService: VehicleService,
-    private systemService: SystemService) { }
+    private systemService: SystemService,
+    private destinationBlocklistService: DestinationBlocklistService) { }
 
 }
