@@ -1,6 +1,3 @@
-[submodule "main/components/pugixml"]
-	path = main/components/pugixml
-	url = https://github.com/zeux/pugixml.git
 [submodule "main/components/Time"]
 	path = main/components/Time
 	url = ../Time.git
@@ -10,3 +7,7 @@
 [submodule "main/components/display-renderer"]
 	path = main/components/display-renderer
 	url = ../display-renderer.git
+[submodule "pugixml"]
+	path = main/components/pugixml
+	url = https://github.com/Arthapz/pugixml.git
+	branch = master
