@@ -15,7 +15,7 @@ public:
     NonVolatileMemory()
     {
         initNVS();
-        util::wrappers::sync::signal(util::wrappers::sync::NvmInitialized);
+        util::wrappers::Task::syncEventGroup.setBits(util::wrappers::sync_events::NvmInitialized);
     };
 
     /// multithread-safe read from NVS

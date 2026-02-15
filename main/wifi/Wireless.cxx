@@ -18,7 +18,8 @@ using namespace util::wrappers;
 //--------------------------------------------------------------------------------------------------
 void Wireless::taskMain(void *)
 {
-    sync::waitForAll(sync::LedDriverStarted | sync::ConfigurationLoaded);
+    Task::syncEventGroup.waitBits(sync_events::LedDriverStarted | sync_events::ConfigurationLoaded,
+                                  true, true, portMAX_DELAY);
 
     init();
     configureStation();
@@ -29,12 +30,12 @@ void Wireless::taskMain(void *)
     {
         if (isConnected)
         {
-            sync::waitForAll(sync::ConnectionFailed);
+            Task::syncEventGroup.clearBits(sync_events::ConnectedToWifi);
             isConnected = false;
         }
         else
         {
-            sync::waitForAll(sync::ConnectedToWifi);
+            Task::syncEventGroup.waitBits(sync_events::ConnectedToWifi, true, false, portMAX_DELAY);
             isConnected = true;
         }
     }
@@ -139,8 +140,8 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
                 reinterpret_cast<wifi_event_sta_disconnected_t *>(eventData);
             ESP_LOGE(PrintTag, "Wifi disconnect. Reason : %d", disconnected->reason);
 
-            sync::clearEvents(sync::ConnectedToWifi);
-            sync::signal(sync::ConnectionFailed);
+            Task::syncEventGroup.clearBits(sync_events::ConnectedToWifi);
+            Task::syncEventGroup.setBits(sync_events::ConnectionFailed);
 
             if (++reconnectionCounter >= ReconnectionCounterThreshould)
             {
@@ -169,8 +170,8 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
         ipAdress = static_cast<ip_event_got_ip_t *>(eventData)->ip_info.ip;
         ESP_LOGI(PrintTag, "IP address: " IPSTR, IP2STR(&ipAdress));
 
-        sync::clearEvents(sync::ConnectionFailed);
-        sync::signal(sync::ConnectedToWifi);
+        Task::syncEventGroup.clearBits(sync_events::ConnectionFailed);
+        Task::syncEventGroup.setBits(sync_events::ConnectedToWifi);
     }
 }
 

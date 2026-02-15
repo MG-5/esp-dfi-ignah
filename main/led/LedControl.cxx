@@ -12,7 +12,7 @@ void LedControl::init()
     initPwm();
     clearShiftRegisters();
 
-    sync::signal(sync::LedDriverStarted);
+    Task::syncEventGroup.setBits(sync_events::LedDriverStarted);
 }
 
 //--------------------------------------------------------------------------------------------------
