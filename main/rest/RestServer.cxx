@@ -87,7 +87,7 @@ esp_err_t RestServer::startServer(std::string newBasePath)
     config.uri_match_fn = httpd_uri_match_wildcard;
 
     ESP_LOGI(PrintTag, "Starting REST server");
-    // ESP_ERROR_CHECK(httpd_start(&server, &config));
+    ESP_ERROR_CHECK(httpd_start(&server, &config));
 
     httpd_uri_t systemInfoGetUri = {.uri = "/system/info",
                                     .method = HTTP_GET,

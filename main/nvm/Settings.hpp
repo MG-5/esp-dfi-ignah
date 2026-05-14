@@ -73,8 +73,7 @@ public:
 protected:
     void taskMain(void *)
     {
-        Task::syncEventGroup.waitBits(sync_events::NvmInitialized | sync_events::LedDriverStarted,
-                                      true, true, portMAX_DELAY);
+        Task::syncEventGroup.waitBits(sync_events::NvmInitialized, true, true, portMAX_DELAY);
         loadValues();
         Task::syncEventGroup.setBits(sync_events::ConfigurationLoaded);
     }

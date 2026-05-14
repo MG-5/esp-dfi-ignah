@@ -18,8 +18,7 @@ using namespace util::wrappers;
 //--------------------------------------------------------------------------------------------------
 void Wireless::taskMain(void *)
 {
-    Task::syncEventGroup.waitBits(sync_events::LedDriverStarted | sync_events::ConfigurationLoaded,
-                                  true, true, portMAX_DELAY);
+    Task::syncEventGroup.waitBits(sync_events::ConfigurationLoaded, true, true, portMAX_DELAY);
 
     init();
     configureStation();
@@ -30,12 +29,15 @@ void Wireless::taskMain(void *)
     {
         if (isConnected)
         {
+            Task::syncEventGroup.waitBits(sync_events::ConnectionFailed, true, false,
+                                          portMAX_DELAY);
             Task::syncEventGroup.clearBits(sync_events::ConnectedToWifi);
             isConnected = false;
         }
         else
         {
             Task::syncEventGroup.waitBits(sync_events::ConnectedToWifi, true, false, portMAX_DELAY);
+            Task::syncEventGroup.clearBits(sync_events::ConnectionFailed);
             isConnected = true;
         }
     }
@@ -44,6 +46,8 @@ void Wireless::taskMain(void *)
 //--------------------------------------------------------------------------------------------------
 void Wireless::init()
 {
+    esp_wifi_set_country_code("DE", true);
+
     // init TCP stack
     ESP_ERROR_CHECK(esp_netif_init());
 
@@ -51,20 +55,21 @@ void Wireless::init()
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
     esp_netif_create_default_wifi_sta();
-    esp_netif_create_default_wifi_ap();
+    // esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
-                                                        &Wireless::eventHandler, nullptr, nullptr));
+    esp_event_handler_instance_t instance_any_id;
+    esp_event_handler_instance_t instance_got_ip;
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        WIFI_EVENT, ESP_EVENT_ANY_ID, &Wireless::eventHandler, nullptr, &instance_any_id));
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
-                                                        &Wireless::eventHandler, nullptr, nullptr));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(
+        IP_EVENT, IP_EVENT_STA_GOT_IP, &Wireless::eventHandler, nullptr, &instance_got_ip));
 
     // ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-    ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
+    // ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
 }
 //--------------------------------------------------------------------------------------------------
 void Wireless::configureStation()
@@ -73,10 +78,15 @@ void Wireless::configureStation()
     std::memcpy(staConfig.ssid, StaSsid.data(), StaSsid.length());
     std::memcpy(staConfig.password, StaPassword.data(), StaPassword.length());
     staConfig.threshold.authmode = WIFI_AUTH_WPA2_PSK; // don't accept auths below this threshold
-    staConfig.sae_pwe_h2e = WPA3_SAE_PWE_BOTH;
+    staConfig.sae_pwe_h2e = WPA3_SAE_PWE_HUNT_AND_PECK;
+
+    constexpr uint8_t H2E_Indentifier[SAE_H2E_IDENTIFIER_LEN]{0};
+    std::memcpy(staConfig.sae_h2e_identifier, H2E_Indentifier, SAE_H2E_IDENTIFIER_LEN);
 
     wifi_config_t wifiConfig;
     wifiConfig.sta = staConfig;
+
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifiConfig));
 }
 
@@ -116,7 +126,7 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
 
         case WIFI_EVENT_STA_CONNECTED:
             std::memcpy(&staInfos, eventData, sizeof(wifi_event_sta_connected_t));
-            ESP_LOGI(PrintTag, "Established a wifi connection to %s, wait for  IP address now.",
+            ESP_LOGI(PrintTag, "Established a wifi connection to %s, wait for IP address now.",
                      staInfos.ssid);
             break;
 
@@ -153,7 +163,6 @@ void Wireless::eventHandler(void *arg, esp_event_base_t eventBase, int32_t event
                 break;
             }
 
-            vTaskDelay(toOsTicks(RetryDelay));
             ESP_LOGW(PrintTag, "try to reconnnect");
             ESP_ERROR_CHECK(esp_wifi_connect());
         }

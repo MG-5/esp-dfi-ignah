@@ -4,7 +4,7 @@
       "name": "ESP-IDF",
       "cStandard": "c11",
       "cppStandard": "c++17",
-      "compilerPath": "${config:idf.toolsPath}/tools/riscv32-esp-elf/esp-14.2.0_20251107/riscv32-esp-elf/bin/riscv32-esp-elf-gcc",
+      "compilerPath": "/home/mg/.espressif/tools/riscv32-esp-elf/esp-14.2.0_20260121/riscv32-esp-elf/bin/riscv32-esp-elf-gcc",
       "compileCommands": "${workspaceFolder}/build/compile_commands.json"
     }
   ],
