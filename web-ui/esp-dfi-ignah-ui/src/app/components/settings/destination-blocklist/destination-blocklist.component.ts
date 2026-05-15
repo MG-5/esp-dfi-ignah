@@ -19,7 +19,7 @@ import { MatListModule } from '@angular/material/list';
 })
 export class DestinationBlocklistComponent {
 
-  protected destinations$: Observable<string[]> = this.store.select(selectDestinationBlocklist);
+  protected destinations$: Observable<DestinationBlocklist> = this.store.select(selectDestinationBlocklist);
 
   private suspendFetching = false;
 

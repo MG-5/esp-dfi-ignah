@@ -1,3 +1,3 @@
 export interface DestinationBlocklist {
-  destinationBlocklist: string[];
+  blocklist: string[];
 }

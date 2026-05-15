@@ -126,7 +126,7 @@ export class ModeEffects {
     return this.actions$.pipe(
       ofType(fetchDestinationBlocklist),
       mergeMap(() => this.destinationBlocklistService.getDestinationBlocklist()),
-      map(data => fetchDestinationBlocklistSuccess({ destinations: data.destinationBlocklist })),
+      map(data => fetchDestinationBlocklistSuccess({ destinations: data.blocklist })),
       catchError(() => of(fetchDestinationBlocklistError()))
     );
   });
@@ -135,7 +135,7 @@ export class ModeEffects {
     return this.actions$.pipe(
       ofType(pushDestinationBlocklist),
       withLatestFrom(this.store.select(selectDestinationBlocklist)),
-      mergeMap(([_, foo]) => this.destinationBlocklistService.setDestinationBlocklist({ destinationBlocklist: foo })),
+      mergeMap(([_, destinations]) => this.destinationBlocklistService.setDestinationBlocklist({ blocklist: destinations.blocklist })),
       map(() => pushDestinationBlocklistSuccess()),
       catchError(() => of(pushDestinationBlocklistError()))
     );

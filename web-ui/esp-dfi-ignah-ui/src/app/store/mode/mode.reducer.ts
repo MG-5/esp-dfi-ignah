@@ -6,6 +6,7 @@ import { addVehicle, fetchVehiclesSuccess, getFreeTextSuccess, getLightSensorSuc
 import { AdditionalVehicle } from "@app/models/additional-vehicles";
 import { LightSensorSettings } from "@app/models/light-sensor";
 import { DfiStationSettings } from "@app/models/dfi-station-settings";
+import { DestinationBlocklist } from "@app/models/destination-blocklist";
 
 export interface ModeState {
   mode: Mode;
@@ -14,7 +15,7 @@ export interface ModeState {
   additionalVehicles: AdditionalVehicle[];
   lightSensorSettings: LightSensorSettings;
   stationSettings: DfiStationSettings;
-  destinations: string[];
+  destinations: DestinationBlocklist;
 }
 
 const initialState: ModeState = {
@@ -33,11 +34,12 @@ const initialState: ModeState = {
     pwmGain: 0,
   },
   stationSettings: {
-    blocklist: [],
     name: '',
     number: -1,
   },
-  destinations: []
+  destinations: {
+    blocklist: [],
+  }
 };
 
 export const modeReducer = createReducer(
@@ -98,28 +100,28 @@ export const modeReducer = createReducer(
   // Destination Blocklist
   on(addDestination, (state, { destination }) => ({
     ...state,
-    destinations: state.destinations.concat(destination)
+    destinations: { ...state.destinations, blocklist: state.destinations.blocklist.concat(destination) }
   })),
   on(removeDestination, (state, { destinationIndex }) => {
-    let newDestinations = [...state.destinations];
-    newDestinations.splice(destinationIndex, 1);
+    const newBlocklist = [...state.destinations.blocklist];
+    newBlocklist.splice(destinationIndex, 1);
 
     return {
       ...state,
-      destinations: newDestinations
+      destinations: { ...state.destinations, blocklist: newBlocklist }
     };
   }),
   on(updateDestination, (state, { destinationIndex, destination }) => {
-    let newDestinations = [...state.destinations];
-    newDestinations[destinationIndex] = destination;
+    const newBlocklist = [...state.destinations.blocklist];
+    newBlocklist[destinationIndex] = destination;
 
     return {
       ...state,
-      destinations: newDestinations
+      destinations: { ...state.destinations, blocklist: newBlocklist }
     };
   }),
   on(fetchDestinationBlocklistSuccess, (state, { destinations }) => ({
     ...state,
-    destinations: destinations
+    destinations: { ...state.destinations, blocklist: destinations }
   }))
 );

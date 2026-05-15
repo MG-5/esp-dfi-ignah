@@ -1,6 +1,6 @@
 @if (destinations$ | async; as destinations) {
 <mat-list>
-  @for (destination of destinations; track destination; let i = $index) {
+  @for (destination of destinations.blocklist; track destination; let i = $index) {
 
   <mat-list-item>
     <span matListItemTitle>{{destination}}</span>
@@ -15,7 +15,7 @@
       </button>
     </span>
   </mat-list-item>
-  @if (i !== destinations.length - 1) {
+  @if (i !== destinations.blocklist.length - 1) {
   <mat-divider></mat-divider>
   }
 

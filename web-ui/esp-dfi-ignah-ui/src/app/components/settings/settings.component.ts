@@ -66,7 +66,6 @@ export class SettingsComponent {
     const stationSettings: DfiStationSettings = {
       name: this.settingsForm.value.station?.name ?? '',
       number: +(this.settingsForm.value.station?.number ?? -1),
-      blocklist: [],
     };
 
     const lightSensorSettings: LightSensorSettings = {

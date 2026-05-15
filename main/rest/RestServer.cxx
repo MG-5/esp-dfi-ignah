@@ -181,6 +181,20 @@ esp_err_t RestServer::startServer(std::string newBasePath)
                                      .user_ctx = this};
     httpd_register_uri_handler(server, &lightSensorSetUri);
 
+    httpd_uri_t destinationBlocklistGetUri = {.uri = "/destinationblocklist",
+                                              .method = HTTP_GET,
+                                              .handler =
+                                                  RestApiHandlers::destinationBlocklistGetHandler,
+                                              .user_ctx = this};
+    httpd_register_uri_handler(server, &destinationBlocklistGetUri);
+
+    httpd_uri_t destinationBlocklistSetUri = {.uri = "/destinationblocklist",
+                                              .method = HTTP_PUT,
+                                              .handler =
+                                                  RestApiHandlers::destinationBlocklistSetHandler,
+                                              .user_ctx = this};
+    httpd_register_uri_handler(server, &destinationBlocklistSetUri);
+
     // URI handler for getting web server files
     httpd_uri_t commonGetUri = {.uri = "/*", //
                                 .method = HTTP_GET,
