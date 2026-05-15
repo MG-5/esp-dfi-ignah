@@ -2,7 +2,7 @@ import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { addDestination, updateDestination } from 'src/app/store/mode';
+import { addDestination, updateDestination } from '@app/store/mode';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';

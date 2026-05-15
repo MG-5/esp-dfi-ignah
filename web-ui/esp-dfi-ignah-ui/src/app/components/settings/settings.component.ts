@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { DfiStationSettings } from 'src/app/models/dfi-station-settings';
-import { getDfiStationSettings, getLightSensor, selectDfiStationSettings, selectLightSensorSettings, setLightSensor, setDfiStationSettings } from 'src/app/store/mode';
+import { DfiStationSettings } from '@app/models/dfi-station-settings';
+import { getDfiStationSettings, getLightSensor, selectDfiStationSettings, selectLightSensorSettings, setLightSensor, setDfiStationSettings } from '@app/store/mode';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LightSensorSettings } from 'src/app/models/light-sensor';
+import { LightSensorSettings } from '@app/models/light-sensor';
 import { DestinationBlocklistComponent } from './destination-blocklist/destination-blocklist.component';
 
 @Component({

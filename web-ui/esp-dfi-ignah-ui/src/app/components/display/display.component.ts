@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Mode } from 'src/app/models/mode';
-import { getMode, selectMode, setMode } from 'src/app/store/mode';
+import { Mode } from '@app/models/mode';
+import { getMode, selectMode, setMode } from '@app/store/mode';
 import { AsyncPipe } from '@angular/common';
 import { AdditionalVehiclesComponent } from './additional-vehicles/additional-vehicles.component';
 import { FreeTextComponent } from './free-text/free-text.component';

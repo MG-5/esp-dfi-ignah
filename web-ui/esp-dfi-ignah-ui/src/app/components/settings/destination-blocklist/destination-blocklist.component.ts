@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { DestinationBlocklist } from 'src/app/models/destination-blocklist';
-import { fetchDestinationBlocklist, pushDestinationBlocklist, removeDestination, selectDestinationBlocklist } from 'src/app/store/mode';
+import { DestinationBlocklist } from '@app/models/destination-blocklist';
+import { fetchDestinationBlocklist, pushDestinationBlocklist, removeDestination, selectDestinationBlocklist } from '@app/store/mode';
 import { ChangeDialogComponent } from './change-dialog/change-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AsyncPipe } from '@angular/common';

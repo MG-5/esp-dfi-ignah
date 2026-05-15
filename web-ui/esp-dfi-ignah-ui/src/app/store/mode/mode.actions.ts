@@ -1,11 +1,10 @@
 import { createAction, props } from "@ngrx/store";
-import { AdditionalVehicle } from "src/app/models/additional-vehicles";
-import { DfiStationSettings } from "src/app/models/dfi-station-settings";
-import { FreeText } from "src/app/models/free-text";
-import { LightSensorSettings } from "src/app/models/light-sensor";
-import { Mode } from "src/app/models/mode";
-import { RunningText } from "src/app/models/running-text";
-import { DestinationBlocklist } from "src/app/models/destination-blocklist";
+import { AdditionalVehicle } from "@app/models/additional-vehicles";
+import { DfiStationSettings } from "@app/models/dfi-station-settings";
+import { FreeText } from "@app/models/free-text";
+import { LightSensorSettings } from "@app/models/light-sensor";
+import { Mode } from "@app/models/mode";
+import { RunningText } from "@app/models/running-text";
 
 
 // Mode

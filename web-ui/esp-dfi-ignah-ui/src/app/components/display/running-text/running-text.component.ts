@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { getRunningText, selectRunningText, setRunningText } from 'src/app/store/mode';
+import { getRunningText, selectRunningText, setRunningText } from '@app/store/mode';
 import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
@@ -10,10 +10,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { map } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-running-text',
-    templateUrl: './running-text.component.html',
-    styleUrls: ['./running-text.component.scss'],
-    imports: [MatFormFieldModule, MatInputModule, MatSliderModule, FormsModule, MatButtonModule, AsyncPipe]
+  selector: 'app-running-text',
+  templateUrl: './running-text.component.html',
+  styleUrls: ['./running-text.component.scss'],
+  imports: [MatFormFieldModule, MatInputModule, MatSliderModule, FormsModule, MatButtonModule, AsyncPipe]
 })
 export class RunningTextComponent implements OnInit {
 
@@ -32,10 +32,12 @@ export class RunningTextComponent implements OnInit {
   }
 
   saveRunningText(text: string): void {
-    this.store.dispatch(setRunningText({runningText: {
-      text,
-      speed: this.speed
-    }}));
+    this.store.dispatch(setRunningText({
+      runningText: {
+        text,
+        speed: this.speed
+      }
+    }));
   }
 
 }

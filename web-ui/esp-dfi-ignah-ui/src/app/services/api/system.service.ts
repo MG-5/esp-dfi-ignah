@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SystemClock } from 'src/app/models/system-clock';
-import { SystemInfo } from 'src/app/models/system-info';
-import { DfiStationSettings } from 'src/app/models/dfi-station-settings';
-import { LightSensorSettings } from 'src/app/models/light-sensor';
+import { SystemClock } from '@app/models/system-clock';
+import { SystemInfo } from '@app/models/system-info';
+import { DfiStationSettings } from '@app/models/dfi-station-settings';
+import { LightSensorSettings } from '@app/models/light-sensor';
 import { HostService } from '../host.service';
 
 @Injectable({

@@ -1,14 +1,14 @@
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, combineLatest, map, mergeMap, of, withLatestFrom } from "rxjs";
-import { ModeService } from "src/app/services/api/mode.service";
-import { TextService } from "src/app/services/api/text.service";
+import { ModeService } from "@app/services/api/mode.service";
+import { TextService } from "@app/services/api/text.service";
 import { getModeError, getMode, getModeSuccess, setMode, setModeSuccess, setModeError, getRunningText, getRunningTextSuccess, getRunningTextError, setRunningText, setRunningTextSuccess, setRunningTextError, getFreeText, setFreeText, setFreeTextSuccess, setFreeTextError, getFreeTextSuccess, getFreeTextError, fetchVehicles, fetchVehiclesSuccess, fetchVehiclesError, pushVehicles, pushVehiclesSuccess, pushVehiclesError, setLightSensor, setLightSensorSuccess, setLightSensorError, getLightSensor, getLightSensorSuccess, getLightSensorError, getDfiStationSettings, setDfiStationSettings, getDfiStationSettingsSuccess, setDfiStationSettingsSuccess, setDfiStationSettingsError, getDfiStationSettingsError, fetchDestinationBlocklist, fetchDestinationBlocklistSuccess, fetchDestinationBlocklistError, pushDestinationBlocklist, pushDestinationBlocklistSuccess, pushDestinationBlocklistError } from "./mode.actions";
-import { VehicleService } from "src/app/services/api/vehicle.service";
+import { VehicleService } from "@app/services/api/vehicle.service";
 import { Store } from "@ngrx/store";
 import { selectAdditionalVehicles, selectDestinationBlocklist } from "./mode.selectors";
-import { SystemService } from "src/app/services/api/system.service";
-import { DestinationBlocklistService } from "src/app/services/api/destination";
+import { SystemService } from "@app/services/api/system.service";
+import { DestinationBlocklistService } from "@app/services/api/destination";
 
 @Injectable()
 export class ModeEffects {

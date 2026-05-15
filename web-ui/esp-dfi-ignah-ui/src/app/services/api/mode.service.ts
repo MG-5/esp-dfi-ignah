@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Mode } from 'src/app/models/mode';
+import { Mode } from '@app/models/mode';
 import { HostService } from '../host.service';
 
 @Injectable({

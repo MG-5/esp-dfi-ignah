@@ -2,16 +2,16 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import { getFreeText, selectFreeText, setFreeText } from 'src/app/store/mode';
+import { getFreeText, selectFreeText, setFreeText } from '@app/store/mode';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
-    selector: 'app-free-text',
-    templateUrl: './free-text.component.html',
-    styleUrls: ['./free-text.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule]
+  selector: 'app-free-text',
+  templateUrl: './free-text.component.html',
+  styleUrls: ['./free-text.component.scss'],
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule]
 })
 export class FreeTextComponent implements OnInit, OnDestroy {
 

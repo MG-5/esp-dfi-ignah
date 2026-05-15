@@ -1,11 +1,11 @@
 import { createReducer, on } from "@ngrx/store";
-import { FreeText } from "src/app/models/free-text";
-import { Mode } from "src/app/models/mode";
-import { RunningText } from "src/app/models/running-text";
+import { FreeText } from "@app/models/free-text";
+import { Mode } from "@app/models/mode";
+import { RunningText } from "@app/models/running-text";
 import { addVehicle, fetchVehiclesSuccess, getFreeTextSuccess, getLightSensorSuccess, getModeSuccess, getRunningTextSuccess, getDfiStationSettingsSuccess, removeVehicle, updateVehicle, addDestination, removeDestination, updateDestination, fetchDestinationBlocklistSuccess } from "./mode.actions";
-import { AdditionalVehicle } from "src/app/models/additional-vehicles";
-import { LightSensorSettings } from "src/app/models/light-sensor";
-import { DfiStationSettings } from "src/app/models/dfi-station-settings";
+import { AdditionalVehicle } from "@app/models/additional-vehicles";
+import { LightSensorSettings } from "@app/models/light-sensor";
+import { DfiStationSettings } from "@app/models/dfi-station-settings";
 
 export interface ModeState {
   mode: Mode;

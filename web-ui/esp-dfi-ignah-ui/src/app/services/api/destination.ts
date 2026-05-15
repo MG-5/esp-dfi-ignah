@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DestinationBlocklist } from 'src/app/models/destination-blocklist';
+import { DestinationBlocklist } from '@app/models/destination-blocklist';
 import { HostService } from '../host.service';
 
 @Injectable({

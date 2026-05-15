@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AdditionalVehicles } from 'src/app/models/additional-vehicles';
+import { AdditionalVehicles } from '@app/models/additional-vehicles';
 import { HostService } from '../host.service';
 
 @Injectable({
