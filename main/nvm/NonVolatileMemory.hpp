@@ -110,20 +110,6 @@ public:
     void updateValue(std::string_view key, const T &value)
     {
         write(key, value);
-        // commitValues(); // not needed at IDF 5.1.1
-    }
-
-    /// at version IDF 5.1.1 this function is not needed because NVS is automatically commited after
-    /// each write
-    void commitValues()
-    {
-        ESP_LOGI(PrintTag, "Committing values to NVS ... ");
-
-        esp_err_t err = handle->commit();
-
-        if (err != ESP_OK)
-            ESP_LOGE(PrintTag, "Error (%s) while committing values to NVS!\n",
-                     esp_err_to_name(err));
     }
 
 private:
