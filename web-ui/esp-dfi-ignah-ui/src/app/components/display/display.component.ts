@@ -11,12 +11,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
-    selector: 'app-display',
-    templateUrl: './display.component.html',
-    styleUrls: ['./display.component.scss'],
-    imports: [MatFormFieldModule, MatSelectModule, MatOptionModule, MatButtonModule, MatTabsModule, RunningTextComponent, FreeTextComponent, AdditionalVehiclesComponent, AsyncPipe]
+  selector: 'app-display',
+  templateUrl: './display.component.html',
+  styleUrls: ['./display.component.scss'],
+  imports: [MatFormFieldModule, MatSelectModule, MatOptionModule, MatButtonModule, MatTabsModule, MatDividerModule, RunningTextComponent, FreeTextComponent, AdditionalVehiclesComponent, AsyncPipe]
 })
 export class DisplayComponent implements OnInit {
 
@@ -31,6 +32,6 @@ export class DisplayComponent implements OnInit {
   }
 
   saveMode(mode: Mode): void {
-    this.store.dispatch(setMode({mode}));
+    this.store.dispatch(setMode({ mode }));
   }
 }

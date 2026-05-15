@@ -7,6 +7,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LightSensorSettings } from '@app/models/light-sensor';
 import { DestinationBlocklistComponent } from './destination-blocklist/destination-blocklist.component';
@@ -15,7 +16,7 @@ import { DestinationBlocklistComponent } from './destination-blocklist/destinati
   selector: 'app-system-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule, DestinationBlocklistComponent]
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule, MatDividerModule, DestinationBlocklistComponent]
 })
 export class SettingsComponent {
 
