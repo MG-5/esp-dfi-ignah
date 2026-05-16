@@ -24,9 +24,9 @@ idf_component_register(SRCS
     esp_app_format
     esp_http_server
     esp_wifi
-    json
     nvs_flash
     spiffs
+    util
 
     INCLUDE_DIRS ".")
 
@@ -57,14 +57,12 @@ add_compile_definitions(
    PUGIXML_NO_XPATH
    PUGIXML_NO_EXCEPTIONS)
 
-add_subdirectory(components/pugixml)
-add_subdirectory(components/Time)
-add_subdirectory(components/display-renderer)
-add_subdirectory(components/util)
+add_subdirectory(dfi/pugixml)
+add_subdirectory(dfi/Time)
+add_subdirectory(dfi/display-renderer)
 
 target_link_libraries(${COMPONENT_LIB} PUBLIC 
                 pugixml
                 Time
                 display-renderer
-                util
                 )

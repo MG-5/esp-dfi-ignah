@@ -1,13 +1,13 @@
 [submodule "main/components/Time"]
-	path = main/components/Time
+	path = main/dfi/Time
 	url = ../Time.git
 [submodule "main/components/util"]
-	path = main/components/util
+	path = components/util
 	url = ../util.git
 [submodule "main/components/display-renderer"]
-	path = main/components/display-renderer
+	path = main/dfi/display-renderer
 	url = ../display-renderer.git
 [submodule "pugixml"]
-	path = main/components/pugixml
+	path = main/dfi/pugixml
 	url = https://github.com/Arthapz/pugixml.git
 	branch = master

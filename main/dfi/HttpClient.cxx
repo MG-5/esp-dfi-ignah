@@ -103,6 +103,14 @@ esp_err_t HttpClient::httpEventHandler(esp_http_client_event_t *event)
         ESP_LOGD(PrintTag, "HTTP_EVENT_REDIRECT");
         return esp_http_client_set_redirection(event->client);
         break;
+
+    case HTTP_EVENT_ON_HEADERS_COMPLETE:
+        ESP_LOGD(PrintTag, "HTTP_EVENT_ON_HEADERS_COMPLETE");
+        break;
+
+    case HTTP_EVENT_ON_STATUS_CODE:
+        ESP_LOGD(PrintTag, "HTTP_EVENT_ON_STATUS_CODE, status_code");
+        break;
     }
     return ESP_OK;
 }
