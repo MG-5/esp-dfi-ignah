@@ -26,13 +26,14 @@ bool HttpClient::requestData(uint32_t stationNumber)
     queryString += "&start=yes";
     queryString += "&input=" + std::to_string(stationNumber);
 
-    esp_http_client_config_t config = {
-        .host = Hostname,
-        .path = Path,
-        .query = queryString.data(),
-        .disable_auto_redirect = true,
-        .event_handler = HttpClient::httpEventHandler,
-    };
+    esp_http_client_config_t config =
+        {
+            .host = Hostname,
+            .path = Path,
+            .query = queryString.data(),
+            .disable_auto_redirect = true,
+            .event_handler = HttpClient::httpEventHandler,
+        };
 
     ESP_LOGI(PrintTag, "request INSA data");
     esp_http_client_handle_t client = esp_http_client_init(&config);

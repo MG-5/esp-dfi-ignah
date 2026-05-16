@@ -64,7 +64,8 @@ void LedControl::initPwm()
                                      .duty_resolution = Settings::PwmResolution,
                                      .timer_num = LEDC_TIMER_0,
                                      .freq_hz = 20000, // frequency in Hz
-                                     .clk_cfg = LEDC_AUTO_CLK};
+                                     .clk_cfg = LEDC_AUTO_CLK,
+                                     .deconfigure = false};
     ESP_ERROR_CHECK(ledc_timer_config(&ledcTimer));
 
     ledc_channel_config_t ledcChannel = {
@@ -75,7 +76,9 @@ void LedControl::initPwm()
         .timer_sel = LEDC_TIMER_0,
         .duty = Settings::PwmMaximumDuty / 4, // Set duty to 25%
         .hpoint = 0,
-        .flags = {1} // invert output
+        .sleep_mode = LEDC_SLEEP_MODE_NO_ALIVE_NO_PD,
+        .flags = {1}, // invert output
+        .deconfigure = false,
     };
     ESP_ERROR_CHECK(ledc_channel_config(&ledcChannel));
 }
