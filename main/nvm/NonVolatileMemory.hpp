@@ -27,13 +27,16 @@ public:
         {
             uint32_t tempValue = 0;
             err = handle->get_item(key.data(), tempValue);
-            value = tempValue / 1000.0;
 
             if (err == ESP_OK)
+            {
+                value = tempValue / 1000.0;
                 ESP_LOGI(PrintTag, "Load \"%s\" from NVS: %f", key.data(), value);
-
+            }
             else if (err == ESP_ERR_NVS_NOT_FOUND)
             {
+                // value is unmodified - no division by 1000.0 here
+
                 ESP_LOGE(
                     PrintTag,
                     "The value \"%s\" is not initialized yet! Set it to internal default value: %f",
@@ -109,6 +112,10 @@ public:
     template <typename T>
     void updateValue(std::string_view key, const T &value)
     {
+        if constexpr (std::is_same_v<std::string, T>)
+            ESP_LOGI(PrintTag, "Updating %s to %s", key.data(), value.c_str());
+        else
+            ESP_LOGI(PrintTag, "Updating %s to %s", key.data(), std::to_string(value).c_str());
         write(key, value);
     }
 
