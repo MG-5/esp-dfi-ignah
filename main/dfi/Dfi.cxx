@@ -19,7 +19,7 @@ using namespace util::wrappers;
 //--------------------------------------------------------------------------------------------------
 void Dfi::taskMain(void *)
 {
-    sync::waitForAll(sync::ConnectedToWifi | sync::TimeIsSynchronized | sync::ConfigurationLoaded);
+    Task::syncEventGroup.waitBits(sync_events::TimeIsSynchronized, true, true, portMAX_DELAY);
 
     ESP_LOGI(PrintTag, "Station %s with number %du", settings.stationName.data(),
              settings.stationNumber);

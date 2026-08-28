@@ -26,13 +26,14 @@ bool HttpClient::requestData(uint32_t stationNumber)
     queryString += "&start=yes";
     queryString += "&input=" + std::to_string(stationNumber);
 
-    esp_http_client_config_t config = {
-        .host = Hostname,
-        .path = Path,
-        .query = queryString.data(),
-        .disable_auto_redirect = true,
-        .event_handler = HttpClient::httpEventHandler,
-    };
+    esp_http_client_config_t config =
+        {
+            .host = Hostname,
+            .path = Path,
+            .query = queryString.data(),
+            .disable_auto_redirect = true,
+            .event_handler = HttpClient::httpEventHandler,
+        };
 
     ESP_LOGI(PrintTag, "request INSA data");
     esp_http_client_handle_t client = esp_http_client_init(&config);
@@ -102,6 +103,14 @@ esp_err_t HttpClient::httpEventHandler(esp_http_client_event_t *event)
     case HTTP_EVENT_REDIRECT:
         ESP_LOGD(PrintTag, "HTTP_EVENT_REDIRECT");
         return esp_http_client_set_redirection(event->client);
+        break;
+
+    case HTTP_EVENT_ON_HEADERS_COMPLETE:
+        ESP_LOGD(PrintTag, "HTTP_EVENT_ON_HEADERS_COMPLETE");
+        break;
+
+    case HTTP_EVENT_ON_STATUS_CODE:
+        ESP_LOGD(PrintTag, "HTTP_EVENT_ON_STATUS_CODE, status_code");
         break;
     }
     return ESP_OK;

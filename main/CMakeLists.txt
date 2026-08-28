@@ -14,7 +14,6 @@ idf_component_register(SRCS
     wifi/Wireless.cxx
 
     Application.cxx
-    sync.cxx
     #StatusLed.cxx
 
     REQUIRES
@@ -25,9 +24,9 @@ idf_component_register(SRCS
     esp_app_format
     esp_http_server
     esp_wifi
-    json
     nvs_flash
     spiffs
+    util
 
     INCLUDE_DIRS ".")
 
@@ -36,10 +35,10 @@ set(WEB_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../web-ui/esp-dfi-ignah-ui")
     if(EXISTS ${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui/browser)
        execute_process(COMMAND du -sh ${WEB_SRC_DIR}/dist OUTPUT_VARIABLE command_return)
        MESSAGE( STATUS "size of dist folder: " ${command_return})
-       # uncomment if web data should be updated/written
-       # spiffs_create_partition_image(www ${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui/browser FLASH_IN_PROJECT)
+
+       spiffs_create_partition_image(www ${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui/browser FLASH_IN_PROJECT)
     else()
-        # message(FATAL_ERROR "${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui/browser doesn't exit. Please run 'ng build' in ${WEB_SRC_DIR}")
+       message(FATAL_ERROR "${WEB_SRC_DIR}/dist/esp-dfi-ignah-ui/browser doesn't exit. Please run 'ng build' in ${WEB_SRC_DIR}")
     endif()
 
 # Unfortunately the pugixml library performs install and export.
@@ -58,14 +57,12 @@ add_compile_definitions(
    PUGIXML_NO_XPATH
    PUGIXML_NO_EXCEPTIONS)
 
-add_subdirectory(components/pugixml)
-add_subdirectory(components/Time)
-add_subdirectory(components/display-renderer)
-add_subdirectory(components/util)
+add_subdirectory(dfi/pugixml)
+add_subdirectory(dfi/Time)
+add_subdirectory(dfi/display-renderer)
 
 target_link_libraries(${COMPONENT_LIB} PUBLIC 
                 pugixml
                 Time
                 display-renderer
-                util
                 )

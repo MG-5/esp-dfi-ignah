@@ -1,20 +1,22 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { DfiStationSettings } from 'src/app/models/dfi-station-settings';
-import { getDfiStationSettings, getLightSensor, selectDfiStationSettings, selectLightSensorSettings, setLightSensor, setDfiStationSettings } from 'src/app/store/mode';
+import { DfiStationSettings } from '@app/models/dfi-station-settings';
+import { getDfiStationSettings, getLightSensor, selectDfiStationSettings, selectLightSensorSettings, setLightSensor, setDfiStationSettings } from '@app/store/mode';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LightSensorSettings } from 'src/app/models/light-sensor';
+import { LightSensorSettings } from '@app/models/light-sensor';
+import { DestinationBlocklistComponent } from './destination-blocklist/destination-blocklist.component';
 
 @Component({
-    selector: 'app-system-settings',
-    templateUrl: './settings.component.html',
-    styleUrls: ['./settings.component.scss'],
-    imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule]
+  selector: 'app-system-settings',
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss'],
+  imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule, MatDividerModule, DestinationBlocklistComponent]
 })
 export class SettingsComponent {
 
@@ -36,7 +38,7 @@ export class SettingsComponent {
     })
   });
 
-  constructor(private store: Store, private fb: FormBuilder) { 
+  constructor(private store: Store, private fb: FormBuilder) {
     this.store.dispatch(getDfiStationSettings());
     this.store.dispatch(getLightSensor());
 
@@ -58,13 +60,12 @@ export class SettingsComponent {
         }
       });
     });
-   }
+  }
 
   protected saveStationSettings(): void {
     const stationSettings: DfiStationSettings = {
       name: this.settingsForm.value.station?.name ?? '',
       number: +(this.settingsForm.value.station?.number ?? -1),
-      blocklist: [],
     };
 
     const lightSensorSettings: LightSensorSettings = {

@@ -15,7 +15,7 @@ public:
     NonVolatileMemory()
     {
         initNVS();
-        util::wrappers::sync::signal(util::wrappers::sync::NvmInitialized);
+        util::wrappers::Task::syncEventGroup.setBits(util::wrappers::sync_events::NvmInitialized);
     };
 
     /// multithread-safe read from NVS
@@ -27,13 +27,16 @@ public:
         {
             uint32_t tempValue = 0;
             err = handle->get_item(key.data(), tempValue);
-            value = tempValue / 1000.0;
 
             if (err == ESP_OK)
+            {
+                value = tempValue / 1000.0;
                 ESP_LOGI(PrintTag, "Load \"%s\" from NVS: %f", key.data(), value);
-
+            }
             else if (err == ESP_ERR_NVS_NOT_FOUND)
             {
+                // value is unmodified - no division by 1000.0 here
+
                 ESP_LOGE(
                     PrintTag,
                     "The value \"%s\" is not initialized yet! Set it to internal default value: %f",
@@ -109,21 +112,11 @@ public:
     template <typename T>
     void updateValue(std::string_view key, const T &value)
     {
+        if constexpr (std::is_same_v<std::string, T>)
+            ESP_LOGI(PrintTag, "Updating %s to %s", key.data(), value.c_str());
+        else
+            ESP_LOGI(PrintTag, "Updating %s to %s", key.data(), std::to_string(value).c_str());
         write(key, value);
-        // commitValues(); // not needed at IDF 5.1.1
-    }
-
-    /// at version IDF 5.1.1 this function is not needed because NVS is automatically commited after
-    /// each write
-    void commitValues()
-    {
-        ESP_LOGI(PrintTag, "Committing values to NVS ... ");
-
-        esp_err_t err = handle->commit();
-
-        if (err != ESP_OK)
-            ESP_LOGE(PrintTag, "Error (%s) while committing values to NVS!\n",
-                     esp_err_to_name(err));
     }
 
 private:

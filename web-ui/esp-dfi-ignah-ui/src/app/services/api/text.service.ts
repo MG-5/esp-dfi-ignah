@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { FreeText } from 'src/app/models/free-text';
-import { RunningText } from 'src/app/models/running-text';
+import { FreeText } from '@app/models/free-text';
+import { RunningText } from '@app/models/running-text';
 import { HostService } from '../host.service';
 
 @Injectable({

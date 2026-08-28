@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HostService {
-
-  public hostname: string = environment.hostname;
-
+  // only relative paths
   public get baseUrl(): string {
-    return `http://${this.hostname}`;
+    return ``;
   }
 
   constructor() { }

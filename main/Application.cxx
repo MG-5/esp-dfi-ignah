@@ -33,12 +33,12 @@ void Application::run()
 {
     Task::applicationIsReadyStartAllTasks();
 
-    sync::waitForAll(sync::ConnectedToWifi);
+    Task::syncEventGroup.waitBits(sync_events::ConnectedToWifi, true, true, portMAX_DELAY);
     renderTask.setState(RenderTask::State::WaitForTimesyncronization);
     Timebase::initTimeSychronization();
 
     resetTimer();
-    sync::waitForAll(sync::TimeIsSynchronized);
+    Task::syncEventGroup.waitBits(sync_events::TimeIsSynchronized, true, true, portMAX_DELAY);
     renderTask.setState(RenderTask::State::ShowVehicles);
     restServer.initServer();
     stopTimer();

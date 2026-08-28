@@ -508,10 +508,6 @@ esp_err_t RestApiHandlers::stationGetHandler(httpd_req_t *req)
 
     cJSON_AddStringToObject(jsonRoot, "name", serverInstance->settings.stationName.c_str());
     cJSON_AddNumberToObject(jsonRoot, "number", serverInstance->settings.stationNumber);
-    auto blocklistArray = cJSON_AddArrayToObject(jsonRoot, "blocklist");
-
-    for (auto &blockEntry : serverInstance->dfi.getBlocklist())
-        cJSON_AddItemToArray(blocklistArray, cJSON_CreateString(blockEntry.c_str()));
 
     sendJsonResponse(req, jsonRoot);
     cJSON_Delete(jsonRoot);
@@ -533,19 +529,6 @@ esp_err_t RestApiHandlers::stationSetHandler(httpd_req_t *req)
 
     auto name = cJSON_GetObjectItem(root, "name");
     auto number = cJSON_GetObjectItem(root, "number");
-    // auto blocklist = cJSON_GetObjectItem(root, "pwmGain");
-
-    if (!name || !number || //! blocklist ||
-        name->type != cJSON_String || number->type != cJSON_Number
-        //|| blocklist->type != cJSON_Array
-    )
-    {
-        addCorsHeaders(req);
-        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
-                            "name, number or blocklist does not exist or it not the correct type");
-        cJSON_Delete(root);
-        return ESP_FAIL;
-    }
 
     std::string nameAsString(static_cast<const char *>(name->valuestring));
 
@@ -555,10 +538,6 @@ esp_err_t RestApiHandlers::stationSetHandler(httpd_req_t *req)
     serverInstance->settings.updateValue(Settings::StationNumberName,
                                          serverInstance->settings.stationNumber,
                                          static_cast<size_t>(number->valueint));
-
-    // serverInstance->settings.updateValue(Settings::StationBlocklistName,
-    // serverInstance->settings.stationBlocklist,
-    //  static_cast<float>(blocklist));
 
     cJSON_Delete(root);
 
@@ -625,6 +604,77 @@ esp_err_t RestApiHandlers::lightSensorSetHandler(httpd_req_t *req)
                                          static_cast<float>(pwmGain->valuedouble));
 
     cJSON_Delete(root);
+
+    addCorsHeaders(req);
+    httpd_resp_set_status(req, HTTPD_200);
+    httpd_resp_send(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::destinationBlocklistGetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(PrintTag, "destinationBlocklistGetHandler");
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+
+    auto jsonRoot = cJSON_CreateObject();
+    auto blocklistArray = cJSON_AddArrayToObject(jsonRoot, "blocklist");
+
+    for (auto &blockEntry : serverInstance->dfi.getBlocklist())
+    {
+        if (!blockEntry.empty())
+            cJSON_AddItemToArray(blocklistArray, cJSON_CreateString(blockEntry.c_str()));
+    }
+
+    sendJsonResponse(req, jsonRoot);
+    cJSON_Delete(jsonRoot);
+
+    return ESP_OK;
+}
+
+//--------------------------------------------------------------------------------------------------
+esp_err_t RestApiHandlers::destinationBlocklistSetHandler(httpd_req_t *req)
+{
+    ESP_LOGI(RestApiHandlers::PrintTag, "destinationBlocklistSetHandler");
+
+    if (loadContentToBuffer(req) != ESP_OK)
+        return ESP_FAIL;
+
+    auto serverInstance = reinterpret_cast<RestServer *>(req->user_ctx);
+    cJSON *root = cJSON_Parse(serverInstance->scratchBuffer);
+    cJSON *blocklist = cJSON_GetObjectItem(root, "blocklist");
+
+    if (!blocklist || !cJSON_IsArray(blocklist))
+    {
+        addCorsHeaders(req);
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST,
+                            "blocklist object does not exist or it not an array");
+        cJSON_Delete(root);
+        return ESP_FAIL;
+    }
+
+    std::string newBlocklist = "";
+
+    // concatenate all entries to one string, separated by ';' and save it to nvm
+    for (size_t i = 0; i < cJSON_GetArraySize(blocklist); i++)
+    {
+        auto blockEntry = cJSON_GetArrayItem(blocklist, i);
+        if (!blockEntry || blockEntry->type != cJSON_String)
+        {
+            ESP_LOGE(PrintTag,
+                     "Array entry at index %d is not a string. This entry will be ignored.", i);
+            continue;
+        }
+        newBlocklist += blockEntry->valuestring;
+        newBlocklist += ';';
+    }
+
+    cJSON_Delete(root);
+
+    serverInstance->settings.updateValue(Settings::StationBlocklistName,
+                                         serverInstance->settings.stationBlocklist, newBlocklist);
+    serverInstance->dfi.updateBlocklist();
 
     addCorsHeaders(req);
     httpd_resp_set_status(req, HTTPD_200);

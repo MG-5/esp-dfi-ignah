@@ -12,7 +12,7 @@ void LedControl::init()
     initPwm();
     clearShiftRegisters();
 
-    sync::signal(sync::LedDriverStarted);
+    Task::syncEventGroup.setBits(sync_events::LedDriverStarted);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -43,8 +43,8 @@ void LedControl::submitImage(const uint8_t *image, size_t length)
 //--------------------------------------------------------------------------------------------------
 void LedControl::initGpios()
 {
-    MultiplexerOut1.init(GPIO_MODE_INPUT);
-    MultiplexerOut2.init(GPIO_MODE_INPUT);
+    // MultiplexerOut1.init(GPIO_MODE_INPUT);
+    // MultiplexerOut2.init(GPIO_MODE_INPUT);
 
     ControlShiftInput.init(GPIO_MODE_OUTPUT);
     ControlShiftClock.init(GPIO_MODE_OUTPUT);
@@ -64,7 +64,8 @@ void LedControl::initPwm()
                                      .duty_resolution = Settings::PwmResolution,
                                      .timer_num = LEDC_TIMER_0,
                                      .freq_hz = 20000, // frequency in Hz
-                                     .clk_cfg = LEDC_AUTO_CLK};
+                                     .clk_cfg = LEDC_AUTO_CLK,
+                                     .deconfigure = false};
     ESP_ERROR_CHECK(ledc_timer_config(&ledcTimer));
 
     ledc_channel_config_t ledcChannel = {
@@ -75,7 +76,9 @@ void LedControl::initPwm()
         .timer_sel = LEDC_TIMER_0,
         .duty = Settings::PwmMaximumDuty / 4, // Set duty to 25%
         .hpoint = 0,
-        .flags = {1} // invert output
+        .sleep_mode = LEDC_SLEEP_MODE_NO_ALIVE_NO_PD,
+        .flags = {1}, // invert output
+        .deconfigure = false,
     };
     ESP_ERROR_CHECK(ledc_channel_config(&ledcChannel));
 }
@@ -96,7 +99,7 @@ void LedControl::setTripleControlShiftRegister(uint8_t rows)
     uint8_t secondRegister =
         0b00000000; // controls OR-Gate, which can disable LEDs, not needed at moment
 
-    [[maybe_unused]] constexpr auto AllowPwm = 1 << 0;
+    constexpr auto AllowPwm = 1 << 0;
     constexpr auto EnableMosfets = 1 << 1;
     [[maybe_unused]] constexpr auto MultiplexerSelect = 1 << 2;
 
@@ -192,7 +195,7 @@ void LedControl::shiftLedDataRow5(const uint8_t *image)
 //--------------------------------------------------------------------------------------------------
 void LedControl::delay50ns()
 {
-#ifndef CONFIG_ESP32_DEFAULT_CPU_FREQ_160
+#ifndef CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_160
 #error "Frequency is not set to 160MHz"
 #endif
 

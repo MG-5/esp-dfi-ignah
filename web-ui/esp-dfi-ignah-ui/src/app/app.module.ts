@@ -30,6 +30,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { HttpClientModule } from '@angular/common/http';
 import { VehicleDialogComponent } from './components/display/additional-vehicles/vehicle-dialog/vehicle-dialog.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { DestinationBlocklistComponent } from './components/settings/destination-blocklist/destination-blocklist.component';
 
 @NgModule({
     declarations: [AppComponent],

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { AdditionalVehicle } from 'src/app/models/additional-vehicles';
-import { fetchVehicles, pushVehicles, removeVehicle, selectAdditionalVehicles } from 'src/app/store/mode';
+import { AdditionalVehicle } from '@app/models/additional-vehicles';
+import { fetchVehicles, pushVehicles, removeVehicle, selectAdditionalVehicles } from '@app/store/mode';
 import { VehicleDialogComponent } from './vehicle-dialog/vehicle-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { AsyncPipe } from '@angular/common';
@@ -12,10 +12,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 
 @Component({
-    selector: 'app-additional-vehicles',
-    templateUrl: './additional-vehicles.component.html',
-    styleUrls: ['./additional-vehicles.component.scss'],
-    imports: [MatListModule, MatButtonModule, MatIconModule, MatDividerModule, AsyncPipe]
+  selector: 'app-additional-vehicles',
+  templateUrl: './additional-vehicles.component.html',
+  styleUrls: ['./additional-vehicles.component.scss'],
+  imports: [MatListModule, MatButtonModule, MatIconModule, MatDividerModule, AsyncPipe]
 })
 export class AdditionalVehiclesComponent {
 

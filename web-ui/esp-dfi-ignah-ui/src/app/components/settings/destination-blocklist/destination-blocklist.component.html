@@ -1,0 +1,28 @@
+@if (destinations$ | async; as destinations) {
+<mat-list>
+  @for (destination of destinations.blocklist; track destination; let i = $index) {
+
+  <mat-list-item>
+    <span matListItemTitle>{{destination}}</span>
+
+    <span matListItemMeta>
+      <button mat-icon-button (click)="onEditDestination(destination, i)">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <button mat-icon-button (click)="onDeleteDestination(i)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </span>
+  </mat-list-item>
+  @if (i !== destinations.blocklist.length - 1) {
+  <mat-divider></mat-divider>
+  }
+
+  }
+</mat-list>
+}
+
+<div>
+  <button mat-flat-button color="primary" (click)="addDestination()">Ziel hinzufügen</button>
+</div>

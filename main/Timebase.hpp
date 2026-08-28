@@ -48,7 +48,7 @@ public:
     {
         ESP_LOGI(PrintTag, "Time synchronization event arrived.");
         printLocaltime();
-        sync::signal(sync::TimeIsSynchronized);
+        Task::syncEventGroup.setBits(sync_events::TimeIsSynchronized);
     }
 
     static void printLocaltime()

@@ -14,7 +14,7 @@ public:
 
     explicit Settings(NonVolatileMemory &nvm)
         : TaskWithMemberFunctionBase("settingsTask", 2048, osPriorityAboveNormal2), //
-          nvm(nvm){};
+          nvm(nvm) {};
 
     static constexpr auto StationNumberName = "stationNumber";
     static constexpr size_t StationNumberDefault = 7307;
@@ -73,9 +73,9 @@ public:
 protected:
     void taskMain(void *)
     {
-        sync::waitForAll(sync::NvmInitialized | sync::LedDriverStarted);
+        Task::syncEventGroup.waitBits(sync_events::NvmInitialized, true, true, portMAX_DELAY);
         loadValues();
-        sync::signal(sync::ConfigurationLoaded);
+        Task::syncEventGroup.setBits(sync_events::ConfigurationLoaded);
     }
 
 private:
