@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AdditionalVehicle } from '@app/models/additional-vehicles';
@@ -15,6 +15,7 @@ import { MatListModule } from '@angular/material/list';
   selector: 'app-additional-vehicles',
   templateUrl: './additional-vehicles.component.html',
   styleUrls: ['./additional-vehicles.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatListModule, MatButtonModule, MatIconModule, MatDividerModule, AsyncPipe]
 })
 export class AdditionalVehiclesComponent {

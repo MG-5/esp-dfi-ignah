@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { EMPTY, map, Observable } from 'rxjs';
 import { navigationEntries } from './data/navigation';
 import { Theme, ThemingService } from './services/theming.service';
@@ -8,6 +8,7 @@ import { Theme, ThemingService } from './services/theming.service';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AppComponent implements OnInit {

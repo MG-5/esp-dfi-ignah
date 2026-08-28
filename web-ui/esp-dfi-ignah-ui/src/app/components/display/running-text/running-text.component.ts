@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { getRunningText, selectRunningText, setRunningText } from '@app/store/mode';
 import { AsyncPipe } from '@angular/common';
@@ -13,6 +13,7 @@ import { map } from 'rxjs/operators';
   selector: 'app-running-text',
   templateUrl: './running-text.component.html',
   styleUrls: ['./running-text.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatFormFieldModule, MatInputModule, MatSliderModule, FormsModule, MatButtonModule, AsyncPipe]
 })
 export class RunningTextComponent implements OnInit {

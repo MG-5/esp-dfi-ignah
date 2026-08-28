@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { DestinationBlocklist } from '@app/models/destination-blocklist';
@@ -15,6 +15,7 @@ import { MatListModule } from '@angular/material/list';
   selector: 'app-destination-blocklist',
   templateUrl: './destination-blocklist.component.html',
   styleUrls: ['./destination-blocklist.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatListModule, MatButtonModule, MatIconModule, MatDividerModule, AsyncPipe]
 })
 export class DestinationBlocklistComponent {

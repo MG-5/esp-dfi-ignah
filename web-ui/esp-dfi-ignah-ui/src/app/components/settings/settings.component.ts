@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { DfiStationSettings } from '@app/models/dfi-station-settings';
@@ -16,6 +16,7 @@ import { DestinationBlocklistComponent } from './destination-blocklist/destinati
   selector: 'app-system-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSliderModule, MatButtonModule, MatDividerModule, DestinationBlocklistComponent]
 })
 export class SettingsComponent {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Mode } from '@app/models/mode';
 import { getMode, selectMode, setMode } from '@app/store/mode';
@@ -17,6 +17,7 @@ import { MatDividerModule } from '@angular/material/divider';
   selector: 'app-display',
   templateUrl: './display.component.html',
   styleUrls: ['./display.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatFormFieldModule, MatSelectModule, MatOptionModule, MatButtonModule, MatTabsModule, MatDividerModule, RunningTextComponent, FreeTextComponent, AdditionalVehiclesComponent, AsyncPipe]
 })
 export class DisplayComponent implements OnInit {
