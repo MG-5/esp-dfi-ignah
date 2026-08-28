@@ -18,34 +18,36 @@
             <input matInput type="text" formControlName="number">
           </mat-form-field>
         </div>
-        <!-- <div>
-          <label for="station-name">Sperrliste:</label>
-          <input matInput type="text" id="station-blocklist" name="station-blocklist" value="string array">
-        </div> -->
       </div>
       <div formGroupName="lightSensor">
         <h3>Lichtsensor</h3>
 
         <div>
           <label>
-            PWM-Bereich: {{ settingsForm.value.lightSensor?.min }} bis {{ settingsForm.value.lightSensor?.max }}
+            PWM-Bereich: {{ settingsForm.controls.lightSensor.controls.min.value }} bis {{ settingsForm.controls.lightSensor.controls.max.value }}
           </label>
         </div>
 
         <!-- Maximum is 2^10-1 -->
         <mat-slider [min]="lightSensorMin" [max]="lightSensorMax" class="control">
-          <input matSliderStartThumb formControlName="min">
-          <input matSliderEndThumb formControlName="max">
+
+          <input matSliderStartThumb [value]="settingsForm.controls.lightSensor.controls.min.value ?? lightSensorMin"
+            (input)="settingsForm.controls.lightSensor.controls.min.setValue($any($event.target).valueAsNumber)">
+
+          <input matSliderEndThumb [value]="settingsForm.controls.lightSensor.controls.max.value ?? lightSensorMax"
+            (input)="settingsForm.controls.lightSensor.controls.max.setValue($any($event.target).valueAsNumber)">
         </mat-slider>
 
         <div>
           <label>
-            PWM-Gain: {{ settingsForm.value.lightSensor?.gain }}
+            PWM-Gain: {{ settingsForm.controls.lightSensor.controls.gain.value }}
           </label>
         </div>
 
-        <mat-slider step="0.25" [min]="lightSensorGainMin" [max]="lightSensorGainMax" showTickMarks class="control">
-          <input matSliderThumb formControlName="gain">
+        <mat-slider [min]="lightSensorGainMin" [max]="lightSensorGainMax" [step]="0.25" showTickMarks class="control">
+
+          <input matSliderThumb [value]="settingsForm.controls.lightSensor.controls.gain.value ?? lightSensorGainMin"
+            (input)="settingsForm.controls.lightSensor.controls.gain.setValue($any($event.target).valueAsNumber)">
         </mat-slider>
       </div>
 
