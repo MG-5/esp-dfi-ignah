@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
 
@@ -32,5 +32,5 @@ jobs:
     - name: esp-idf build
       uses: espressif/esp-idf-ci-action@v1
       with:
-        esp_idf_version: v5.4.1
+        esp_idf_version: v6.1.0
         target: esp32
