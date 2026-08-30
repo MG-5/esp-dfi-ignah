@@ -4,8 +4,6 @@
 //--------------------------------------------------------------------------------------------------
 void LightSensor::taskMain(void *)
 {
-    powerEnable.init(GPIO_MODE_OUTPUT);
-
     bool hasPrintedOnce = false;
     auto lastWakeTime = xTaskGetTickCount();
     while (true)
@@ -50,10 +48,6 @@ void LightSensor::taskMain(void *)
 bool LightSensor::reconfigureSensor()
 {
     ESP_LOGD(PrintTag, "restart and reconfigure sensor");
-    powerEnable.write(false);
-    vTaskDelay(toOsTicks(100.0_ms));
-    powerEnable.write(true);
-    vTaskDelay(toOsTicks(100.0_ms));
 
     return sensor.setChannel(AD7417::Channel::Channel1);
 }

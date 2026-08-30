@@ -40,7 +40,7 @@ public:
     Gpio ShiftClock2{GPIO_NUM_5};   // SRCK for rows 3, 4, 7 and 8
     Gpio ShiftClock1{GPIO_NUM_6};   // SRCK for rows 1, 2, 5 and 6
 
-    static constexpr auto PwmPin = GPIO_NUM_8;
+    static constexpr auto PwmPin = GPIO_NUM_9;
     static constexpr auto PwmChannel = LEDC_CHANNEL_0;
 
     static constexpr auto PwmMode = LEDC_LOW_SPEED_MODE;

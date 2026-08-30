@@ -17,8 +17,8 @@ public:
     {};
 
     static constexpr auto I2cPort = I2C_NUM_0;
-    static constexpr auto SdaPin = GPIO_NUM_9;
-    static constexpr auto SclPin = GPIO_NUM_10;
+    static constexpr auto SdaPin = GPIO_NUM_10;
+    static constexpr auto SclPin = GPIO_NUM_7;
 
 protected:
     void taskMain(void *) override;
@@ -33,7 +33,7 @@ private:
 
     EspI2cBusAccessor espI2cBusAccessor{I2cPort, SdaPin, SclPin};
     AD7417 sensor{espI2cBusAccessor, 0b111};
-    util::Gpio powerEnable{GPIO_NUM_7};
+    // util::Gpio powerEnable{GPIO_NUM_7};
 
     uint16_t rawValue = 0;
     uint16_t filteredValue = (1 << Resolution) / 2; // init with value lay in the middle
